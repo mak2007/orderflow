@@ -1,132 +1,107 @@
-// Order & Inventory Management Dashboard Logic
+// Order & Inventory Management Dashboard Logic with Telegram Bot & Worker Key Integration
 (function() {
   'use strict';
 
   const STORAGE_KEY = 'worker_order_inventory_v1';
+  const API_BASE = '/api';
 
-  // State
+  // Application State
   let state = {
     orders: [],
-    currentTab: 'unsold', // 'unsold', 'sold', 'workers', 'all'
+    workers: [],
+    settings: {
+      botToken: '',
+      botUsername: '',
+      defaultRate: 15.00
+    },
+    botStatus: {
+      isConfigured: false,
+      isPolling: false,
+      botUsername: '',
+      lastError: null
+    },
+    currentTab: 'unsold', // 'unsold', 'sold', 'keys', 'workers', 'all'
     searchQuery: '',
     selectedIds: new Set(),
     soldSubFilter: 'all', // 'all', 'unfulfilled', 'fulfilled'
-    workerFilter: 'all',
+    isApiOnline: true,
+    pollTimer: null
   };
 
-  // Initial demo data if empty
-  const DEMO_DATA = [
-    {
-      id: 'demo-1',
-      workerName: 'Alex Carter',
-      orderId: 'ORD-99214',
-      orderNumber: 'ON-4501',
-      uniqueId: 'UQ-883192',
-      payoutAmount: 15.00,
-      inventoryStatus: 'unsold',
-      fulfillmentStatus: 'unfulfilled',
-      workerPaymentStatus: 'unpaid',
-      notes: 'Standard package intake',
-      createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-      soldAt: null,
-      fulfilledAt: null,
-      paidAt: null
-    },
-    {
-      id: 'demo-2',
-      workerName: 'Maria Santos',
-      orderId: 'ORD-99215',
-      orderNumber: 'ON-4502',
-      uniqueId: 'UQ-883193',
-      payoutAmount: 15.00,
-      inventoryStatus: 'unsold',
-      fulfillmentStatus: 'unfulfilled',
-      workerPaymentStatus: 'unpaid',
-      notes: 'Batch submission #1',
-      createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-      soldAt: null,
-      fulfilledAt: null,
-      paidAt: null
-    },
-    {
-      id: 'demo-3',
-      workerName: 'Alex Carter',
-      orderId: 'ORD-99210',
-      orderNumber: 'ON-4498',
-      uniqueId: 'UQ-883188',
-      payoutAmount: 20.00,
-      inventoryStatus: 'sold',
-      fulfillmentStatus: 'unfulfilled',
-      workerPaymentStatus: 'paid',
-      notes: 'Customer requested priority dispatch',
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      soldAt: new Date(Date.now() - 3600000 * 6).toISOString(),
-      fulfilledAt: null,
-      paidAt: new Date(Date.now() - 3600000 * 5).toISOString()
-    },
-    {
-      id: 'demo-4',
-      workerName: 'David Kim',
-      orderId: 'ORD-99208',
-      orderNumber: 'ON-4496',
-      uniqueId: 'UQ-883185',
-      payoutAmount: 15.00,
-      inventoryStatus: 'sold',
-      fulfillmentStatus: 'fulfilled',
-      workerPaymentStatus: 'paid',
-      notes: 'Delivered and verified',
-      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-      soldAt: new Date(Date.now() - 86400000).toISOString(),
-      fulfilledAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-      paidAt: new Date(Date.now() - 86400000).toISOString()
-    },
-    {
-      id: 'demo-5',
-      workerName: 'Maria Santos',
-      orderId: 'ORD-99205',
-      orderNumber: 'ON-4492',
-      uniqueId: 'UQ-883180',
-      payoutAmount: 18.00,
-      inventoryStatus: 'sold',
-      fulfillmentStatus: 'unfulfilled',
-      workerPaymentStatus: 'unpaid',
-      notes: 'Sold on marketplace, waiting for dispatch',
-      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-      soldAt: new Date(Date.now() - 3600000 * 1).toISOString(),
-      fulfilledAt: null,
-      paidAt: null
-    }
-  ];
-
   // Initialize
-  function init() {
-    loadState();
+  async function init() {
     setupEventListeners();
+    await fetchServerState();
     render();
+
+    // Start auto-poll every 4 seconds to sync Telegram submissions live
+    state.pollTimer = setInterval(async () => {
+      await fetchServerState(true);
+    }, 4000);
   }
 
-  // LocalStorage handling
-  function loadState() {
+  // Fetch state from server API with localStorage fallback
+  async function fetchServerState(isBackground = false) {
     try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      if (data) {
-        state.orders = JSON.parse(data);
-      } else {
-        state.orders = [...DEMO_DATA];
-        saveState();
+      const res = await fetch(`${API_BASE}/state`);
+      if (res.ok) {
+        const data = await res.json();
+        state.isApiOnline = true;
+        state.orders = data.orders || [];
+        state.workers = data.workers || [];
+        state.settings = data.settings || {};
+        state.botStatus = data.botStatus || {};
+        
+        // Cache in localStorage for offline availability
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          orders: state.orders,
+          workers: state.workers,
+          settings: state.settings
+        }));
+
+        updateBotStatusPill();
+        if (isBackground) {
+          renderKPIs();
+          // Update active panel without disturbing inputs
+          renderCurrentPanelQuietly();
+        } else {
+          render();
+        }
+        return;
+      }
+    } catch (err) {
+      // Server unreachable - fall back to localStorage
+      state.isApiOnline = false;
+    }
+
+    if (!isBackground) {
+      loadFromLocalStorage();
+    }
+  }
+
+  function loadFromLocalStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        state.orders = data.orders || [];
+        state.workers = data.workers || [];
+        state.settings = data.settings || {};
       }
     } catch (e) {
-      console.error('Failed to load storage', e);
-      state.orders = [...DEMO_DATA];
+      console.error('LocalStorage load failed', e);
     }
   }
 
-  function saveState() {
+  function saveToLocalStorage() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.orders));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        orders: state.orders,
+        workers: state.workers,
+        settings: state.settings
+      }));
     } catch (e) {
-      console.error('Failed to save to localStorage', e);
-      showToast('Error saving data to local storage', 'danger');
+      console.error('LocalStorage save failed', e);
     }
   }
 
@@ -188,8 +163,26 @@
       .replace(/'/g, '&#039;');
   }
 
+  // Update Bot Status Indicator Pill in Header
+  function updateBotStatusPill() {
+    const pill = document.getElementById('bot-status-pill');
+    const text = document.getElementById('bot-status-text');
+    if (!pill || !text) return;
+
+    if (state.botStatus && state.botStatus.isPolling) {
+      pill.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 transition';
+      pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>@${state.botStatus.botUsername || 'Bot Connected'}</span>`;
+    } else if (state.settings && state.settings.botToken) {
+      pill.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition';
+      pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Connecting Bot...</span>`;
+    } else {
+      pill.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition';
+      pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span><span>Connect Telegram Bot</span>`;
+    }
+  }
+
   // Status Toggles
-  window.toggleInventoryStatus = function(id) {
+  window.toggleInventoryStatus = async function(id) {
     const item = state.orders.find(o => o.id === id);
     if (!item) return;
     const isNowSold = item.inventoryStatus === 'unsold';
@@ -199,61 +192,127 @@
       item.fulfillmentStatus = 'unfulfilled';
       item.fulfilledAt = null;
     }
-    saveState();
+
+    saveToLocalStorage();
     render();
     showToast(`Order ${item.orderId} marked as ${item.inventoryStatus.toUpperCase()}`, isNowSold ? 'success' : 'info');
+
+    // Sync to backend
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/orders/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      } catch (e) {
+        console.error('API sync error', e);
+      }
+    }
   };
 
-  window.toggleFulfillmentStatus = function(id) {
+  window.toggleFulfillmentStatus = async function(id) {
     const item = state.orders.find(o => o.id === id);
     if (!item) return;
     const isNowFulfilled = item.fulfillmentStatus !== 'fulfilled';
     item.fulfillmentStatus = isNowFulfilled ? 'fulfilled' : 'unfulfilled';
     item.fulfilledAt = isNowFulfilled ? new Date().toISOString() : null;
-    saveState();
+
+    saveToLocalStorage();
     render();
     showToast(`Order ${item.orderId} marked as ${item.fulfillmentStatus.toUpperCase()}`, isNowFulfilled ? 'success' : 'warning');
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/orders/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      } catch (e) {
+        console.error('API sync error', e);
+      }
+    }
   };
 
-  window.toggleWorkerPaymentStatus = function(id) {
+  window.toggleWorkerPaymentStatus = async function(id) {
     const item = state.orders.find(o => o.id === id);
     if (!item) return;
     const isNowPaid = item.workerPaymentStatus !== 'paid';
     item.workerPaymentStatus = isNowPaid ? 'paid' : 'unpaid';
     item.paidAt = isNowPaid ? new Date().toISOString() : null;
-    saveState();
+
+    saveToLocalStorage();
     render();
-    showToast(`Worker payout for ${item.workerName} marked as ${item.workerPaymentStatus.toUpperCase()}`, isNowPaid ? 'success' : 'warning');
+    showToast(`Payout for ${item.workerName} marked as ${item.workerPaymentStatus.toUpperCase()}`, isNowPaid ? 'success' : 'warning');
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/orders/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      } catch (e) {
+        console.error('API sync error', e);
+      }
+    }
   };
 
-  window.markAllWorkerPaid = function(workerName) {
+  // Mark all orders paid for a worker & send automated Telegram notification
+  window.markWorkerPaidWithAlert = async function(workerId, workerName) {
+    const worker = state.workers.find(w => w.id === workerId || w.name === workerName);
+    
+    if (state.isApiOnline && worker) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/${worker.id}/mark-paid`, { method: 'POST' });
+        const result = await res.json();
+        if (result.success) {
+          await fetchServerState();
+          let msg = `Marked ${result.paidCount} orders ($${result.totalPaidAmount.toFixed(2)}) as PAID for ${worker.name}!`;
+          if (result.telegramSent) {
+            msg += ' 📲 Payment notification sent to worker via Telegram!';
+          }
+          showToast(msg, 'success');
+          return;
+        }
+      } catch (e) {
+        console.error('Error marking paid via API', e);
+      }
+    }
+
+    // Offline fallback
     let count = 0;
     const now = new Date().toISOString();
     state.orders.forEach(o => {
-      if (o.workerName === workerName && o.workerPaymentStatus !== 'paid') {
+      if ((o.workerName === workerName || (worker && o.workerKey === worker.key)) && o.workerPaymentStatus !== 'paid') {
         o.workerPaymentStatus = 'paid';
         o.paidAt = now;
         count++;
       }
     });
-    if (count > 0) {
-      saveState();
-      render();
-      showToast(`Marked ${count} orders as PAID for ${workerName}!`, 'success');
-    } else {
-      showToast(`All orders for ${workerName} are already marked as Paid.`, 'info');
-    }
+    saveToLocalStorage();
+    render();
+    showToast(`Marked ${count} orders as PAID for ${workerName}!`, 'success');
   };
 
-  window.deleteOrder = function(id) {
+  window.deleteOrder = async function(id) {
     const item = state.orders.find(o => o.id === id);
     if (!item) return;
     if (confirm(`Are you sure you want to delete Order "${item.orderId}" submitted by ${item.workerName}?`)) {
       state.orders = state.orders.filter(o => o.id !== id);
       state.selectedIds.delete(id);
-      saveState();
+      saveToLocalStorage();
       render();
       showToast(`Order ${item.orderId} deleted`, 'info');
+
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/orders/${id}`, { method: 'DELETE' });
+        } catch (e) {
+          console.error('API delete error', e);
+        }
+      }
     }
   };
 
@@ -270,7 +329,6 @@
     render();
   };
 
-  // Set Sub-filter for Sold tab
   window.setSoldSubFilter = function(filter) {
     state.soldSubFilter = filter;
     render();
@@ -280,11 +338,12 @@
   function getFilteredOrders() {
     let list = state.orders;
 
-    // Search query filter
     if (state.searchQuery.trim()) {
       const q = state.searchQuery.trim().toLowerCase();
       list = list.filter(o =>
         (o.workerName && o.workerName.toLowerCase().includes(q)) ||
+        (o.workerKey && o.workerKey.toLowerCase().includes(q)) ||
+        (o.telegramUsername && o.telegramUsername.toLowerCase().includes(q)) ||
         (o.orderId && o.orderId.toLowerCase().includes(q)) ||
         (o.orderNumber && o.orderNumber.toLowerCase().includes(q)) ||
         (o.uniqueId && o.uniqueId.toLowerCase().includes(q)) ||
@@ -307,16 +366,24 @@
       renderUnsoldPanel(container);
     } else if (state.currentTab === 'sold') {
       renderSoldPanel(container);
+    } else if (state.currentTab === 'keys') {
+      renderKeysPanel(container);
     } else if (state.currentTab === 'workers') {
       renderWorkersPanel(container);
     } else if (state.currentTab === 'all') {
       renderAllOrdersPanel(container);
     }
+  }
 
-    // Refresh icons if lucide is loaded
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons();
+  function renderCurrentPanelQuietly() {
+    const container = document.getElementById('panel-content');
+    if (!container) return;
+    // Only re-render if user is not actively typing in an input
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+      return;
     }
+    render();
   }
 
   // Update top KPI cards
@@ -328,7 +395,7 @@
     
     const unpaidOrders = state.orders.filter(o => o.workerPaymentStatus === 'unpaid');
     const unpaidCount = unpaidOrders.length;
-    const unpaidSum = unpaidOrders.reduce((acc, curr) => acc + (Number(curr.payoutAmount) || 0), 0);
+    const unpaidSum = unpaidOrders.reduce((acc, curr) => acc + (Number(curr.payoutAmount) || 15), 0);
 
     const elTotal = document.getElementById('kpi-total');
     const elUnsold = document.getElementById('kpi-unsold');
@@ -342,27 +409,42 @@
     if (elUnfulfilled) elUnfulfilled.textContent = unfulfilled;
     if (elUnpaid) elUnpaid.textContent = `${unpaidCount} ($${unpaidSum.toFixed(2)})`;
 
-    // Badges on tab headers
     const badgeUnsold = document.getElementById('tab-badge-unsold');
     const badgeSold = document.getElementById('tab-badge-sold');
+    const badgeKeys = document.getElementById('tab-badge-keys');
     const badgeWorkers = document.getElementById('tab-badge-workers');
     const badgeAll = document.getElementById('tab-badge-all');
 
     if (badgeUnsold) badgeUnsold.textContent = unsold;
     if (badgeSold) badgeSold.textContent = sold;
+    if (badgeKeys) badgeKeys.textContent = state.workers.length;
     if (badgeWorkers) badgeWorkers.textContent = unpaidCount;
     if (badgeAll) badgeAll.textContent = total;
   }
 
-  // Worker datalist for easy autocomplete
+  // Worker datalist
   function renderWorkerDatalist() {
     const datalist = document.getElementById('workerNamesList');
     if (!datalist) return;
-    const uniqueWorkers = [...new Set(state.orders.map(o => o.workerName).filter(Boolean))].sort();
-    datalist.innerHTML = uniqueWorkers.map(w => `<option value="${escapeHtml(w)}">`).join('');
+    const names = [...new Set([
+      ...state.workers.map(w => w.name),
+      ...state.orders.map(o => o.workerName)
+    ].filter(Boolean))].sort();
+    datalist.innerHTML = names.map(w => `<option value="${escapeHtml(w)}">`).join('');
   }
 
-  // Panel 1: Unsold Inventory
+  // When worker selected in Add Order modal, auto-populate Key & default payout
+  window.onWorkerSelected = function(name) {
+    const worker = state.workers.find(w => w.name.toLowerCase() === (name || '').trim().toLowerCase());
+    if (worker) {
+      const keyInput = document.getElementById('input-worker-key');
+      const payoutInput = document.getElementById('input-payout');
+      if (keyInput) keyInput.value = worker.key || '';
+      if (payoutInput && worker.rate) payoutInput.value = worker.rate;
+    }
+  };
+
+  // PANEL 1: Unsold Inventory
   function renderUnsoldPanel(container) {
     const allFiltered = getFilteredOrders();
     const unsoldList = allFiltered.filter(o => o.inventoryStatus === 'unsold');
@@ -411,7 +493,7 @@
         <table class="w-full text-left text-sm text-slate-600">
           <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
             <tr>
-              <th class="py-3.5 px-4">Worker Name</th>
+              <th class="py-3.5 px-4">Worker & Telegram</th>
               <th class="py-3.5 px-4">Order ID</th>
               <th class="py-3.5 px-4">Order Number</th>
               <th class="py-3.5 px-4">Unique ID</th>
@@ -432,9 +514,12 @@
           <td class="py-3.5 px-4">
             <div class="font-semibold text-slate-900 flex items-center gap-2">
               <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
-                ${escapeHtml(item.workerName.charAt(0).toUpperCase())}
+                ${escapeHtml((item.workerName || 'W').charAt(0).toUpperCase())}
               </div>
-              <span>${escapeHtml(item.workerName)}</span>
+              <div>
+                <div>${escapeHtml(item.workerName)}</div>
+                ${item.telegramUsername ? `<span class="text-[11px] text-sky-600 font-mono font-medium">${escapeHtml(item.telegramUsername)}</span>` : ''}
+              </div>
             </div>
             ${item.notes ? `<div class="text-xs text-slate-400 mt-0.5 truncate max-w-xs">${escapeHtml(item.notes)}</div>` : ''}
           </td>
@@ -505,7 +590,7 @@
     container.innerHTML = html;
   }
 
-  // Panel 2: Sold Inventory
+  // PANEL 2: Sold Inventory
   function renderSoldPanel(container) {
     const allFiltered = getFilteredOrders();
     let soldList = allFiltered.filter(o => o.inventoryStatus === 'sold');
@@ -533,7 +618,6 @@
             </p>
           </div>
 
-          <!-- Sub-filters for Sold panel -->
           <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
             <button onclick="setSoldSubFilter('all')" class="px-3 py-1.5 rounded-md transition ${state.soldSubFilter === 'all' ? 'bg-white shadow-sm text-slate-900 font-bold' : 'text-slate-600 hover:text-slate-900'}">
               All Sold (${totalSold})
@@ -570,7 +654,7 @@
           <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
             <tr>
               <th class="py-3.5 px-4">Order ID & Number</th>
-              <th class="py-3.5 px-4">Worker Name</th>
+              <th class="py-3.5 px-4">Worker & Telegram</th>
               <th class="py-3.5 px-4">Unique ID</th>
               <th class="py-3.5 px-4">Fulfillment Status</th>
               <th class="py-3.5 px-4">Worker Payout</th>
@@ -606,6 +690,7 @@
 
           <td class="py-3.5 px-4">
             <div class="font-semibold text-slate-900">${escapeHtml(item.workerName)}</div>
+            ${item.telegramUsername ? `<span class="text-[11px] text-sky-600 font-mono">${escapeHtml(item.telegramUsername)}</span>` : ''}
             ${item.notes ? `<div class="text-xs text-slate-400 truncate max-w-xs">${escapeHtml(item.notes)}</div>` : ''}
           </td>
 
@@ -618,7 +703,6 @@
             </div>
           </td>
 
-          <!-- Fulfillment Toggle -->
           <td class="py-3.5 px-4">
             <button onclick="toggleFulfillmentStatus('${item.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm ${isFulfilled ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100' : 'bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100 animate-pulse'}">
               ${isFulfilled ? `
@@ -631,7 +715,6 @@
             </button>
           </td>
 
-          <!-- Worker Payment Toggle -->
           <td class="py-3.5 px-4">
             <button onclick="toggleWorkerPaymentStatus('${item.id}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 hover:bg-rose-200'}">
               <span class="w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
@@ -671,7 +754,215 @@
     container.innerHTML = html;
   }
 
-  // Panel 3: Worker Payouts (Grouped by Worker)
+  // PANEL 3: Telegram & Worker Keys Hub (NEW!)
+  function renderKeysPanel(container) {
+    let html = `
+      <div class="space-y-6">
+        <!-- Banner & Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-sky-50/50 via-indigo-50/30 to-white flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <svg class="w-6 h-6 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+              Telegram & Worker Keys Management
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Connect Telegram usernames to unique worker keys. View <span class="font-semibold text-sky-700">Success Rates</span>, order counts, and calculated payouts.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 sm:gap-3">
+            <button onclick="openBotConfigModal()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-2xs transition flex items-center gap-1.5">
+              <span>🤖 Bot Settings</span>
+            </button>
+            <button onclick="openAddWorkerModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>+</span> Generate Worker Key
+            </button>
+          </div>
+        </div>
+
+        <!-- Bot Connection Instructions Bar -->
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-sky-900">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-sky-200 text-sky-700 flex items-center justify-center font-bold text-sm">💡</div>
+            <div>
+              <span class="font-bold">How Telegram Linking Works:</span>
+              <span class="text-sky-800"> Send your worker their assigned Key. The worker messages the bot: <code>/link &lt;KEY&gt;</code>. Their username links instantly!</span>
+            </div>
+          </div>
+          <div class="font-mono text-[11px] bg-white px-2.5 py-1 rounded border border-sky-200 text-sky-700 font-semibold whitespace-nowrap">
+            Bot Status: ${state.botStatus && state.botStatus.isPolling ? `🟢 @${state.botStatus.botUsername || 'Active'}` : '🔴 Offline / Setup Token'}
+          </div>
+        </div>
+    `;
+
+    if (state.workers.length === 0) {
+      html += `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <p class="text-slate-500 mb-4">No worker keys created yet.</p>
+          <button onclick="openAddWorkerModal()" class="px-4 py-2 bg-sky-600 text-white font-medium text-xs rounded-lg shadow-sm">
+            + Generate First Worker Key
+          </button>
+        </div>
+      </div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">`;
+
+    state.workers.forEach(worker => {
+      // Calculate worker stats
+      const workerOrders = state.orders.filter(o =>
+        (o.workerKey && o.workerKey.toUpperCase() === worker.key.toUpperCase()) ||
+        (o.workerName && o.workerName.toLowerCase() === worker.name.toLowerCase())
+      );
+
+      const totalOrders = workerOrders.length;
+      const completedOrders = workerOrders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
+      const soldOrders = workerOrders.filter(o => o.inventoryStatus === 'sold').length;
+      const unsoldCount = workerOrders.filter(o => o.inventoryStatus === 'unsold').length;
+
+      // Success Rate Calculation
+      const rateNum = totalOrders > 0 ? ((completedOrders / totalOrders) * 100) : 0;
+      const successRate = rateNum.toFixed(1);
+
+      // Financials
+      const baseRate = Number(worker.rate) || 15.00;
+      const totalEarned = workerOrders
+        .filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled')
+        .reduce((sum, o) => sum + (Number(o.payoutAmount) || baseRate), 0);
+
+      const unpaidOrders = workerOrders.filter(o => o.workerPaymentStatus === 'unpaid');
+      const unpaidAmount = unpaidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || baseRate), 0);
+
+      const isLinked = Boolean(worker.telegramId);
+
+      // Color coding for success rate
+      let rateColor = 'text-slate-600 bg-slate-100';
+      let progressColor = 'bg-slate-400';
+      if (rateNum >= 80) {
+        rateColor = 'text-emerald-700 bg-emerald-100';
+        progressColor = 'bg-emerald-500';
+      } else if (rateNum >= 50) {
+        rateColor = 'text-amber-700 bg-amber-100';
+        progressColor = 'bg-amber-500';
+      } else if (totalOrders > 0) {
+        rateColor = 'text-rose-700 bg-rose-100';
+        progressColor = 'bg-rose-500';
+      }
+
+      html += `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-sky-300 transition-all overflow-hidden flex flex-col justify-between">
+          <div class="p-5">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                  ${escapeHtml(worker.name.charAt(0).toUpperCase())}
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900 text-base leading-tight">${escapeHtml(worker.name)}</h3>
+                  <div class="flex items-center gap-1.5 mt-1">
+                    <span class="font-mono text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">${escapeHtml(worker.key)}</span>
+                    <button onclick="copyToClipboard('${escapeHtml(worker.key)}', 'Worker Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
+                    <button onclick="copyToClipboard('/link ${escapeHtml(worker.key)}', 'Telegram Command')" title="Copy Telegram /link Command" class="text-xs text-sky-600 hover:underline ml-1">
+                      Copy <code>/link</code>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Telegram Link Status Pill -->
+              ${isLinked ? `
+                <div class="text-right">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-200">
+                    <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                    ${escapeHtml(worker.telegramUsername || 'Linked')}
+                  </span>
+                  <div class="text-[10px] text-slate-400 font-mono mt-0.5">ID: ${escapeHtml(worker.telegramId)}</div>
+                </div>
+              ` : `
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                  Unlinked
+                </span>
+              `}
+            </div>
+
+            <!-- Success Rate Metric Bar -->
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
+              <div class="flex items-center justify-between text-xs font-bold mb-1.5">
+                <span class="text-slate-600 flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                  Fulfillment Success Rate:
+                </span>
+                <span class="px-2 py-0.5 rounded font-mono ${rateColor}">${successRate}%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                <div class="${progressColor} h-2 rounded-full transition-all duration-500" style="width: ${rateNum}%"></div>
+              </div>
+              <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                <span>${completedOrders} Completed & Fulfilled</span>
+                <span>${totalOrders} Total Submitted</span>
+              </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-4 gap-2 text-center text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-100 mb-3">
+              <div>
+                <div class="text-slate-400 text-[11px]">Submitted</div>
+                <div class="font-bold text-slate-800 text-sm mt-0.5">${totalOrders}</div>
+              </div>
+              <div>
+                <div class="text-slate-400 text-[11px]">Unsold</div>
+                <div class="font-bold text-emerald-600 text-sm mt-0.5">${unsoldCount}</div>
+              </div>
+              <div>
+                <div class="text-slate-400 text-[11px]">Earned</div>
+                <div class="font-bold text-slate-800 text-sm mt-0.5">$${totalEarned.toFixed(2)}</div>
+              </div>
+              <div>
+                <div class="text-slate-400 text-[11px]">Unpaid Due</div>
+                <div class="font-bold ${unpaidAmount > 0 ? 'text-rose-600' : 'text-slate-500'} text-sm mt-0.5">$${unpaidAmount.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions Footer -->
+          <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 text-xs text-slate-500">
+              <span>Rate:</span>
+              <span class="font-bold text-slate-800">$${baseRate.toFixed(2)}/order</span>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              ${unpaidAmount > 0 ? `
+                <button onclick="markWorkerPaidWithAlert('${worker.id}', '${escapeHtml(worker.name)}')" title="Mark all unpaid orders as paid and send alert" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                  Pay $${unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
+                </button>
+              ` : `
+                <span class="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded">All Settled</span>
+              `}
+
+              <button onclick="editWorkerKey('${worker.id}')" title="Edit Rate or Key" class="p-1.5 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-200 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              </button>
+              <button onclick="deleteWorkerKey('${worker.id}')" title="Delete Key" class="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+    container.innerHTML = html;
+  }
+
+  // PANEL 4: Worker Payouts (Grouped by Worker)
   function renderWorkersPanel(container) {
     const allFiltered = getFilteredOrders();
     const workersMap = {};
@@ -681,6 +972,8 @@
       if (!workersMap[name]) {
         workersMap[name] = {
           name,
+          workerKey: item.workerKey || '',
+          telegramUsername: item.telegramUsername || '',
           totalSubmissions: 0,
           soldCount: 0,
           unsoldCount: 0,
@@ -695,7 +988,7 @@
       if (item.inventoryStatus === 'sold') workersMap[name].soldCount++;
       else workersMap[name].unsoldCount++;
 
-      const amount = Number(item.payoutAmount) || 0;
+      const amount = Number(item.payoutAmount) || 15.00;
       if (item.workerPaymentStatus === 'paid') {
         workersMap[name].paidCount++;
         workersMap[name].paidAmount += amount;
@@ -714,17 +1007,15 @@
           <div>
             <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
               <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-              Worker Payouts & Performance Hub
+              Worker Payouts & Balance Hub
             </h2>
             <p class="text-sm text-slate-500 mt-1">
-              Summary grouped by worker. Easily clear outstanding balances with 1-click <span class="font-semibold text-emerald-700">"Mark All Paid"</span>.
+              Summary grouped by worker. Clear balances with <span class="font-semibold text-emerald-700">"Mark All Paid"</span> with automatic Telegram alert.
             </p>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="text-right">
-              <div class="text-xs text-slate-400 uppercase font-semibold">Total Workers Tracked</div>
-              <div class="text-lg font-bold text-slate-800">${workersList.length} Active Workers</div>
-            </div>
+          <div class="text-right">
+            <div class="text-xs text-slate-400 uppercase font-semibold">Active Submitting Workers</div>
+            <div class="text-lg font-bold text-slate-800">${workersList.length} Workers</div>
           </div>
         </div>
     `;
@@ -747,7 +1038,6 @@
       html += `
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-indigo-300 transition-all overflow-hidden flex flex-col justify-between">
           <div class="p-5">
-            <!-- Header -->
             <div class="flex items-start justify-between gap-3 mb-4">
               <div class="flex items-center gap-3">
                 <div class="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
@@ -755,7 +1045,9 @@
                 </div>
                 <div>
                   <h3 class="font-bold text-slate-900 text-base leading-tight">${escapeHtml(w.name)}</h3>
-                  <div class="text-xs text-slate-500 mt-0.5">${w.totalSubmissions} Total Submissions (${w.soldCount} Sold, ${w.unsoldCount} Unsold)</div>
+                  <div class="text-xs text-slate-500 mt-0.5">
+                    ${w.totalSubmissions} Total Submissions (${w.soldCount} Sold, ${w.unsoldCount} Unsold)
+                  </div>
                 </div>
               </div>
 
@@ -771,7 +1063,6 @@
               `}
             </div>
 
-            <!-- Stats grid -->
             <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100 text-center mb-4">
               <div>
                 <div class="text-xs text-slate-400 font-medium">Sold / Unsold</div>
@@ -787,10 +1078,9 @@
               </div>
             </div>
 
-            <!-- Recent orders summary -->
             <div class="text-xs text-slate-500 font-medium mb-2 flex items-center justify-between">
-              <span>Submissions:</span>
-              <span class="text-slate-400">${w.orders.length} items</span>
+              <span>Order Intakes:</span>
+              <span class="text-slate-400">${w.orders.length} orders</span>
             </div>
             <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
               ${w.orders.map(o => `
@@ -804,19 +1094,18 @@
                     </span>
                   </div>
                   <button onclick="toggleWorkerPaymentStatus('${o.id}')" class="px-2 py-0.5 rounded font-bold transition text-[11px] ${o.workerPaymentStatus === 'paid' ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800 hover:bg-rose-300'}">
-                    ${o.workerPaymentStatus === 'paid' ? 'Paid' : 'Pay ($' + Number(o.payoutAmount || 0).toFixed(2) + ')'}
+                    ${o.workerPaymentStatus === 'paid' ? 'Paid' : 'Pay ($' + Number(o.payoutAmount || 15).toFixed(2) + ')'}
                   </button>
                 </div>
               `).join('')}
             </div>
           </div>
 
-          <!-- Card Footer with Action -->
           <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
             <span class="text-xs text-slate-500">
-              ${hasUnpaid ? `Owed: <strong class="text-rose-600">$${w.unpaidAmount.toFixed(2)}</strong>` : 'No outstanding payouts'}
+              ${hasUnpaid ? `Owed: <strong class="text-rose-600">$${w.unpaidAmount.toFixed(2)}</strong>` : 'No balance due'}
             </span>
-            <button onclick="markAllWorkerPaid('${escapeHtml(w.name)}')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm ${hasUnpaid ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 text-slate-500 cursor-not-allowed'}">
+            <button onclick="markWorkerPaidWithAlert(null, '${escapeHtml(w.name)}')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm ${hasUnpaid ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 text-slate-500 cursor-not-allowed'}">
               Mark All Paid
             </button>
           </div>
@@ -828,14 +1117,13 @@
     container.innerHTML = html;
   }
 
-  // Panel 4: All Records / Master Table
+  // PANEL 5: Master All Records
   function renderAllOrdersPanel(container) {
     const list = getFilteredOrders();
     const isAllSelected = list.length > 0 && list.every(o => state.selectedIds.has(o.id));
 
     let html = `
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <!-- Panel Header & Batch Actions -->
         <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -845,7 +1133,6 @@
             <p class="text-sm text-slate-500 mt-0.5">Comprehensive view of all worker submissions, status flags, and metadata.</p>
           </div>
 
-          <!-- Batch Action Controls -->
           <div class="flex flex-wrap items-center gap-2">
             ${state.selectedIds.size > 0 ? `
               <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-900">
@@ -884,7 +1171,7 @@
               <th class="py-3.5 px-4 w-10">
                 <input type="checkbox" onchange="toggleSelectAll(this.checked)" ${isAllSelected ? 'checked' : ''} class="rounded text-indigo-600 focus:ring-indigo-500">
               </th>
-              <th class="py-3.5 px-4">Worker Name</th>
+              <th class="py-3.5 px-4">Worker & Key</th>
               <th class="py-3.5 px-4">Order ID</th>
               <th class="py-3.5 px-4">Order Number</th>
               <th class="py-3.5 px-4">Unique ID</th>
@@ -911,7 +1198,11 @@
 
           <td class="py-3.5 px-4">
             <div class="font-semibold text-slate-900">${escapeHtml(item.workerName)}</div>
-            ${item.notes ? `<div class="text-xs text-slate-400 truncate max-w-[200px]">${escapeHtml(item.notes)}</div>` : ''}
+            <div class="flex items-center gap-1.5 mt-0.5">
+              ${item.workerKey ? `<span class="font-mono text-[10px] text-indigo-700 bg-indigo-50 px-1.5 rounded">${escapeHtml(item.workerKey)}</span>` : ''}
+              ${item.telegramUsername ? `<span class="font-mono text-[11px] text-sky-600">${escapeHtml(item.telegramUsername)}</span>` : ''}
+            </div>
+            ${item.notes ? `<div class="text-xs text-slate-400 truncate max-w-[200px] mt-0.5">${escapeHtml(item.notes)}</div>` : ''}
           </td>
 
           <td class="py-3.5 px-4">
@@ -941,14 +1232,12 @@
             </div>
           </td>
 
-          <!-- Inventory Toggle -->
           <td class="py-3.5 px-4">
             <button onclick="toggleInventoryStatus('${item.id}')" class="px-2.5 py-1 rounded-full text-xs font-semibold transition ${isSold ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'}">
               ${isSold ? 'Sold' : 'Unsold'}
             </button>
           </td>
 
-          <!-- Fulfillment Toggle -->
           <td class="py-3.5 px-4">
             ${isSold ? `
               <button onclick="toggleFulfillmentStatus('${item.id}')" class="px-2.5 py-1 rounded-full text-xs font-semibold transition ${isFulfilled ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'}">
@@ -959,7 +1248,6 @@
             `}
           </td>
 
-          <!-- Worker Paid Toggle -->
           <td class="py-3.5 px-4">
             <button onclick="toggleWorkerPaymentStatus('${item.id}')" class="px-2.5 py-1 rounded-full text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 hover:bg-rose-200'}">
               ${isPaid ? 'Paid' : 'Unpaid'}
@@ -989,7 +1277,7 @@
     container.innerHTML = html;
   }
 
-  // Selection & Batch Action handling
+  // Batch action handler
   window.toggleSelectAll = function(checked) {
     const list = getFilteredOrders();
     if (checked) {
@@ -1001,55 +1289,59 @@
   };
 
   window.toggleSelectOne = function(id, checked) {
-    if (checked) {
-      state.selectedIds.add(id);
-    } else {
-      state.selectedIds.delete(id);
-    }
+    if (checked) state.selectedIds.add(id);
+    else state.selectedIds.delete(id);
     render();
   };
 
-  window.batchAction = function(action) {
+  window.batchAction = async function(action) {
     if (state.selectedIds.size === 0) return;
     const ids = Array.from(state.selectedIds);
     const now = new Date().toISOString();
 
     if (action === 'delete') {
-      if (confirm(`Delete ${ids.length} selected orders?`)) {
-        state.orders = state.orders.filter(o => !state.selectedIds.has(o.id));
-        state.selectedIds.clear();
-        saveState();
-        render();
-        showToast(`Deleted ${ids.length} orders`, 'info');
-      }
-      return;
+      if (!confirm(`Delete ${ids.length} selected orders?`)) return;
+      state.orders = state.orders.filter(o => !state.selectedIds.has(o.id));
+    } else {
+      state.orders.forEach(o => {
+        if (state.selectedIds.has(o.id)) {
+          if (action === 'markSold') {
+            o.inventoryStatus = 'sold';
+            if (!o.soldAt) o.soldAt = now;
+          } else if (action === 'markUnsold') {
+            o.inventoryStatus = 'unsold';
+            o.soldAt = null;
+            o.fulfillmentStatus = 'unfulfilled';
+          } else if (action === 'markFulfilled') {
+            o.fulfillmentStatus = 'fulfilled';
+            o.fulfilledAt = now;
+          } else if (action === 'markPaid') {
+            o.workerPaymentStatus = 'paid';
+            o.paidAt = now;
+          }
+        }
+      });
     }
 
-    state.orders.forEach(o => {
-      if (state.selectedIds.has(o.id)) {
-        if (action === 'markSold') {
-          o.inventoryStatus = 'sold';
-          if (!o.soldAt) o.soldAt = now;
-        } else if (action === 'markUnsold') {
-          o.inventoryStatus = 'unsold';
-          o.soldAt = null;
-          o.fulfillmentStatus = 'unfulfilled';
-        } else if (action === 'markFulfilled') {
-          o.fulfillmentStatus = 'fulfilled';
-          o.fulfilledAt = now;
-        } else if (action === 'markPaid') {
-          o.workerPaymentStatus = 'paid';
-          o.paidAt = now;
-        }
-      }
-    });
-
-    saveState();
+    state.selectedIds.clear();
+    saveToLocalStorage();
     render();
     showToast(`Updated ${ids.length} orders`, 'success');
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/orders/batch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids, action })
+        });
+      } catch (e) {
+        console.error('API batch error', e);
+      }
+    }
   };
 
-  // Add / Edit Modal
+  // Add / Edit Order Modal
   window.openAddModal = function() {
     document.getElementById('modal-title').textContent = 'Add New Worker Submission';
     document.getElementById('order-form').reset();
@@ -1069,6 +1361,7 @@
     document.getElementById('modal-title').textContent = 'Edit Submission Details';
     document.getElementById('edit-order-id').value = item.id;
     document.getElementById('input-worker-name').value = item.workerName || '';
+    document.getElementById('input-worker-key').value = item.workerKey || '';
     document.getElementById('input-order-id').value = item.orderId || '';
     document.getElementById('input-order-number').value = item.orderNumber || '';
     document.getElementById('input-unique-id').value = item.uniqueId || '';
@@ -1082,15 +1375,16 @@
     document.getElementById('input-worker-name').focus();
   };
 
-  window.handleFormSubmit = function(e, addAnother = false) {
+  window.handleFormSubmit = async function(e, addAnother = false) {
     if (e) e.preventDefault();
 
     const editId = document.getElementById('edit-order-id').value;
     const workerName = document.getElementById('input-worker-name').value.trim();
+    const workerKey = document.getElementById('input-worker-key').value.trim();
     const orderId = document.getElementById('input-order-id').value.trim();
     const orderNumber = document.getElementById('input-order-number').value.trim();
     const uniqueId = document.getElementById('input-unique-id').value.trim();
-    const payoutAmount = parseFloat(document.getElementById('input-payout').value) || 0;
+    const payoutAmount = parseFloat(document.getElementById('input-payout').value) || 15.0;
     const inventoryStatus = document.getElementById('input-inventory-status').value;
     const fulfillmentStatus = document.getElementById('input-fulfillment-status').value;
     const workerPaymentStatus = document.getElementById('input-worker-status').value;
@@ -1101,48 +1395,65 @@
       return;
     }
 
+    const orderPayload = {
+      workerName,
+      workerKey,
+      orderId,
+      orderNumber,
+      uniqueId,
+      payoutAmount,
+      inventoryStatus,
+      fulfillmentStatus,
+      workerPaymentStatus,
+      notes
+    };
+
     if (editId) {
-      // Editing existing
       const existing = state.orders.find(o => o.id === editId);
       if (existing) {
-        existing.workerName = workerName;
-        existing.orderId = orderId;
-        existing.orderNumber = orderNumber;
-        existing.uniqueId = uniqueId;
-        existing.payoutAmount = payoutAmount;
-        existing.inventoryStatus = inventoryStatus;
-        existing.fulfillmentStatus = fulfillmentStatus;
-        existing.workerPaymentStatus = workerPaymentStatus;
-        existing.notes = notes;
+        Object.assign(existing, orderPayload);
         showToast(`Order ${orderId} updated successfully`, 'success');
       }
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/orders/${editId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderPayload)
+          });
+        } catch (err) {
+          console.error('API update error', err);
+        }
+      }
     } else {
-      // Creating new
       const newOrder = {
-        id: 'ord-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-        workerName,
-        orderId,
-        orderNumber,
-        uniqueId,
-        payoutAmount,
-        inventoryStatus,
-        fulfillmentStatus,
-        workerPaymentStatus,
-        notes,
+        id: `ord-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        ...orderPayload,
         createdAt: new Date().toISOString(),
         soldAt: inventoryStatus === 'sold' ? new Date().toISOString() : null,
         fulfilledAt: fulfillmentStatus === 'fulfilled' ? new Date().toISOString() : null,
-        paidAt: workerPaymentStatus === 'paid' ? new Date().toISOString() : null,
+        paidAt: workerPaymentStatus === 'paid' ? new Date().toISOString() : null
       };
       state.orders.unshift(newOrder);
       showToast(`Added Order ${orderId} by ${workerName}`, 'success');
+
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newOrder)
+          });
+        } catch (err) {
+          console.error('API create error', err);
+        }
+      }
     }
 
-    saveState();
+    saveToLocalStorage();
     render();
 
     if (addAnother) {
-      // Reset inputs except worker name for rapid entry
       document.getElementById('input-order-id').value = '';
       document.getElementById('input-order-number').value = '';
       document.getElementById('input-unique-id').value = '';
@@ -1150,6 +1461,175 @@
       document.getElementById('input-order-id').focus();
     } else {
       closeModal();
+    }
+  };
+
+  // Telegram Bot Config Modal
+  window.openBotConfigModal = function() {
+    document.getElementById('input-bot-token').value = state.settings.botToken || '';
+    const feedback = document.getElementById('bot-config-feedback');
+    if (state.botStatus && state.botStatus.isPolling) {
+      feedback.className = 'text-xs text-emerald-600 font-medium mt-1';
+      feedback.textContent = `🟢 Connected as @${state.botStatus.botUsername}`;
+    } else if (state.botStatus && state.botStatus.lastError) {
+      feedback.className = 'text-xs text-rose-600 font-medium mt-1';
+      feedback.textContent = `⚠️ Error: ${state.botStatus.lastError}`;
+    } else {
+      feedback.className = 'text-xs text-slate-500 mt-1';
+      feedback.textContent = 'Paste your token from @BotFather above.';
+    }
+    document.getElementById('bot-config-modal').classList.remove('hidden');
+  };
+
+  window.closeBotConfigModal = function() {
+    document.getElementById('bot-config-modal').classList.add('hidden');
+  };
+
+  window.saveBotToken = async function() {
+    const token = document.getElementById('input-bot-token').value.trim();
+    state.settings.botToken = token;
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/bot/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ botToken: token })
+        });
+        const result = await res.json();
+        if (result.success) {
+          state.botStatus = result.botStatus;
+          showToast(result.message || 'Bot connected successfully!', 'success');
+          closeBotConfigModal();
+          updateBotStatusPill();
+          render();
+          return;
+        } else {
+          showToast(`Bot error: ${result.message || 'Failed to connect'}`, 'danger');
+          return;
+        }
+      } catch (e) {
+        showToast('Could not reach backend server to connect bot', 'danger');
+      }
+    } else {
+      saveToLocalStorage();
+      showToast('Bot token saved locally. Start server to begin polling.', 'warning');
+      closeBotConfigModal();
+    }
+  };
+
+  // Worker Keys Modal
+  window.openAddWorkerModal = function() {
+    document.getElementById('edit-worker-id').value = '';
+    document.getElementById('input-new-worker-name').value = '';
+    document.getElementById('input-new-worker-key').value = '';
+    document.getElementById('input-new-worker-rate').value = state.settings.defaultRate || '15.00';
+    document.getElementById('worker-modal').classList.remove('hidden');
+    document.getElementById('input-new-worker-name').focus();
+  };
+
+  window.closeWorkerModal = function() {
+    document.getElementById('worker-modal').classList.add('hidden');
+  };
+
+  window.autoGenerateKey = function(name) {
+    const keyInput = document.getElementById('input-new-worker-key');
+    if (!keyInput.value || keyInput.dataset.autogen === 'true') {
+      const cleanName = (name || 'USER').replace(/[^a-zA-Z0-9]/g, '').slice(0, 5).toUpperCase();
+      keyInput.value = `KEY-${cleanName || 'USER'}-${Math.floor(1000 + Math.random() * 9000)}`;
+      keyInput.dataset.autogen = 'true';
+    }
+  };
+
+  window.regenerateRandomKey = function() {
+    const name = document.getElementById('input-new-worker-name').value;
+    const cleanName = (name || 'USER').replace(/[^a-zA-Z0-9]/g, '').slice(0, 5).toUpperCase();
+    document.getElementById('input-new-worker-key').value = `KEY-${cleanName || 'USER'}-${Math.floor(1000 + Math.random() * 9000)}`;
+  };
+
+  window.editWorkerKey = function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId);
+    if (!worker) return;
+
+    document.getElementById('edit-worker-id').value = worker.id;
+    document.getElementById('input-new-worker-name').value = worker.name || '';
+    document.getElementById('input-new-worker-key').value = worker.key || '';
+    document.getElementById('input-new-worker-rate').value = worker.rate || 15.00;
+
+    document.getElementById('worker-modal').classList.remove('hidden');
+  };
+
+  window.saveWorkerKey = async function() {
+    const editId = document.getElementById('edit-worker-id').value;
+    const name = document.getElementById('input-new-worker-name').value.trim();
+    const key = document.getElementById('input-new-worker-key').value.trim();
+    const rate = parseFloat(document.getElementById('input-new-worker-rate').value) || 15.00;
+
+    if (!name || !key) {
+      showToast('Worker Name and Key are required', 'warning');
+      return;
+    }
+
+    if (editId) {
+      const worker = state.workers.find(w => w.id === editId);
+      if (worker) {
+        worker.name = name;
+        worker.key = key;
+        worker.rate = rate;
+      }
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/workers/${editId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, key, rate })
+          });
+        } catch (e) { console.error('API worker update error', e); }
+      }
+      showToast(`Updated Worker Key for ${name}`, 'success');
+    } else {
+      const newWorker = {
+        id: `w-${Date.now()}`,
+        name,
+        key,
+        rate,
+        telegramId: null,
+        telegramUsername: null,
+        linkedAt: null,
+        status: 'active'
+      };
+      state.workers.push(newWorker);
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/workers`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newWorker)
+          });
+        } catch (e) { console.error('API worker create error', e); }
+      }
+      showToast(`Generated Worker Key: ${key}`, 'success');
+    }
+
+    saveToLocalStorage();
+    render();
+    closeWorkerModal();
+  };
+
+  window.deleteWorkerKey = async function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId);
+    if (!worker) return;
+    if (confirm(`Delete Worker Key for ${worker.name} (${worker.key})?`)) {
+      state.workers = state.workers.filter(w => w.id !== workerId);
+      saveToLocalStorage();
+      render();
+      showToast(`Worker key deleted`, 'info');
+
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/workers/${workerId}`, { method: 'DELETE' });
+        } catch (e) { console.error('API delete error', e); }
+      }
     }
   };
 
@@ -1174,8 +1654,7 @@
     const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
     const parsed = [];
 
-    lines.forEach((line, idx) => {
-      // Split by tab, comma, or pipe
+    lines.forEach(line => {
       let parts = [];
       if (line.includes('\t')) parts = line.split('\t');
       else if (line.includes('|')) parts = line.split('|');
@@ -1218,7 +1697,7 @@
     return parsed;
   };
 
-  window.importBulkData = function() {
+  window.importBulkData = async function() {
     const parsed = parseBulkText();
     if (parsed.length === 0) {
       showToast('No valid rows to import.', 'warning');
@@ -1226,18 +1705,29 @@
     }
 
     const now = new Date().toISOString();
-    parsed.forEach(item => {
-      state.orders.unshift({
-        id: 'ord-' + Date.now() + '-' + Math.floor(Math.random() * 10000),
+    for (const item of parsed) {
+      const newOrder = {
+        id: `ord-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
         ...item,
         createdAt: now,
         soldAt: null,
         fulfilledAt: null,
         paidAt: null
-      });
-    });
+      };
+      state.orders.unshift(newOrder);
 
-    saveState();
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newOrder)
+          });
+        } catch (e) {}
+      }
+    }
+
+    saveToLocalStorage();
     render();
     closeBulkModal();
     showToast(`Successfully imported ${parsed.length} orders!`, 'success');
@@ -1250,23 +1740,22 @@
       return;
     }
 
-    const headers = ['ID', 'Worker Name', 'Order ID', 'Order Number', 'Unique ID', 'Inventory Status', 'Fulfillment Status', 'Worker Payment Status', 'Payout Amount', 'Notes', 'Created At', 'Sold At', 'Fulfilled At', 'Paid At'];
+    const headers = ['ID', 'Worker Name', 'Worker Key', 'Telegram', 'Order ID', 'Order Number', 'Unique ID', 'Inventory Status', 'Fulfillment Status', 'Worker Payment Status', 'Payout Amount', 'Notes', 'Created At'];
     
     const rows = state.orders.map(o => [
       o.id,
       `"${(o.workerName || '').replace(/"/g, '""')}"`,
+      `"${(o.workerKey || '').replace(/"/g, '""')}"`,
+      `"${(o.telegramUsername || '').replace(/"/g, '""')}"`,
       `"${(o.orderId || '').replace(/"/g, '""')}"`,
       `"${(o.orderNumber || '').replace(/"/g, '""')}"`,
       `"${(o.uniqueId || '').replace(/"/g, '""')}"`,
       o.inventoryStatus,
       o.fulfillmentStatus,
       o.workerPaymentStatus,
-      o.payoutAmount || 0,
+      o.payoutAmount || 15,
       `"${(o.notes || '').replace(/"/g, '""')}"`,
-      o.createdAt || '',
-      o.soldAt || '',
-      o.fulfilledAt || '',
-      o.paidAt || ''
+      o.createdAt || ''
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -1282,59 +1771,19 @@
 
   // Export & Import JSON Backup
   window.exportJSON = function() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.orders, null, 2));
+    const backupData = {
+      orders: state.orders,
+      workers: state.workers,
+      settings: state.settings
+    };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `order_inventory_backup_${new Date().toISOString().slice(0,10)}.json`);
+    downloadAnchor.setAttribute("download", `orderflow_database_backup_${new Date().toISOString().slice(0,10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    showToast('JSON backup exported', 'success');
-  };
-
-  window.importJSON = function(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const parsed = JSON.parse(e.target.result);
-        if (Array.isArray(parsed)) {
-          state.orders = parsed;
-          saveState();
-          render();
-          showToast(`Imported ${parsed.length} records from backup`, 'success');
-        } else {
-          showToast('Invalid JSON file format (expected array)', 'danger');
-        }
-      } catch (err) {
-        showToast('Failed to parse JSON file', 'danger');
-      }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-  };
-
-  // Clear data or reload demo
-  window.resetToDemoData = function() {
-    if (confirm('Load demo sample data? This will overwrite current entries.')) {
-      state.orders = [...DEMO_DATA];
-      state.selectedIds.clear();
-      saveState();
-      render();
-      showToast('Loaded demo data', 'info');
-    }
-  };
-
-  window.clearAllData = function() {
-    if (confirm('Are you sure you want to delete ALL orders? This cannot be undone.')) {
-      state.orders = [];
-      state.selectedIds.clear();
-      saveState();
-      render();
-      showToast('All orders cleared', 'warning');
-    }
+    showToast('Database backup exported', 'success');
   };
 
   window.clearSearch = function() {
@@ -1344,7 +1793,6 @@
     render();
   };
 
-  // Event Listeners setup
   function setupEventListeners() {
     const searchInput = document.getElementById('global-search');
     if (searchInput) {
@@ -1354,7 +1802,6 @@
       });
     }
 
-    // Keyboard shortcut for adding: Ctrl+K or '+'
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         const modal = document.getElementById('order-modal');
@@ -1365,6 +1812,5 @@
     });
   }
 
-  // Run on load
   document.addEventListener('DOMContentLoaded', init);
 })();

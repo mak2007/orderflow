@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OrderFlow & Inventory Hub | Worker Submission Tracker</title>
+  <title>OrderFlow & Inventory Hub | Worker Submission & Telegram Tracker</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,15 +36,21 @@
           </div>
           <div>
             <h1 class="text-lg font-extrabold text-slate-900 tracking-tight leading-none">OrderFlow & Inventory Hub</h1>
-            <p class="text-xs text-slate-500 mt-1">Worker Submissions • Sold / Unsold • Fulfillment & Payouts</p>
+            <p class="text-xs text-slate-500 mt-1">Worker Submissions • Sold / Unsold • Telegram Bot & Keys</p>
           </div>
         </div>
 
-        <!-- Top Action Buttons -->
+        <!-- Bot Status & Top Action Buttons -->
         <div class="flex items-center gap-2 sm:gap-3">
-          <button onclick="openBulkModal()" title="Import multiple records at once" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-200">
+          <!-- Live Telegram Bot Status Pill -->
+          <button onclick="openBotConfigModal()" id="bot-status-pill" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+            <span id="bot-status-text">Bot Offline</span>
+          </button>
+
+          <button onclick="openBulkModal()" title="Import multiple records at once" class="hidden md:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-200">
             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-            Bulk Paste / Import
+            Bulk Import
           </button>
 
           <button onclick="exportCSV()" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-lg transition border border-slate-200 shadow-2xs">
@@ -59,25 +63,24 @@
             <button class="px-2.5 py-2 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 flex items-center gap-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
             </button>
-            <div class="absolute right-0 mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1.5 hidden group-hover:block z-40">
-              <button onclick="exportJSON()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <span>Backup Data (JSON)</span>
+            <div class="absolute right-0 mt-1 w-52 bg-white border border-slate-200 rounded-lg shadow-lg py-1.5 hidden group-hover:block z-40">
+              <button onclick="openBotConfigModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>🤖 Telegram Bot Settings</span>
               </button>
-              <label class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                <span>Restore Backup (JSON)</span>
-                <input type="file" accept=".json" onchange="importJSON(event)" class="hidden">
-              </label>
+              <button onclick="openAddWorkerModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>🔑 Generate Worker Key</span>
+              </button>
               <hr class="my-1 border-slate-100">
+              <button onclick="exportJSON()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>Backup Database (JSON)</span>
+              </button>
               <button onclick="resetToDemoData()" class="w-full text-left px-4 py-2 text-xs text-slate-600 hover:bg-slate-100">
                 Reload Demo Data
-              </button>
-              <button onclick="clearAllData()" class="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-semibold">
-                Clear All Orders
               </button>
             </div>
           </div>
 
-          <button onclick="openAddModal()" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition transform active:scale-95">
+          <button onclick="openAddModal()" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition transform active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             + Add Submission
           </button>
@@ -158,6 +161,13 @@
             <span id="tab-badge-sold" class="px-2 py-0.5 text-xs font-bold rounded-full bg-purple-100 text-purple-800">0</span>
           </button>
 
+          <!-- NEW: Telegram & Worker Keys Tab -->
+          <button onclick="switchTab('keys')" data-tab="keys" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+            <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+            <span>Telegram & Keys</span>
+            <span id="tab-badge-keys" class="px-2 py-0.5 text-xs font-bold rounded-full bg-sky-100 text-sky-800">0</span>
+          </button>
+
           <!-- Worker Payouts Tab -->
           <button onclick="switchTab('workers')" data-tab="workers" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
             <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -178,7 +188,7 @@
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </div>
-          <input type="text" id="global-search" placeholder="Search worker, order ID, no, unique ID..." class="w-full pl-9 pr-8 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+          <input type="text" id="global-search" placeholder="Search worker, key, @username, order ID..." class="w-full pl-9 pr-8 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
           <button onclick="clearSearch()" title="Clear search" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600">
             &times;
           </button>
@@ -196,7 +206,6 @@
   <!-- Add / Edit Submission Modal -->
   <div id="order-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 transform transition-all">
-      <!-- Modal Header -->
       <div class="p-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white flex items-center justify-between">
         <h3 id="modal-title" class="text-base font-bold flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -205,25 +214,31 @@
         <button onclick="closeModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
       </div>
 
-      <!-- Modal Body Form -->
       <form id="order-form" onsubmit="handleFormSubmit(event, false)" class="p-6 space-y-4">
         <input type="hidden" id="edit-order-id">
 
-        <!-- Worker Name -->
+        <!-- Worker Selection / Name -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Name *</label>
-          <input type="text" id="input-worker-name" list="workerNamesList" required placeholder="e.g. Alex Carter" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Worker Name *</label>
+            <span class="text-[11px] text-indigo-600 font-medium">Select or type name</span>
+          </div>
+          <input type="text" id="input-worker-name" list="workerNamesList" onchange="onWorkerSelected(this.value)" required placeholder="e.g. Alex Carter" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <datalist id="workerNamesList"></datalist>
         </div>
 
+        <!-- Worker Key (Auto-filled if worker chosen) -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Key (Optional)</label>
+          <input type="text" id="input-worker-key" placeholder="e.g. KEY-ALEX-9921" class="font-mono text-xs w-full px-3 py-1.5 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none">
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <!-- Order ID (Tracking) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Order ID *</label>
             <input type="text" id="input-order-id" required placeholder="e.g. ORD-98124" class="font-mono w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
-          <!-- Order Number -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Order Number *</label>
             <input type="text" id="input-order-number" required placeholder="e.g. ON-5021" class="font-mono w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -231,13 +246,11 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <!-- Unique ID -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Unique ID *</label>
             <input type="text" id="input-unique-id" required placeholder="e.g. UQ-772910" class="font-mono w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
-          <!-- Payout Amount -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Payout ($)</label>
             <input type="number" step="0.01" id="input-payout" value="15.00" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -274,7 +287,7 @@
         <!-- Optional Notes -->
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Notes (Optional)</label>
-          <input type="text" id="input-notes" placeholder="e.g. Priority shipping or customer tag" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none">
+          <input type="text" id="input-notes" placeholder="e.g. Priority dispatch tag" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none">
         </div>
 
         <!-- Modal Actions -->
@@ -292,6 +305,92 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Telegram Bot Configuration Modal -->
+  <div id="bot-config-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
+      <div class="p-5 bg-gradient-to-r from-sky-600 to-sky-700 text-white flex items-center justify-between">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+          Telegram Bot Configuration
+        </h3>
+        <button onclick="closeBotConfigModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div class="p-3 bg-sky-50 border border-sky-100 rounded-lg text-xs text-sky-900 space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span>ℹ️ How to get your Bot Token:</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1 text-[11px] text-sky-800">
+            <li>Open Telegram and message <strong>@BotFather</strong>.</li>
+            <li>Send <code>/newbot</code> and follow prompts to name your bot.</li>
+            <li>Copy the API Token given (e.g. <code>123456789:ABCdefGh...</code>) and paste it below.</li>
+          </ol>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Telegram Bot Token</label>
+          <input type="password" id="input-bot-token" placeholder="Paste HTTP API token from @BotFather" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          <p id="bot-config-feedback" class="text-xs text-slate-500 mt-1"></p>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <button type="button" onclick="closeBotConfigModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+            Close
+          </button>
+          <button type="button" onclick="saveBotToken()" class="px-4 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition">
+            Save & Connect Bot
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generate / Add Worker Key Modal -->
+  <div id="worker-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
+      <div class="p-5 bg-gradient-to-r from-indigo-700 to-purple-700 text-white flex items-center justify-between">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+          Create / Edit Worker Key
+        </h3>
+        <button onclick="closeWorkerModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="edit-worker-id">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Name *</label>
+          <input type="text" id="input-new-worker-name" placeholder="e.g. Liam Patel" oninput="autoGenerateKey(this.value)" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Key *</label>
+          <div class="flex items-center gap-2">
+            <input type="text" id="input-new-worker-key" placeholder="KEY-LIAM-4921" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="button" onclick="regenerateRandomKey()" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700">New</button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Give this key to the worker. They send <code>/link KEY</code> in Telegram to connect.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Default Pay Rate ($ / order)</label>
+          <input type="number" step="0.5" id="input-new-worker-rate" value="15.00" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <button type="button" onclick="closeWorkerModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+            Cancel
+          </button>
+          <button type="button" onclick="saveWorkerKey()" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition">
+            Save Worker Key
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -313,7 +412,7 @@
             <br>
             <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono font-semibold">Worker Name, Order ID, Order Number, Unique ID, [Optional Payout]</code>
           </p>
-          <textarea id="bulk-textarea" oninput="parseBulkText()" rows="6" placeholder="Alex Carter, ORD-991, NO-101, UQ-701, 15&#10;Maria Santos, ORD-992, NO-102, UQ-702, 15" class="font-mono text-xs w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          <textarea id="bulk-textarea" oninput="parseBulkText()" rows="6" placeholder="Alex Carter, ORD-991, NO-101, UQ-701, 15&#10;Maria Santos, ORD-992, NO-102, UQ-702, 18" class="font-mono text-xs w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
         </div>
 
         <div id="bulk-preview" class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs min-h-[70px]">
