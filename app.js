@@ -770,9 +770,8 @@
             </p>
           </div>
 
-          <div class="flex items-center gap-2 sm:gap-3">
-            <button onclick="openBotConfigModal()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-2xs transition flex items-center gap-1.5">
-              <span>🤖 Bot Settings</span>
+            <button onclick="openMasiModal()" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>⚡</span> Extract from Masi Boss
             </button>
             <button onclick="openAddWorkerModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-sm transition flex items-center gap-1.5">
               <span>+</span> Generate Worker Key
@@ -1847,6 +1846,129 @@
     downloadAnchor.click();
     downloadAnchor.remove();
     showToast('Database backup exported', 'success');
+  };
+
+  // Masi Boss Extractor Modal Handlers
+  let lastExtractedMasiData = null;
+
+  window.openMasiModal = function() {
+    document.getElementById('masi-modal').classList.remove('hidden');
+    document.getElementById('input-masi-key').focus();
+  };
+
+  window.closeMasiModal = function() {
+    document.getElementById('masi-modal').classList.add('hidden');
+  };
+
+  window.extractMasiPreview = async function() {
+    const keyInput = document.getElementById('input-masi-key');
+    const bossKey = (keyInput ? keyInput.value : '').trim();
+    const btnFetch = document.getElementById('btn-masi-fetch');
+    const previewBox = document.getElementById('masi-extract-preview');
+    const btnSync = document.getElementById('btn-masi-sync');
+
+    if (!bossKey) {
+      showToast('Please enter your Masi Boss Key', 'warning');
+      return;
+    }
+
+    btnFetch.disabled = true;
+    btnFetch.textContent = 'Extracting...';
+    previewBox.innerHTML = '<div class="flex items-center gap-2 text-indigo-600 font-semibold"><span>⏳ Connecting to https://masi.cc.cd/boss and extracting workers...</span></div>';
+
+    try {
+      const res = await fetch(`${API_BASE}/masi/extract`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bossKey })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to extract data');
+      }
+
+      lastExtractedMasiData = data;
+      btnSync.disabled = false;
+
+      const workers = data.workers || [];
+      showToast(`Successfully extracted ${workers.length} workers from Masi Boss!`, 'success');
+
+      previewBox.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+            <span class="font-bold text-slate-800 text-sm">✅ Extracted ${workers.length} Worker Profiles</span>
+            <span class="text-indigo-600 font-bold">${data.ordersCount || 0} Orders in History</span>
+          </div>
+          <div class="max-h-60 overflow-y-auto space-y-2 pr-1">
+            ${workers.map((w, idx) => `
+              <div class="p-2.5 rounded-lg bg-white border border-slate-200 shadow-2xs text-xs flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>${idx + 1}. ${escapeHtml(w.name)}</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded font-mono ${w.active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${w.active ? 'Active' : 'Inactive'}</span>
+                  </div>
+                  <div class="font-mono text-[11px] text-indigo-700 font-semibold truncate mt-0.5">${escapeHtml(w.key)}</div>
+                </div>
+                <div class="text-right whitespace-nowrap">
+                  <div class="font-bold text-slate-800">Completed: <strong class="text-emerald-700 font-mono">${w.completedCount}</strong></div>
+                  <div class="text-[11px] font-bold text-indigo-600">Success Rate: <strong class="font-mono">${Number(w.successRate).toFixed(1)}%</strong></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <p class="text-[11px] text-slate-500 pt-1">
+            Click <strong>"Sync & Import to Dashboard"</strong> below to add these keys and assign their exact success rates to your system!
+          </p>
+        </div>
+      `;
+    } catch (err) {
+      previewBox.innerHTML = `
+        <div class="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700">
+          <strong>❌ Extraction Error:</strong> ${escapeHtml(err.message)}
+          <div class="text-[11px] text-rose-600 mt-1">Please verify that your Boss Key is correct and that your account has boss permissions on masi.cc.cd.</div>
+        </div>
+      `;
+      btnSync.disabled = true;
+      showToast(err.message, 'danger');
+    } finally {
+      btnFetch.disabled = false;
+      btnFetch.textContent = 'Extract Data';
+    }
+  };
+
+  window.syncMasiToDashboard = async function() {
+    const keyInput = document.getElementById('input-masi-key');
+    const bossKey = (keyInput ? keyInput.value : '').trim();
+    const btnSync = document.getElementById('btn-masi-sync');
+
+    if (!bossKey) return;
+
+    btnSync.disabled = true;
+    btnSync.textContent = 'Syncing...';
+
+    try {
+      const res = await fetch(`${API_BASE}/masi/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bossKey, defaultRate: state.settings.defaultRate || 15.00 })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Sync failed');
+      }
+
+      await fetchServerState();
+      closeMasiModal();
+      switchTab('keys');
+      showToast(`Imported ${data.importedWorkers} new workers & updated ${data.updatedWorkers} existing workers with live success rates!`, 'success');
+    } catch (err) {
+      showToast(`Sync error: ${err.message}`, 'danger');
+    } finally {
+      btnSync.disabled = false;
+      btnSync.textContent = 'Sync & Import to Dashboard';
+    }
   };
 
   window.clearSearch = function() {

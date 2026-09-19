@@ -70,6 +70,9 @@
               <button onclick="openAddWorkerModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
                 <span>🔑 Generate Worker Key</span>
               </button>
+              <button onclick="openMasiModal()" class="w-full text-left px-4 py-2 text-xs text-indigo-700 font-semibold hover:bg-indigo-50 flex items-center gap-2">
+                <span>⚡ Extract from Masi Boss</span>
+              </button>
               <hr class="my-1 border-slate-100">
               <button onclick="exportJSON()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
                 <span>Backup Database (JSON)</span>
@@ -437,6 +440,45 @@
           <button type="button" onclick="closeDecideRateModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
           <button type="button" onclick="saveDecidedRate()" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition">Apply Rate</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Masi Boss Portal Extractor Modal -->
+  <div id="masi-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
+      <div class="p-5 bg-gradient-to-r from-violet-700 via-indigo-700 to-purple-800 text-white flex items-center justify-between flex-shrink-0">
+        <div>
+          <h3 class="text-base font-bold flex items-center gap-2">
+            <span>⚡</span> Masi Boss Extractor & Sync
+          </h3>
+          <p class="text-[11px] text-violet-200 mt-0.5">Extract worker keys, completed orders & success rates from masi.cc.cd/boss</p>
+        </div>
+        <button onclick="closeMasiModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4 overflow-y-auto flex-1">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Masi Boss Key (WORKER-XXXX-XXXX-...)</label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="input-masi-key" placeholder="Paste your Boss Key from masi.cc.cd/boss" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <button type="button" onclick="extractMasiPreview()" id="btn-masi-fetch" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow-sm whitespace-nowrap transition">
+              Extract Data
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">This connects securely to <code>https://masi.cc.cd/api/worker/team</code> with your boss key.</p>
+        </div>
+
+        <div id="masi-extract-preview" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs min-h-[120px]">
+          <span class="text-slate-400">Enter your Boss Key above and click "Extract Data" to preview workers, keys, and success rates.</span>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+        <button type="button" onclick="closeMasiModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancel</button>
+        <button type="button" onclick="syncMasiToDashboard()" id="btn-masi-sync" disabled class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed rounded-lg shadow-sm transition">
+          Sync & Import to Dashboard
+        </button>
       </div>
     </div>
   </div>

@@ -3,6 +3,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const TelegramBotEngine = require('./telegram-bot');
+const { extractMasiData } = require('./sync-masi');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
@@ -311,6 +312,78 @@ const server = http.createServer(async (req, res) => {
 
         const sent = await botEngine.sendMessage(telegramId, message);
         return sendJson(res, 200, { success: Boolean(sent) });
+      }
+
+      // POST /api/masi/extract (Preview extracted data from masi.cc.cd)
+      if (req.method === 'POST' && parsedUrl === '/api/masi/extract') {
+        const body = await parseJsonBody(req);
+        const { bossKey } = body;
+        if (!bossKey) return sendJson(res, 400, { success: false, error: 'Boss Key is required' });
+
+        try {
+          const masiData = await extractMasiData(bossKey);
+          return sendJson(res, 200, {
+            success: true,
+            overview: masiData.overview,
+            workers: masiData.workers,
+            ordersCount: masiData.orders.length
+          });
+        } catch (err) {
+          return sendJson(res, 400, { success: false, error: err.message });
+        }
+      }
+
+      // POST /api/masi/sync (Import & sync extracted workers and stats into database)
+      if (req.method === 'POST' && parsedUrl === '/api/masi/sync') {
+        const body = await parseJsonBody(req);
+        const { bossKey, defaultRate } = body;
+        if (!bossKey) return sendJson(res, 400, { success: false, error: 'Boss Key is required' });
+
+        try {
+          const masiData = await extractMasiData(bossKey);
+          let importedWorkers = 0;
+          let updatedWorkers = 0;
+
+          masiData.workers.forEach(mw => {
+            const existing = db.workers.find(w => 
+              (w.key && w.key.toUpperCase() === mw.key.toUpperCase()) ||
+              (w.name && w.name.toLowerCase() === mw.name.toLowerCase())
+            );
+
+            if (existing) {
+              existing.name = mw.name;
+              existing.key = mw.key;
+              existing.customSuccessRate = Number(mw.successRate);
+              existing.status = mw.active ? 'active' : 'paused';
+              updatedWorkers++;
+            } else {
+              db.workers.push({
+                id: `w-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                name: mw.name,
+                key: mw.key,
+                rate: Number(defaultRate) || 15.00,
+                customSuccessRate: Number(mw.successRate),
+                telegramId: null,
+                telegramUsername: null,
+                linkedAt: null,
+                status: mw.active ? 'active' : 'paused'
+              });
+              importedWorkers++;
+            }
+          });
+
+          dbManager.saveDb();
+
+          return sendJson(res, 200, {
+            success: true,
+            importedWorkers,
+            updatedWorkers,
+            totalWorkers: db.workers.length,
+            workers: db.workers
+          });
+        } catch (err) {
+          return sendJson(res, 400, { success: false, error: err.message });
+        }
       }
 
       return sendJson(res, 404, { success: false, error: 'Endpoint not found' });
