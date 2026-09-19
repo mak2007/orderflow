@@ -21,6 +21,8 @@
       lastError: null
     },
     currentTab: 'unsold', // 'unsold', 'sold', 'keys', 'workers', 'all'
+    keysViewMode: 'grouped', // 'grouped' (Group by Guy) or 'individual' (All Keys)
+    teamAssignTab: 'paste',
     searchQuery: '',
     selectedIds: new Set(),
     soldSubFilter: 'all', // 'all', 'unfulfilled', 'fulfilled'
@@ -754,8 +756,122 @@
     container.innerHTML = html;
   }
 
-  // PANEL 3: Telegram & Worker Keys Hub (NEW!)
+  // Helper: Group workers by Telegram Handle or Guy Name
+  function getGroupedGuys() {
+    const groups = new Map();
+
+    state.workers.forEach(worker => {
+      let groupKey = '';
+      let displayName = '';
+      let tgHandle = (worker.telegramUsername || '').trim();
+      if (tgHandle && !tgHandle.startsWith('@')) tgHandle = '@' + tgHandle;
+
+      if (tgHandle) {
+        groupKey = 'tg:' + tgHandle.toLowerCase();
+        displayName = worker.personName || worker.name || tgHandle;
+      } else if (worker.personName && worker.personName.trim()) {
+        groupKey = 'person:' + worker.personName.trim().toLowerCase();
+        displayName = worker.personName.trim();
+      } else {
+        groupKey = 'worker:' + (worker.key || worker.name).toLowerCase();
+        displayName = worker.name || worker.key;
+      }
+
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, {
+          id: groupKey,
+          displayName: displayName,
+          personName: worker.personName || displayName,
+          telegramUsername: tgHandle,
+          telegramId: worker.telegramId,
+          keys: [],
+          rate: Number(worker.rate) || 15.00,
+          customSuccessRate: worker.customSuccessRate
+        });
+      }
+
+      const guy = groups.get(groupKey);
+      if (!guy.telegramUsername && tgHandle) guy.telegramUsername = tgHandle;
+      if (!guy.telegramId && worker.telegramId) guy.telegramId = worker.telegramId;
+      if (worker.personName && (!guy.personName || guy.personName === guy.displayName)) {
+        guy.personName = worker.personName;
+      }
+      guy.keys.push(worker);
+    });
+
+    // Compute metrics for each guy
+    return Array.from(groups.values()).map(guy => {
+      const allKeys = guy.keys.map(k => k.key.toUpperCase());
+      const allNames = guy.keys.map(k => (k.name || '').toLowerCase());
+
+      const guyOrders = state.orders.filter(o =>
+        (o.workerKey && allKeys.includes(o.workerKey.toUpperCase())) ||
+        (o.workerName && allNames.includes(o.workerName.toLowerCase()))
+      );
+
+      const localTotal = guyOrders.length;
+      const localCompleted = guyOrders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
+      const extractedCompleted = guy.keys.reduce((sum, k) => sum + (Number(k.completedOrders) || 0), 0);
+      const extractedFail = guy.keys.reduce((sum, k) => sum + (Number(k.failCount) || 0), 0);
+
+      const completedOrders = Math.max(localCompleted, extractedCompleted);
+      const totalOrders = Math.max(localTotal, extractedCompleted + extractedFail);
+      const unsoldCount = guyOrders.filter(o => o.inventoryStatus === 'unsold').length;
+
+      const isCustomRate = guy.customSuccessRate !== null && guy.customSuccessRate !== undefined && guy.customSuccessRate !== '';
+      let rateNum = 0;
+      if (isCustomRate) {
+        rateNum = Math.min(100, Math.max(0, Number(guy.customSuccessRate)));
+      } else if (totalOrders > 0) {
+        rateNum = (completedOrders / totalOrders) * 100;
+      } else if (guy.keys.length === 1 && guy.keys[0].successRate) {
+        rateNum = Number(guy.keys[0].successRate);
+      }
+      const successRate = rateNum.toFixed(1);
+
+      const baseRate = guy.rate || 15.00;
+      const totalEarned = completedOrders * baseRate;
+
+      const unpaidOrders = guyOrders.filter(o => o.workerPaymentStatus === 'unpaid');
+      const unpaidAmount = unpaidOrders.length > 0
+        ? unpaidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || baseRate), 0)
+        : 0;
+
+      let rateColor = 'text-slate-600 bg-slate-100';
+      let progressColor = 'bg-slate-400';
+      if (rateNum >= 80) {
+        rateColor = 'text-emerald-700 bg-emerald-100';
+        progressColor = 'bg-emerald-500';
+      } else if (rateNum >= 50) {
+        rateColor = 'text-amber-700 bg-amber-100';
+        progressColor = 'bg-amber-500';
+      } else if (totalOrders > 0 || isCustomRate) {
+        rateColor = 'text-rose-700 bg-rose-100';
+        progressColor = 'bg-rose-500';
+      }
+
+      return {
+        ...guy,
+        completedOrders,
+        totalOrders,
+        unsoldCount,
+        isCustomRate,
+        rateNum,
+        successRate,
+        rateColor,
+        progressColor,
+        totalEarned,
+        unpaidAmount,
+        unpaidCount: unpaidOrders.length
+      };
+    });
+  }
+
+  // PANEL 3: Telegram & Worker Keys Hub (With Multi-Key Team/Guy Grouping)
   function renderKeysPanel(container) {
+    const guys = getGroupedGuys();
+    const isGroupedView = state.keysViewMode === 'grouped';
+
     let html = `
       <div class="space-y-6">
         <!-- Banner & Quick Actions -->
@@ -766,15 +882,29 @@
               Telegram & Worker Keys Management
             </h2>
             <p class="text-sm text-slate-500 mt-1">
-              Connect Telegram usernames to unique worker keys. View <span class="font-semibold text-sky-700">Success Rates</span>, order counts, and calculated payouts.
+              Group keys under individual team members, connect Telegram usernames, view success rates & calculated payouts.
             </p>
           </div>
 
-            <button onclick="openMasiModal()" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-sm transition flex items-center gap-1.5">
-              <span>⚡</span> Extract from Masi Boss
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- View Mode Switch: Group by Guy vs All Keys -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
+              <button onclick="switchKeysViewMode('grouped')" class="px-3 py-1.5 rounded-md transition ${isGroupedView ? 'bg-indigo-600 text-white shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'}">
+                👥 Group by Guy (${guys.length})
+              </button>
+              <button onclick="switchKeysViewMode('individual')" class="px-3 py-1.5 rounded-md transition ${!isGroupedView ? 'bg-indigo-600 text-white shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'}">
+                🔑 All Keys (${state.workers.length})
+              </button>
+            </div>
+
+            <button onclick="openTeamAssignModal()" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>👥</span> Assign Keys to Guys
             </button>
-            <button onclick="openAddWorkerModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-sm transition flex items-center gap-1.5">
-              <span>+</span> Generate Worker Key
+            <button onclick="openMasiModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>⚡</span> Extract Masi
+            </button>
+            <button onclick="openAddWorkerModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-sm transition flex items-center gap-1">
+              <span>+</span> New Key
             </button>
           </div>
         </div>
@@ -784,8 +914,8 @@
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-full bg-sky-200 text-sky-700 flex items-center justify-center font-bold text-sm">💡</div>
             <div>
-              <span class="font-bold">How Telegram Linking Works:</span>
-              <span class="text-sky-800"> Send your worker their assigned Key. The worker messages the bot: <code>/link &lt;KEY&gt;</code>. Their username links instantly!</span>
+              <span class="font-bold">Team Multi-Key Feature:</span>
+              <span class="text-sky-800"> You can assign multiple keys to the <b>same guy</b> by putting their Telegram username on each key. Their orders, success rates, and pay will combine automatically!</span>
             </div>
           </div>
           <div class="font-mono text-[11px] bg-white px-2.5 py-1 rounded border border-sky-200 text-sky-700 font-semibold whitespace-nowrap">
@@ -807,6 +937,148 @@
       return;
     }
 
+    // MODE 1: Group by Guy (Consolidated Team View)
+    if (isGroupedView) {
+      html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">`;
+
+      guys.forEach(guy => {
+        const isLinked = Boolean(guy.telegramId);
+
+        html += `
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-indigo-300 transition-all overflow-hidden flex flex-col justify-between">
+            <div class="p-5">
+              <!-- Header: Guy Name & Telegram -->
+              <div class="flex items-start justify-between gap-3 mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                    ${escapeHtml(guy.displayName.charAt(0).toUpperCase())}
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-bold text-slate-900 text-base leading-tight">${escapeHtml(guy.displayName)}</h3>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${guy.keys.length > 1 ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : 'bg-slate-100 text-slate-600'}">
+                        ${guy.keys.length} ${guy.keys.length === 1 ? 'Key' : 'Keys Combined'}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1">
+                      ${guy.telegramUsername ? `
+                        <a href="https://t.me/${escapeHtml(guy.telegramUsername.replace('@', ''))}" target="_blank" class="font-mono text-xs font-bold text-sky-600 hover:underline flex items-center gap-1">
+                          <span>✈️</span> ${escapeHtml(guy.telegramUsername)}
+                        </a>
+                      ` : `
+                        <span class="text-xs text-slate-400 italic">No Telegram handle</span>
+                      `}
+                      <button onclick="promptEditGuyTelegram('${escapeHtml(guy.keys[0].key)}', '${escapeHtml(guy.telegramUsername || '')}')" class="text-[11px] text-indigo-600 hover:underline font-semibold">
+                        ${guy.telegramUsername ? '✏️ Edit' : '+ Set Telegram'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Telegram Link Status -->
+                ${isLinked ? `
+                  <div class="text-right">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-200">
+                      <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                      Linked
+                    </span>
+                    <div class="text-[10px] text-slate-400 font-mono mt-0.5">ID: ${escapeHtml(guy.telegramId)}</div>
+                  </div>
+                ` : `
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    Unlinked
+                  </span>
+                `}
+              </div>
+
+              <!-- Assigned Keys List (Pill Tags) -->
+              <div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-2">
+                  <span class="flex items-center gap-1">🔑 Assigned Keys (${guy.keys.length}):</span>
+                  <button onclick="openTeamAssignModal()" class="text-[11px] text-indigo-600 hover:underline font-bold">+ Manage Keys</button>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  ${guy.keys.map(k => `
+                    <div class="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-xs shadow-2xs">
+                      <span class="font-mono font-bold text-indigo-700">${escapeHtml(k.key)}</span>
+                      <span class="text-[10px] text-slate-500">(${k.completedOrders || 0} done)</span>
+                      <button onclick="copyToClipboard('${escapeHtml(k.key)}', 'Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Combined Success Rate Bar -->
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
+                <div class="flex items-center justify-between text-xs font-bold mb-1.5">
+                  <span class="text-slate-700 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Combined Success Rate:
+                    ${guy.isCustomRate ? `<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800">Admin Decided</span>` : `<span class="text-[10px] font-medium px-1.5 py-0.2 rounded bg-slate-200 text-slate-600">Combined</span>`}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded font-mono font-bold ${guy.rateColor}">${guy.successRate}%</span>
+                    <button onclick="openDecideRateModal('${guy.keys[0].id}')" title="Set Success Rate for this Guy" class="px-2 py-0.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded transition">
+                      🎯 Set Rate
+                    </button>
+                  </div>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                  <div class="${guy.progressColor} h-2.5 rounded-full transition-all duration-500" style="width: ${guy.rateNum}%"></div>
+                </div>
+                <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                  <span>${guy.completedOrders} Orders Fulfilled</span>
+                  <span>${guy.totalOrders} Total Orders</span>
+                </div>
+              </div>
+
+              <!-- Combined Financial Metrics Grid -->
+              <div class="grid grid-cols-4 gap-2 text-center text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-100 mb-3">
+                <div>
+                  <div class="text-slate-400 text-[11px]">Keys</div>
+                  <div class="font-bold text-slate-800 text-sm mt-0.5">${guy.keys.length}</div>
+                </div>
+                <div>
+                  <div class="text-slate-400 text-[11px]">Completed</div>
+                  <div class="font-bold text-indigo-600 text-sm mt-0.5">${guy.completedOrders}</div>
+                </div>
+                <div>
+                  <div class="text-slate-400 text-[11px]">Total Pay</div>
+                  <div class="font-bold text-emerald-700 text-sm mt-0.5">$${guy.totalEarned.toFixed(2)}</div>
+                </div>
+                <div>
+                  <div class="text-slate-400 text-[11px]">Unpaid Due</div>
+                  <div class="font-bold ${guy.unpaidAmount > 0 ? 'text-rose-600' : 'text-slate-500'} text-sm mt-0.5">$${guy.unpaidAmount.toFixed(2)}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions Footer -->
+            <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+              <span class="text-xs text-slate-500">Rate: <strong>$${guy.rate.toFixed(2)}/order</strong></span>
+              <div class="flex items-center gap-1.5">
+                ${guy.unpaidAmount > 0 ? `
+                  <button onclick="markWorkerPaidWithAlert('${guy.keys[0].id}', '${escapeHtml(guy.displayName)}')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                    Pay $${guy.unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
+                  </button>
+                ` : `
+                  <span class="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded">All Settled</span>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    // MODE 2: Individual Keys View
     html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">`;
 
     state.workers.forEach(worker => {
@@ -890,10 +1162,18 @@
                   <div class="text-[10px] text-slate-400 font-mono mt-0.5">ID: ${escapeHtml(worker.telegramId)}</div>
                 </div>
               ` : `
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                  Unlinked
-                </span>
+                <div class="text-right">
+                  ${worker.telegramUsername ? `
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-200">
+                      ${escapeHtml(worker.telegramUsername)}
+                    </span>
+                    <div class="text-[10px] text-amber-600 mt-0.5">Awaiting /link</div>
+                  ` : `
+                    <button onclick="promptEditGuyTelegram('${escapeHtml(worker.key)}', '')" class="text-xs text-indigo-600 hover:underline font-semibold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                      + Set Telegram
+                    </button>
+                  `}
+                </div>
               `}
             </div>
 
@@ -1972,6 +2252,219 @@
     } finally {
       btnSync.disabled = false;
       btnSync.textContent = 'Sync & Import to Dashboard';
+    }
+  };
+
+  // Team & Guy Multi-Key Management Handlers
+  window.switchKeysViewMode = function(mode) {
+    state.keysViewMode = mode;
+    renderCurrentPanelQuietly();
+  };
+
+  window.openTeamAssignModal = function() {
+    document.getElementById('team-assign-modal').classList.remove('hidden');
+    switchTeamAssignTab(state.teamAssignTab || 'paste');
+    parseTeamAssignText();
+  };
+
+  window.closeTeamAssignModal = function() {
+    document.getElementById('team-assign-modal').classList.add('hidden');
+  };
+
+  window.switchTeamAssignTab = function(tab) {
+    state.teamAssignTab = tab;
+    const btnPaste = document.getElementById('btn-tab-assign-paste');
+    const btnSearch = document.getElementById('btn-tab-assign-search');
+    const panelPaste = document.getElementById('panel-assign-paste');
+    const panelSearch = document.getElementById('panel-assign-search');
+
+    if (tab === 'paste') {
+      btnPaste.className = 'px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 transition';
+      btnSearch.className = 'px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition';
+      panelPaste.classList.remove('hidden');
+      panelSearch.classList.add('hidden');
+      document.getElementById('team-assign-textarea').focus();
+    } else {
+      btnSearch.className = 'px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 transition';
+      btnPaste.className = 'px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition';
+      panelSearch.classList.remove('hidden');
+      panelPaste.classList.add('hidden');
+      renderTeamAssignTable();
+    }
+  };
+
+  window.parseTeamAssignText = function() {
+    const textarea = document.getElementById('team-assign-textarea');
+    const preview = document.getElementById('team-assign-preview');
+    const text = textarea ? textarea.value.trim() : '';
+
+    if (!text) {
+      preview.innerHTML = '<span class="text-slate-400">Preview will appear here as you type or paste...</span>';
+      return;
+    }
+
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const mappings = [];
+
+    lines.forEach(line => {
+      // Format: KEY @telegram [Guy Name] or KEY, @telegram, [Name]
+      const parts = line.split(/[\s,\t]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        const key = parts[0].trim();
+        let tg = parts[1].trim();
+        if (tg && !tg.startsWith('@')) tg = '@' + tg;
+        const name = parts.slice(2).join(' ') || '';
+        mappings.push({ key, telegramUsername: tg, personName: name });
+      }
+    });
+
+    if (mappings.length === 0) {
+      preview.innerHTML = '<div class="text-rose-600">No valid lines detected yet. Use: <code>WORKER-XXXX @username [Name]</code></div>';
+      return;
+    }
+
+    preview.innerHTML = `
+      <div class="space-y-2">
+        <div class="font-bold text-slate-800 flex items-center justify-between">
+          <span>Detected ${mappings.length} Key Assignments:</span>
+          <span class="text-xs text-indigo-600 font-semibold">${new Set(mappings.map(m => m.telegramUsername)).size} Unique Guys</span>
+        </div>
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-500 font-semibold">
+              <th class="py-1">Key</th>
+              <th class="py-1">Assigned Telegram</th>
+              <th class="py-1">Guy Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            ${mappings.map(m => `
+              <tr>
+                <td class="py-1 font-mono font-bold text-indigo-700">${escapeHtml(m.key)}</td>
+                <td class="py-1 font-mono text-sky-700">${escapeHtml(m.telegramUsername)}</td>
+                <td class="py-1 text-slate-700">${escapeHtml(m.personName || '—')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  };
+
+  window.renderTeamAssignTable = function() {
+    const tbody = document.getElementById('team-assign-table-body');
+    const filterInput = document.getElementById('team-assign-filter');
+    const q = (filterInput ? filterInput.value : '').toLowerCase().trim();
+
+    const filtered = state.workers.filter(w => 
+      !q ||
+      w.name.toLowerCase().includes(q) ||
+      w.key.toLowerCase().includes(q) ||
+      (w.telegramUsername && w.telegramUsername.toLowerCase().includes(q)) ||
+      (w.personName && w.personName.toLowerCase().includes(q))
+    );
+
+    tbody.innerHTML = filtered.slice(0, 100).map(w => `
+      <tr class="hover:bg-slate-50">
+        <td class="p-2">
+          <div class="font-bold text-slate-800">${escapeHtml(w.name)}</div>
+          <div class="font-mono text-[11px] text-indigo-600">${escapeHtml(w.key)}</div>
+        </td>
+        <td class="p-2">
+          <input type="text" data-key="${escapeHtml(w.key)}" class="input-tg font-mono text-xs w-full px-2 py-1 border border-slate-300 rounded focus:ring-1 focus:ring-indigo-500" placeholder="@username" value="${escapeHtml(w.telegramUsername || '')}">
+        </td>
+        <td class="p-2">
+          <input type="text" data-key="${escapeHtml(w.key)}" class="input-name text-xs w-full px-2 py-1 border border-slate-300 rounded focus:ring-1 focus:ring-indigo-500" placeholder="Guy Name" value="${escapeHtml(w.personName || '')}">
+        </td>
+      </tr>
+    `).join('');
+  };
+
+  window.saveTeamAssignments = async function() {
+    const btnSave = document.getElementById('btn-save-team-assign');
+    btnSave.disabled = true;
+    btnSave.textContent = 'Saving...';
+
+    const mappings = [];
+
+    if (state.teamAssignTab === 'paste') {
+      const textarea = document.getElementById('team-assign-textarea');
+      const text = textarea ? textarea.value.trim() : '';
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+
+      lines.forEach(line => {
+        const parts = line.split(/[\s,\t]+/).filter(Boolean);
+        if (parts.length >= 2) {
+          const key = parts[0].trim();
+          let tg = parts[1].trim();
+          if (tg && !tg.startsWith('@')) tg = '@' + tg;
+          const name = parts.slice(2).join(' ') || '';
+          mappings.push({ key, telegramUsername: tg, personName: name });
+        }
+      });
+    } else {
+      // Read from table inputs
+      const tgInputs = document.querySelectorAll('#team-assign-table-body .input-tg');
+      const nameInputs = document.querySelectorAll('#team-assign-table-body .input-name');
+
+      tgInputs.forEach((tgInp, idx) => {
+        const key = tgInp.getAttribute('data-key');
+        const tg = tgInp.value.trim();
+        const name = nameInputs[idx] ? nameInputs[idx].value.trim() : '';
+        if (key && (tg || name)) {
+          mappings.push({ key, telegramUsername: tg, personName: name });
+        }
+      });
+    }
+
+    if (mappings.length === 0) {
+      showToast('Please enter at least one key assignment', 'warning');
+      btnSave.disabled = false;
+      btnSave.textContent = 'Save & Group Keys';
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/workers/batch-assign-telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mappings })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to save assignments');
+      }
+
+      await fetchServerState();
+      closeTeamAssignModal();
+      switchTab('keys');
+      showToast(`Updated ${data.updated} keys! Keys belonging to the same guy are now grouped together!`, 'success');
+    } catch (err) {
+      showToast(`Error: ${err.message}`, 'danger');
+    } finally {
+      btnSave.disabled = false;
+      btnSave.textContent = 'Save & Group Keys';
+    }
+  };
+
+  window.promptEditGuyTelegram = async function(key, currentTg) {
+    const newTg = prompt(`Assign Telegram username for key ${key} (e.g. @username):`, currentTg || '');
+    if (newTg === null) return;
+    const personName = prompt(`Enter Guy / Person Name (e.g. Rahul):`, '') || '';
+
+    try {
+      const res = await fetch(`${API_BASE}/workers/assign-telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, telegramUsername: newTg.trim(), personName: personName.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update');
+      await fetchServerState();
+      showToast(`Assigned key ${key} to ${newTg.trim() || 'worker'}`, 'success');
+    } catch (e) {
+      showToast(e.message, 'danger');
     }
   };
 

@@ -483,6 +483,79 @@
     </div>
   </div>
 
+  <!-- Team / Assign Keys to Guys Modal -->
+  <div id="team-assign-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-100 animate-in">
+      <div class="p-5 bg-gradient-to-r from-sky-600 via-indigo-600 to-indigo-700 text-white flex items-center justify-between flex-shrink-0">
+        <div>
+          <h3 class="text-base font-bold flex items-center gap-2">
+            <span>👥</span> Group Keys Under 1 Guy / Telegram
+          </h3>
+          <p class="text-[11px] text-sky-100 mt-0.5">Assign multiple keys to the same worker and sort their stats under 1 person</p>
+        </div>
+        <button onclick="closeTeamAssignModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <!-- Mode Tabs: Bulk Paste vs Search & Pick -->
+      <div class="px-6 pt-3 pb-0 flex items-center gap-2 border-b border-slate-200 bg-slate-50">
+        <button type="button" onclick="switchTeamAssignTab('paste')" id="btn-tab-assign-paste" class="px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 transition">
+          📋 Bulk Paste (Key & Telegram)
+        </button>
+        <button type="button" onclick="switchTeamAssignTab('search')" id="btn-tab-assign-search" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
+          🔍 Quick Search & Assign Table
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 overflow-y-auto flex-1">
+        <!-- Tab 1: Paste Lines -->
+        <div id="panel-assign-paste" class="space-y-3">
+          <p class="text-xs text-slate-600">
+            Paste copied keys from the website followed by their <b>Telegram username</b> (and optional Guy name). Multiple keys with the same username will be automatically grouped into <b>1 Guy Profile</b>:
+          </p>
+          <div class="bg-indigo-50/70 p-3 rounded-lg border border-indigo-100 text-[11px] text-indigo-900">
+            <span class="font-bold">Format:</span> <code class="font-mono bg-white px-1 py-0.5 rounded border border-indigo-200">KEY @telegram [Guy Name]</code>
+            <div class="mt-1 font-mono text-[10px] text-indigo-700">
+              WORKER-0BE2-72E7-D72A-E15F @alam_tg Alam<br>
+              WORKER-EEA7-F4C4-1EF8-7BBC @alam_tg Alam<br>
+              WORKER-BC2F-E0A0-6295-651D @majid Majid
+            </div>
+          </div>
+          <textarea id="team-assign-textarea" oninput="parseTeamAssignText()" rows="6" placeholder="Paste keys with telegram usernames here...&#10;WORKER-0BE2-72E7-D72A-E15F @alam_tg Alam&#10;WORKER-EEA7-F4C4-1EF8-7BBC @alam_tg Alam" class="font-mono text-xs w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          
+          <div id="team-assign-preview" class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs max-h-48 overflow-y-auto">
+            <span class="text-slate-400">Preview will appear here as you type or paste...</span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Search Table -->
+        <div id="panel-assign-search" class="space-y-3 hidden">
+          <input type="text" id="team-assign-filter" oninput="renderTeamAssignTable()" placeholder="🔍 Search key or worker name to assign..." class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-lg">
+            <table class="w-full text-xs text-left divide-y divide-slate-200">
+              <thead class="bg-slate-50 text-slate-600 font-semibold sticky top-0">
+                <tr>
+                  <th class="p-2.5">Key / Worker</th>
+                  <th class="p-2.5">Telegram (@...)</th>
+                  <th class="p-2.5">Guy / Team Name</th>
+                </tr>
+              </thead>
+              <tbody id="team-assign-table-body" class="divide-y divide-slate-100">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+        <button type="button" onclick="closeTeamAssignModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancel</button>
+        <button type="button" onclick="saveTeamAssignments()" id="btn-save-team-assign" class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
+          <span>✓</span> Save & Group Keys
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Bulk Paste / CSV Import Modal -->
   <div id="bulk-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100">

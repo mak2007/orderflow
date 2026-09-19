@@ -247,6 +247,52 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { success: true });
       }
 
+      // POST /api/workers/batch-assign-telegram (Bulk assign Telegram usernames & Guy names to keys)
+      if (req.method === 'POST' && parsedUrl === '/api/workers/batch-assign-telegram') {
+        const body = await parseJsonBody(req);
+        const { mappings } = body;
+        if (!Array.isArray(mappings)) {
+          return sendJson(res, 400, { success: false, error: 'mappings array required' });
+        }
+
+        let updated = 0;
+        mappings.forEach(m => {
+          const key = (m.key || '').trim().toUpperCase();
+          let tg = (m.telegramUsername || '').trim();
+          if (tg && !tg.startsWith('@')) tg = '@' + tg;
+          const personName = (m.personName || '').trim();
+
+          const worker = db.workers.find(w => w.key && w.key.toUpperCase() === key);
+          if (worker) {
+            worker.telegramUsername = tg || null;
+            if (personName) worker.personName = personName;
+            worker.updatedAt = new Date().toISOString();
+            updated++;
+          }
+        });
+
+        dbManager.saveDb();
+        return sendJson(res, 200, { success: true, updated, workers: db.workers });
+      }
+
+      // POST /api/workers/assign-telegram (Single assign key to guy/telegram)
+      if (req.method === 'POST' && parsedUrl === '/api/workers/assign-telegram') {
+        const body = await parseJsonBody(req);
+        const { key, telegramUsername, personName } = body;
+        let tg = (telegramUsername || '').trim();
+        if (tg && !tg.startsWith('@')) tg = '@' + tg;
+
+        const worker = db.workers.find(w => w.key && w.key.toUpperCase() === (key || '').trim().toUpperCase());
+        if (!worker) return sendJson(res, 404, { success: false, error: 'Worker key not found' });
+
+        worker.telegramUsername = tg || null;
+        if (personName) worker.personName = personName.trim();
+        worker.updatedAt = new Date().toISOString();
+        dbManager.saveDb();
+
+        return sendJson(res, 200, { success: true, worker });
+      }
+
       // POST /api/workers/:id/mark-paid (Batch pay & optional Telegram Alert)
       if (req.method === 'POST' && parsedUrl.includes('/mark-paid')) {
         const id = parsedUrl.split('/')[3];

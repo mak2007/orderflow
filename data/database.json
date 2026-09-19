@@ -198,7 +198,7 @@
       "name": "Alam00",
       "key": "WORKER-0BE2-72E7-D72A-E15F",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "@alam_tg",
       "rate": 15,
       "completedOrders": 26,
       "failCount": 29,
@@ -212,14 +212,16 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.954Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.954Z",
+      "personName": "Alam",
+      "updatedAt": "2026-09-19T22:01:54.911Z"
     },
     {
       "id": "w-masi-9",
       "name": "Alam0000",
       "key": "WORKER-EEA7-F4C4-1EF8-7BBC",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "@alam_tg",
       "rate": 15,
       "completedOrders": 15,
       "failCount": 17,
@@ -233,7 +235,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.954Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.954Z",
+      "personName": "Alam",
+      "updatedAt": "2026-09-19T22:01:54.912Z"
     },
     {
       "id": "w-masi-10",

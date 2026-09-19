@@ -217,6 +217,21 @@ Once linked, you can submit orders directly from here, track your fulfillment su
     worker.telegramUsername = username;
     worker.linkedAt = new Date().toISOString();
 
+    // Auto-link ALL other keys assigned to this same Telegram username or guy
+    const otherLinkedKeys = [];
+    db.workers.forEach(w => {
+      if (w.key.toUpperCase() !== worker.key.toUpperCase()) {
+        const matchesUsername = w.telegramUsername && w.telegramUsername.toLowerCase() === username.toLowerCase();
+        const matchesGuy = (worker.personName && w.personName && w.personName.toLowerCase() === worker.personName.toLowerCase());
+        if (matchesUsername || matchesGuy) {
+          w.telegramId = chatId.toString();
+          w.telegramUsername = username;
+          w.linkedAt = new Date().toISOString();
+          otherLinkedKeys.push(w);
+        }
+      }
+    });
+
     // Also update matching worker orders with username
     db.orders.forEach(o => {
       if (o.workerKey === worker.key || o.workerName === worker.name) {
@@ -226,23 +241,42 @@ Once linked, you can submit orders directly from here, track your fulfillment su
 
     this.dbManager.saveDb();
 
+    let keysListText = `🔑 *Assigned Key:* \`${worker.key}\``;
+    if (otherLinkedKeys.length > 0) {
+      keysListText = `🔑 *Primary Key:* \`${worker.key}\`\n👥 *Additional Keys Grouped to You (${otherLinkedKeys.length}):*\n` +
+        otherLinkedKeys.map(k => `• \`${k.key}\` (${k.name})`).join('\n');
+    }
+
     const successMsg = `
 ✅ *Account Linked Successfully!*
 
-👤 *Worker Name:* ${worker.name}
-🔑 *Assigned Key:* \`${worker.key}\`
+👤 *Guy / Worker:* ${worker.personName || worker.name} (${username})
+${keysListText}
 💵 *Pay Rate:* $${Number(worker.rate || 15).toFixed(2)} per order
 
 📌 *What you can do now:*
 • \`/submit <order_id> <order_number> <unique_id> [notes]\` — Submit new order
-• \`/stats\` — View your completed orders, success rate & earnings
+• \`/stats\` — View your completed orders, success rate & earnings across all your keys
 • \`/balance\` — Check your unpaid balance
 • \`/help\` — See command details
 `;
     await this.sendMessage(chatId, successMsg);
   }
 
-  // Helper: Find worker by Telegram Chat ID
+  // Helper: Find all worker keys assigned to this Telegram user
+  findWorkersForUser(chatId, from) {
+    const db = this.dbManager.getDb();
+    const uname = (from && from.username) ? `@${from.username.toLowerCase()}` : null;
+    const cid = chatId ? chatId.toString() : null;
+
+    return db.workers.filter(w => {
+      if (cid && w.telegramId && w.telegramId.toString() === cid) return true;
+      if (uname && w.telegramUsername && w.telegramUsername.toLowerCase() === uname) return true;
+      return false;
+    });
+  }
+
+  // Helper: Find primary worker by Telegram Chat ID
   findWorkerByChatId(chatId) {
     const db = this.dbManager.getDb();
     return db.workers.find(w => w.telegramId && w.telegramId.toString() === chatId.toString());
@@ -250,7 +284,8 @@ Once linked, you can submit orders directly from here, track your fulfillment su
 
   // Command: /submit <order_id> <order_number> <unique_id> [notes]
   async handleSubmit(chatId, from, args) {
-    const worker = this.findWorkerByChatId(chatId);
+    const workers = this.findWorkersForUser(chatId, from);
+    const worker = workers[0] || this.findWorkerByChatId(chatId);
 
     if (!worker) {
       await this.sendMessage(chatId, `⚠️ *Your Telegram account is not linked!*\nPlease connect your worker key first:\n👉 \`/link YOUR_KEY\``);
@@ -325,42 +360,48 @@ Your order is now live on the dashboard and waiting to be sold!
 
   // Command: /stats
   async handleStats(chatId, from) {
-    const worker = this.findWorkerByChatId(chatId);
-
-    if (!worker) {
+    const workers = this.findWorkersForUser(chatId, from);
+    if (!workers || workers.length === 0) {
       await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\``);
       return;
     }
 
     const db = this.dbManager.getDb();
+    const primaryWorker = workers[0];
+    const workerKeys = workers.map(w => w.key.toUpperCase());
+    const workerNames = workers.map(w => w.name.toLowerCase());
+
     const orders = db.orders.filter(o => 
-      (o.workerKey && o.workerKey.toUpperCase() === worker.key.toUpperCase()) ||
-      (o.workerName && o.workerName.toLowerCase() === worker.name.toLowerCase())
+      (o.workerKey && workerKeys.includes(o.workerKey.toUpperCase())) ||
+      (o.workerName && workerNames.includes(o.workerName.toLowerCase()))
     );
 
     const localTotal = orders.length;
     const localCompleted = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
-    const completedOrders = (worker.completedOrders !== undefined && worker.completedOrders !== null)
-      ? Math.max(localCompleted, Number(worker.completedOrders))
-      : localCompleted;
-    const totalOrders = Math.max(localTotal, (Number(worker.completedOrders) || 0) + (Number(worker.failCount) || 0));
+    
+    // Sum extracted completed orders across all their keys
+    const extractedCompleted = workers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const extractedFail = workers.reduce((sum, w) => sum + (Number(w.failCount) || 0), 0);
+
+    const completedOrders = Math.max(localCompleted, extractedCompleted);
+    const totalOrders = Math.max(localTotal, extractedCompleted + extractedFail);
     const soldOrders = orders.filter(o => o.inventoryStatus === 'sold').length;
     const unsoldCount = orders.filter(o => o.inventoryStatus === 'unsold').length;
     const unfulfilledSold = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'unfulfilled').length;
 
-    // Success Rate calculation: Admin decided rate takes priority if set, else auto-calculate
+    // Success Rate calculation: Admin decided rate takes priority if set, else combined
     let successRate = '0.0';
-    const isCustomRate = worker.customSuccessRate !== null && worker.customSuccessRate !== undefined && worker.customSuccessRate !== '';
+    const isCustomRate = primaryWorker.customSuccessRate !== null && primaryWorker.customSuccessRate !== undefined && primaryWorker.customSuccessRate !== '';
     if (isCustomRate) {
-      successRate = Number(worker.customSuccessRate).toFixed(1);
+      successRate = Number(primaryWorker.customSuccessRate).toFixed(1);
     } else {
       successRate = totalOrders > 0 
         ? ((completedOrders / totalOrders) * 100).toFixed(1) 
-        : (worker.successRate !== undefined ? Number(worker.successRate).toFixed(1) : '0.0');
+        : (workers.length === 1 && primaryWorker.successRate !== undefined ? Number(primaryWorker.successRate).toFixed(1) : '0.0');
     }
 
     // Payout calculations
-    const defaultRate = Number(worker.rate) || 15.00;
+    const defaultRate = Number(primaryWorker.rate) || 15.00;
     const totalEarned = completedOrders * defaultRate;
 
     const paidTotal = orders
@@ -374,17 +415,24 @@ Your order is now live on the dashboard and waiting to be sold!
     const paidCount = orders.filter(o => o.workerPaymentStatus === 'paid').length;
     const unpaidCount = orders.filter(o => o.workerPaymentStatus === 'unpaid').length;
 
+    let keysBlock = '';
+    if (workers.length > 1) {
+      keysBlock = `👥 *Assigned Keys (${workers.length}):*\n` + workers.map(w =>
+        `• \`${w.key}\` (${w.name}): *${w.completedOrders || 0}* done | *${w.customSuccessRate || w.successRate || 0}%* rate`
+      ).join('\n') + '\n';
+    } else {
+      keysBlock = `🔑 *Key:* \`${primaryWorker.key}\`\n`;
+    }
+
     const statsMsg = `
 📊 *Performance & Payout Statistics*
 
-👤 *Worker:* ${worker.name} (${worker.telegramUsername || ''})
-🔑 *Key:* \`${worker.key}\`
-💵 *Base Rate:* $${defaultRate.toFixed(2)} / order
+👤 *Guy / Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
+${keysBlock}💵 *Base Rate:* $${defaultRate.toFixed(2)} / order
 
 ━━━━━━━━━━━━━━━━━━━━
-📦 *Order Metrics:*
-• *Total Submitted:* ${totalOrders}
-• ✅ *Completed & Fulfilled:* ${completedOrders}
+📦 *Combined Order Metrics:*
+• *Total Completed:* ${completedOrders} orders
 • ⚠️ *Sold (Awaiting Delivery):* ${unfulfilledSold}
 • 🟡 *Unsold in Stock:* ${unsoldCount}
 
@@ -401,29 +449,35 @@ Your order is now live on the dashboard and waiting to be sold!
 
   // Command: /pay or /balance
   async handleBalance(chatId, from) {
-    const worker = this.findWorkerByChatId(chatId);
-    if (!worker) {
+    const workers = this.findWorkersForUser(chatId, from);
+    if (!workers || workers.length === 0) {
       await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\``);
       return;
     }
 
+    const primaryWorker = workers[0];
+    const workerKeys = workers.map(w => w.key.toUpperCase());
+    const workerNames = workers.map(w => w.name.toLowerCase());
+
     const db = this.dbManager.getDb();
     const orders = db.orders.filter(o => 
-      (o.workerKey && o.workerKey.toUpperCase() === worker.key.toUpperCase()) ||
-      (o.workerName && o.workerName.toLowerCase() === worker.name.toLowerCase())
+      (o.workerKey && workerKeys.includes(o.workerKey.toUpperCase())) ||
+      (o.workerName && workerNames.includes(o.workerName.toLowerCase()))
     );
 
-    const defaultRate = Number(worker.rate) || 15.00;
+    const defaultRate = Number(primaryWorker.rate) || 15.00;
     const unpaidOrders = orders.filter(o => o.workerPaymentStatus === 'unpaid');
     const unpaidTotal = unpaidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || defaultRate), 0);
     const paidOrders = orders.filter(o => o.workerPaymentStatus === 'paid');
     const paidTotal = paidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || defaultRate), 0);
 
+    let keysList = workers.map(w => `\`${w.key}\``).join(', ');
+
     const balanceMsg = `
 💳 *Your Payout Balance*
 
-👤 *Worker:* ${worker.name}
-🔑 *Key:* \`${worker.key}\`
+👤 *Guy / Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
+🔑 *Keys:* ${keysList}
 
 🔴 *Current Pending Balance:* *$${unpaidTotal.toFixed(2)}* (${unpaidOrders.length} unpaid orders)
 🟢 *Total Cleared to Date:* $${paidTotal.toFixed(2)} (${paidOrders.length} paid orders)
