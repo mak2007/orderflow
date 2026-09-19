@@ -1,0 +1,12 @@
+{
+  "name": "order-inventory-manager",
+  "version": "1.0.0",
+  "description": "Worker submission tracking, sold/unsold inventory management, and fulfillment dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["inventory", "order-tracker", "worker-payouts"],
+  "author": "Antigravity",
+  "license": "MIT"
+}

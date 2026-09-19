@@ -1,0 +1,1370 @@
+// Order & Inventory Management Dashboard Logic
+(function() {
+  'use strict';
+
+  const STORAGE_KEY = 'worker_order_inventory_v1';
+
+  // State
+  let state = {
+    orders: [],
+    currentTab: 'unsold', // 'unsold', 'sold', 'workers', 'all'
+    searchQuery: '',
+    selectedIds: new Set(),
+    soldSubFilter: 'all', // 'all', 'unfulfilled', 'fulfilled'
+    workerFilter: 'all',
+  };
+
+  // Initial demo data if empty
+  const DEMO_DATA = [
+    {
+      id: 'demo-1',
+      workerName: 'Alex Carter',
+      orderId: 'ORD-99214',
+      orderNumber: 'ON-4501',
+      uniqueId: 'UQ-883192',
+      payoutAmount: 15.00,
+      inventoryStatus: 'unsold',
+      fulfillmentStatus: 'unfulfilled',
+      workerPaymentStatus: 'unpaid',
+      notes: 'Standard package intake',
+      createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+      soldAt: null,
+      fulfilledAt: null,
+      paidAt: null
+    },
+    {
+      id: 'demo-2',
+      workerName: 'Maria Santos',
+      orderId: 'ORD-99215',
+      orderNumber: 'ON-4502',
+      uniqueId: 'UQ-883193',
+      payoutAmount: 15.00,
+      inventoryStatus: 'unsold',
+      fulfillmentStatus: 'unfulfilled',
+      workerPaymentStatus: 'unpaid',
+      notes: 'Batch submission #1',
+      createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+      soldAt: null,
+      fulfilledAt: null,
+      paidAt: null
+    },
+    {
+      id: 'demo-3',
+      workerName: 'Alex Carter',
+      orderId: 'ORD-99210',
+      orderNumber: 'ON-4498',
+      uniqueId: 'UQ-883188',
+      payoutAmount: 20.00,
+      inventoryStatus: 'sold',
+      fulfillmentStatus: 'unfulfilled',
+      workerPaymentStatus: 'paid',
+      notes: 'Customer requested priority dispatch',
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      soldAt: new Date(Date.now() - 3600000 * 6).toISOString(),
+      fulfilledAt: null,
+      paidAt: new Date(Date.now() - 3600000 * 5).toISOString()
+    },
+    {
+      id: 'demo-4',
+      workerName: 'David Kim',
+      orderId: 'ORD-99208',
+      orderNumber: 'ON-4496',
+      uniqueId: 'UQ-883185',
+      payoutAmount: 15.00,
+      inventoryStatus: 'sold',
+      fulfillmentStatus: 'fulfilled',
+      workerPaymentStatus: 'paid',
+      notes: 'Delivered and verified',
+      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+      soldAt: new Date(Date.now() - 86400000).toISOString(),
+      fulfilledAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+      paidAt: new Date(Date.now() - 86400000).toISOString()
+    },
+    {
+      id: 'demo-5',
+      workerName: 'Maria Santos',
+      orderId: 'ORD-99205',
+      orderNumber: 'ON-4492',
+      uniqueId: 'UQ-883180',
+      payoutAmount: 18.00,
+      inventoryStatus: 'sold',
+      fulfillmentStatus: 'unfulfilled',
+      workerPaymentStatus: 'unpaid',
+      notes: 'Sold on marketplace, waiting for dispatch',
+      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+      soldAt: new Date(Date.now() - 3600000 * 1).toISOString(),
+      fulfilledAt: null,
+      paidAt: null
+    }
+  ];
+
+  // Initialize
+  function init() {
+    loadState();
+    setupEventListeners();
+    render();
+  }
+
+  // LocalStorage handling
+  function loadState() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (data) {
+        state.orders = JSON.parse(data);
+      } else {
+        state.orders = [...DEMO_DATA];
+        saveState();
+      }
+    } catch (e) {
+      console.error('Failed to load storage', e);
+      state.orders = [...DEMO_DATA];
+    }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.orders));
+    } catch (e) {
+      console.error('Failed to save to localStorage', e);
+      showToast('Error saving data to local storage', 'danger');
+    }
+  }
+
+  // Toast Notification
+  window.showToast = function(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    let icon = '';
+    if (type === 'success') icon = '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+    else if (type === 'danger') icon = '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+    else if (type === 'warning') icon = '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>';
+    else icon = '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+
+    toast.innerHTML = `
+      ${icon}
+      <span class="flex-1">${escapeHtml(message)}</span>
+      <button class="text-white/70 hover:text-white ml-2 text-lg leading-none" onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(10px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
+  };
+
+  // Clipboard copy helper
+  window.copyToClipboard = function(text, label = 'Value') {
+    if (!navigator.clipboard) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast(`Copied ${label}: ${text}`, 'success');
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(`Copied ${label}: ${text}`, 'success');
+    }).catch(() => {
+      showToast('Failed to copy to clipboard', 'danger');
+    });
+  };
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Status Toggles
+  window.toggleInventoryStatus = function(id) {
+    const item = state.orders.find(o => o.id === id);
+    if (!item) return;
+    const isNowSold = item.inventoryStatus === 'unsold';
+    item.inventoryStatus = isNowSold ? 'sold' : 'unsold';
+    item.soldAt = isNowSold ? new Date().toISOString() : null;
+    if (!isNowSold) {
+      item.fulfillmentStatus = 'unfulfilled';
+      item.fulfilledAt = null;
+    }
+    saveState();
+    render();
+    showToast(`Order ${item.orderId} marked as ${item.inventoryStatus.toUpperCase()}`, isNowSold ? 'success' : 'info');
+  };
+
+  window.toggleFulfillmentStatus = function(id) {
+    const item = state.orders.find(o => o.id === id);
+    if (!item) return;
+    const isNowFulfilled = item.fulfillmentStatus !== 'fulfilled';
+    item.fulfillmentStatus = isNowFulfilled ? 'fulfilled' : 'unfulfilled';
+    item.fulfilledAt = isNowFulfilled ? new Date().toISOString() : null;
+    saveState();
+    render();
+    showToast(`Order ${item.orderId} marked as ${item.fulfillmentStatus.toUpperCase()}`, isNowFulfilled ? 'success' : 'warning');
+  };
+
+  window.toggleWorkerPaymentStatus = function(id) {
+    const item = state.orders.find(o => o.id === id);
+    if (!item) return;
+    const isNowPaid = item.workerPaymentStatus !== 'paid';
+    item.workerPaymentStatus = isNowPaid ? 'paid' : 'unpaid';
+    item.paidAt = isNowPaid ? new Date().toISOString() : null;
+    saveState();
+    render();
+    showToast(`Worker payout for ${item.workerName} marked as ${item.workerPaymentStatus.toUpperCase()}`, isNowPaid ? 'success' : 'warning');
+  };
+
+  window.markAllWorkerPaid = function(workerName) {
+    let count = 0;
+    const now = new Date().toISOString();
+    state.orders.forEach(o => {
+      if (o.workerName === workerName && o.workerPaymentStatus !== 'paid') {
+        o.workerPaymentStatus = 'paid';
+        o.paidAt = now;
+        count++;
+      }
+    });
+    if (count > 0) {
+      saveState();
+      render();
+      showToast(`Marked ${count} orders as PAID for ${workerName}!`, 'success');
+    } else {
+      showToast(`All orders for ${workerName} are already marked as Paid.`, 'info');
+    }
+  };
+
+  window.deleteOrder = function(id) {
+    const item = state.orders.find(o => o.id === id);
+    if (!item) return;
+    if (confirm(`Are you sure you want to delete Order "${item.orderId}" submitted by ${item.workerName}?`)) {
+      state.orders = state.orders.filter(o => o.id !== id);
+      state.selectedIds.delete(id);
+      saveState();
+      render();
+      showToast(`Order ${item.orderId} deleted`, 'info');
+    }
+  };
+
+  // Switch Tab
+  window.switchTab = function(tabName) {
+    state.currentTab = tabName;
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      if (btn.dataset.tab === tabName) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    render();
+  };
+
+  // Set Sub-filter for Sold tab
+  window.setSoldSubFilter = function(filter) {
+    state.soldSubFilter = filter;
+    render();
+  };
+
+  // Filter orders by global search and tab
+  function getFilteredOrders() {
+    let list = state.orders;
+
+    // Search query filter
+    if (state.searchQuery.trim()) {
+      const q = state.searchQuery.trim().toLowerCase();
+      list = list.filter(o =>
+        (o.workerName && o.workerName.toLowerCase().includes(q)) ||
+        (o.orderId && o.orderId.toLowerCase().includes(q)) ||
+        (o.orderNumber && o.orderNumber.toLowerCase().includes(q)) ||
+        (o.uniqueId && o.uniqueId.toLowerCase().includes(q)) ||
+        (o.notes && o.notes.toLowerCase().includes(q))
+      );
+    }
+
+    return list;
+  }
+
+  // Render application
+  function render() {
+    renderKPIs();
+    renderWorkerDatalist();
+
+    const container = document.getElementById('panel-content');
+    if (!container) return;
+
+    if (state.currentTab === 'unsold') {
+      renderUnsoldPanel(container);
+    } else if (state.currentTab === 'sold') {
+      renderSoldPanel(container);
+    } else if (state.currentTab === 'workers') {
+      renderWorkersPanel(container);
+    } else if (state.currentTab === 'all') {
+      renderAllOrdersPanel(container);
+    }
+
+    // Refresh icons if lucide is loaded
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+  }
+
+  // Update top KPI cards
+  function renderKPIs() {
+    const total = state.orders.length;
+    const unsold = state.orders.filter(o => o.inventoryStatus === 'unsold').length;
+    const sold = state.orders.filter(o => o.inventoryStatus === 'sold').length;
+    const unfulfilled = state.orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'unfulfilled').length;
+    
+    const unpaidOrders = state.orders.filter(o => o.workerPaymentStatus === 'unpaid');
+    const unpaidCount = unpaidOrders.length;
+    const unpaidSum = unpaidOrders.reduce((acc, curr) => acc + (Number(curr.payoutAmount) || 0), 0);
+
+    const elTotal = document.getElementById('kpi-total');
+    const elUnsold = document.getElementById('kpi-unsold');
+    const elSold = document.getElementById('kpi-sold');
+    const elUnfulfilled = document.getElementById('kpi-unfulfilled');
+    const elUnpaid = document.getElementById('kpi-unpaid');
+
+    if (elTotal) elTotal.textContent = total;
+    if (elUnsold) elUnsold.textContent = unsold;
+    if (elSold) elSold.textContent = sold;
+    if (elUnfulfilled) elUnfulfilled.textContent = unfulfilled;
+    if (elUnpaid) elUnpaid.textContent = `${unpaidCount} ($${unpaidSum.toFixed(2)})`;
+
+    // Badges on tab headers
+    const badgeUnsold = document.getElementById('tab-badge-unsold');
+    const badgeSold = document.getElementById('tab-badge-sold');
+    const badgeWorkers = document.getElementById('tab-badge-workers');
+    const badgeAll = document.getElementById('tab-badge-all');
+
+    if (badgeUnsold) badgeUnsold.textContent = unsold;
+    if (badgeSold) badgeSold.textContent = sold;
+    if (badgeWorkers) badgeWorkers.textContent = unpaidCount;
+    if (badgeAll) badgeAll.textContent = total;
+  }
+
+  // Worker datalist for easy autocomplete
+  function renderWorkerDatalist() {
+    const datalist = document.getElementById('workerNamesList');
+    if (!datalist) return;
+    const uniqueWorkers = [...new Set(state.orders.map(o => o.workerName).filter(Boolean))].sort();
+    datalist.innerHTML = uniqueWorkers.map(w => `<option value="${escapeHtml(w)}">`).join('');
+  }
+
+  // Panel 1: Unsold Inventory
+  function renderUnsoldPanel(container) {
+    const allFiltered = getFilteredOrders();
+    const unsoldList = allFiltered.filter(o => o.inventoryStatus === 'unsold');
+
+    let html = `
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-emerald-50/50 to-white">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+              Unsold Inventory Panel
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Active stock available to be sold. Click <span class="font-semibold text-emerald-700">"Mark as Sold"</span> to transfer item to the Sold panel.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-semibold text-sm rounded-full">
+              ${unsoldList.length} Items Available
+            </span>
+          </div>
+        </div>
+    `;
+
+    if (unsoldList.length === 0) {
+      html += `
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-700">No Unsold Inventory</h3>
+          <p class="text-sm text-slate-500 max-w-md mx-auto mt-1 mb-6">
+            All submitted items have been sold, or no submissions match your current search query.
+          </p>
+          <button onclick="openAddModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition">
+            + Add New Submission
+          </button>
+        </div>
+      </div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600">
+          <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
+            <tr>
+              <th class="py-3.5 px-4">Worker Name</th>
+              <th class="py-3.5 px-4">Order ID</th>
+              <th class="py-3.5 px-4">Order Number</th>
+              <th class="py-3.5 px-4">Unique ID</th>
+              <th class="py-3.5 px-4">Worker Status</th>
+              <th class="py-3.5 px-4">Submitted Date</th>
+              <th class="py-3.5 px-4 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+    `;
+
+    unsoldList.forEach(item => {
+      const isPaid = item.workerPaymentStatus === 'paid';
+      const formattedDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A';
+
+      html += `
+        <tr class="hover:bg-slate-50/80 transition-colors group">
+          <td class="py-3.5 px-4">
+            <div class="font-semibold text-slate-900 flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                ${escapeHtml(item.workerName.charAt(0).toUpperCase())}
+              </div>
+              <span>${escapeHtml(item.workerName)}</span>
+            </div>
+            ${item.notes ? `<div class="text-xs text-slate-400 mt-0.5 truncate max-w-xs">${escapeHtml(item.notes)}</div>` : ''}
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-medium text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">${escapeHtml(item.orderId)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.orderId)}', 'Order ID')" title="Copy Order ID" class="copy-btn text-slate-400 hover:text-indigo-600 p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono text-slate-700 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">${escapeHtml(item.orderNumber)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.orderNumber)}', 'Order Number')" title="Copy Order Number" class="copy-btn text-slate-400 hover:text-indigo-600 p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono text-xs text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 font-semibold">${escapeHtml(item.uniqueId)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.uniqueId)}', 'Unique ID')" title="Copy Unique ID" class="copy-btn text-slate-400 hover:text-indigo-600 p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <td class="py-3.5 px-4">
+            <button onclick="toggleWorkerPaymentStatus('${item.id}')" title="Click to toggle Paid/Unpaid" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 hover:bg-rose-200'}">
+              <span class="w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+              ${isPaid ? 'Paid' : 'Unpaid'}
+              ${item.payoutAmount ? `<span class="opacity-75 font-normal">($${Number(item.payoutAmount).toFixed(2)})</span>` : ''}
+            </button>
+          </td>
+
+          <td class="py-3.5 px-4 text-xs text-slate-500">
+            ${formattedDate}
+          </td>
+
+          <td class="py-3.5 px-4 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-2">
+              <button onclick="toggleInventoryStatus('${item.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition transform active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                Mark Sold
+              </button>
+              <button onclick="editOrder('${item.id}')" title="Edit" class="text-slate-400 hover:text-slate-700 p-1.5 rounded hover:bg-slate-100 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              </button>
+              <button onclick="deleteOrder('${item.id}')" title="Delete" class="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+    container.innerHTML = html;
+  }
+
+  // Panel 2: Sold Inventory
+  function renderSoldPanel(container) {
+    const allFiltered = getFilteredOrders();
+    let soldList = allFiltered.filter(o => o.inventoryStatus === 'sold');
+
+    if (state.soldSubFilter === 'unfulfilled') {
+      soldList = soldList.filter(o => o.fulfillmentStatus === 'unfulfilled');
+    } else if (state.soldSubFilter === 'fulfilled') {
+      soldList = soldList.filter(o => o.fulfillmentStatus === 'fulfilled');
+    }
+
+    const totalSold = allFiltered.filter(o => o.inventoryStatus === 'sold').length;
+    const countUnfulfilled = allFiltered.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'unfulfilled').length;
+    const countFulfilled = allFiltered.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
+
+    let html = `
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-purple-50/50 to-white">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-purple-600"></span>
+              Sold Inventory Panel
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Items successfully sold. Track and toggle order <span class="font-semibold text-amber-700">Fulfillment Status</span> and worker payouts.
+            </p>
+          </div>
+
+          <!-- Sub-filters for Sold panel -->
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
+            <button onclick="setSoldSubFilter('all')" class="px-3 py-1.5 rounded-md transition ${state.soldSubFilter === 'all' ? 'bg-white shadow-sm text-slate-900 font-bold' : 'text-slate-600 hover:text-slate-900'}">
+              All Sold (${totalSold})
+            </button>
+            <button onclick="setSoldSubFilter('unfulfilled')" class="px-3 py-1.5 rounded-md transition ${state.soldSubFilter === 'unfulfilled' ? 'bg-amber-500 text-white shadow-sm' : 'text-amber-700 hover:bg-amber-100/50'}">
+              ⚠️ Unfulfilled (${countUnfulfilled})
+            </button>
+            <button onclick="setSoldSubFilter('fulfilled')" class="px-3 py-1.5 rounded-md transition ${state.soldSubFilter === 'fulfilled' ? 'bg-emerald-600 text-white shadow-sm' : 'text-emerald-700 hover:bg-emerald-100/50'}">
+              ✓ Fulfilled (${countFulfilled})
+            </button>
+          </div>
+        </div>
+    `;
+
+    if (soldList.length === 0) {
+      html += `
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-700">No Items Found in this View</h3>
+          <p class="text-sm text-slate-500 max-w-md mx-auto mt-1">
+            ${totalSold === 0 ? 'No items have been marked as Sold yet. Go to the "Unsold Inventory" panel and click "Mark Sold".' : 'No items match the selected sub-filter.'}
+          </p>
+        </div>
+      </div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600">
+          <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
+            <tr>
+              <th class="py-3.5 px-4">Order ID & Number</th>
+              <th class="py-3.5 px-4">Worker Name</th>
+              <th class="py-3.5 px-4">Unique ID</th>
+              <th class="py-3.5 px-4">Fulfillment Status</th>
+              <th class="py-3.5 px-4">Worker Payout</th>
+              <th class="py-3.5 px-4">Sold Timestamp</th>
+              <th class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+    `;
+
+    soldList.forEach(item => {
+      const isFulfilled = item.fulfillmentStatus === 'fulfilled';
+      const isPaid = item.workerPaymentStatus === 'paid';
+      const soldDate = item.soldAt ? new Date(item.soldAt).toLocaleString() : 'Recently';
+
+      html += `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5 mb-1">
+              <span class="font-mono font-bold text-slate-900">${escapeHtml(item.orderId)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.orderId)}', 'Order ID')" title="Copy Order ID" class="copy-btn text-slate-400 hover:text-purple-600">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+            <div class="flex items-center gap-1 text-xs text-slate-500">
+              <span>No:</span>
+              <span class="font-mono font-medium text-slate-700">${escapeHtml(item.orderNumber)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.orderNumber)}', 'Order Number')" title="Copy Order Number" class="copy-btn text-slate-400 hover:text-purple-600">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="font-semibold text-slate-900">${escapeHtml(item.workerName)}</div>
+            ${item.notes ? `<div class="text-xs text-slate-400 truncate max-w-xs">${escapeHtml(item.notes)}</div>` : ''}
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono text-xs font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">${escapeHtml(item.uniqueId)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.uniqueId)}', 'Unique ID')" title="Copy Unique ID" class="copy-btn text-slate-400 hover:text-purple-600">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <!-- Fulfillment Toggle -->
+          <td class="py-3.5 px-4">
+            <button onclick="toggleFulfillmentStatus('${item.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm ${isFulfilled ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100' : 'bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100 animate-pulse'}">
+              ${isFulfilled ? `
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                Fulfilled
+              ` : `
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Unfulfilled (Click to Fulfill)
+              `}
+            </button>
+          </td>
+
+          <!-- Worker Payment Toggle -->
+          <td class="py-3.5 px-4">
+            <button onclick="toggleWorkerPaymentStatus('${item.id}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 hover:bg-rose-200'}">
+              <span class="w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+              ${isPaid ? 'Paid' : 'Unpaid'}
+              ${item.payoutAmount ? `<span class="opacity-75 font-normal">($${Number(item.payoutAmount).toFixed(2)})</span>` : ''}
+            </button>
+          </td>
+
+          <td class="py-3.5 px-4 text-xs text-slate-500">
+            ${soldDate}
+          </td>
+
+          <td class="py-3.5 px-4 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-2">
+              <button onclick="toggleInventoryStatus('${item.id}')" title="Revert back to Unsold" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-lg transition border border-slate-300">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
+                Revert to Unsold
+              </button>
+              <button onclick="editOrder('${item.id}')" title="Edit" class="text-slate-400 hover:text-slate-700 p-1.5 rounded hover:bg-slate-100 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              </button>
+              <button onclick="deleteOrder('${item.id}')" title="Delete" class="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+    container.innerHTML = html;
+  }
+
+  // Panel 3: Worker Payouts (Grouped by Worker)
+  function renderWorkersPanel(container) {
+    const allFiltered = getFilteredOrders();
+    const workersMap = {};
+
+    allFiltered.forEach(item => {
+      const name = item.workerName || 'Unknown Worker';
+      if (!workersMap[name]) {
+        workersMap[name] = {
+          name,
+          totalSubmissions: 0,
+          soldCount: 0,
+          unsoldCount: 0,
+          unpaidCount: 0,
+          unpaidAmount: 0,
+          paidCount: 0,
+          paidAmount: 0,
+          orders: []
+        };
+      }
+      workersMap[name].totalSubmissions++;
+      if (item.inventoryStatus === 'sold') workersMap[name].soldCount++;
+      else workersMap[name].unsoldCount++;
+
+      const amount = Number(item.payoutAmount) || 0;
+      if (item.workerPaymentStatus === 'paid') {
+        workersMap[name].paidCount++;
+        workersMap[name].paidAmount += amount;
+      } else {
+        workersMap[name].unpaidCount++;
+        workersMap[name].unpaidAmount += amount;
+      }
+      workersMap[name].orders.push(item);
+    });
+
+    const workersList = Object.values(workersMap).sort((a, b) => b.unpaidCount - a.unpaidCount || a.name.localeCompare(b.name));
+
+    let html = `
+      <div class="space-y-6">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-blue-50/50 to-white flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+              Worker Payouts & Performance Hub
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Summary grouped by worker. Easily clear outstanding balances with 1-click <span class="font-semibold text-emerald-700">"Mark All Paid"</span>.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <div class="text-xs text-slate-400 uppercase font-semibold">Total Workers Tracked</div>
+              <div class="text-lg font-bold text-slate-800">${workersList.length} Active Workers</div>
+            </div>
+          </div>
+        </div>
+    `;
+
+    if (workersList.length === 0) {
+      html += `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <p class="text-slate-500">No worker submission data found.</p>
+        </div>
+      </div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">`;
+
+    workersList.forEach(w => {
+      const hasUnpaid = w.unpaidCount > 0;
+
+      html += `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-indigo-300 transition-all overflow-hidden flex flex-col justify-between">
+          <div class="p-5">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                  ${escapeHtml(w.name.charAt(0).toUpperCase())}
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900 text-base leading-tight">${escapeHtml(w.name)}</h3>
+                  <div class="text-xs text-slate-500 mt-0.5">${w.totalSubmissions} Total Submissions (${w.soldCount} Sold, ${w.unsoldCount} Unsold)</div>
+                </div>
+              </div>
+
+              ${hasUnpaid ? `
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                  ${w.unpaidCount} Unpaid ($${w.unpaidAmount.toFixed(2)})
+                </span>
+              ` : `
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                  ✓ All Settled ($${w.paidAmount.toFixed(2)})
+                </span>
+              `}
+            </div>
+
+            <!-- Stats grid -->
+            <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100 text-center mb-4">
+              <div>
+                <div class="text-xs text-slate-400 font-medium">Sold / Unsold</div>
+                <div class="text-sm font-bold text-slate-800">${w.soldCount} / ${w.unsoldCount}</div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 font-medium">Paid Orders</div>
+                <div class="text-sm font-bold text-emerald-600">${w.paidCount} ($${w.paidAmount.toFixed(2)})</div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 font-medium">Pending Due</div>
+                <div class="text-sm font-bold ${hasUnpaid ? 'text-rose-600' : 'text-slate-400'}">$${w.unpaidAmount.toFixed(2)}</div>
+              </div>
+            </div>
+
+            <!-- Recent orders summary -->
+            <div class="text-xs text-slate-500 font-medium mb-2 flex items-center justify-between">
+              <span>Submissions:</span>
+              <span class="text-slate-400">${w.orders.length} items</span>
+            </div>
+            <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+              ${w.orders.map(o => `
+                <div class="flex items-center justify-between p-2 rounded bg-slate-50 hover:bg-slate-100 transition text-xs border border-slate-100">
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono font-semibold text-slate-800">${escapeHtml(o.orderId)}</span>
+                    <span class="text-slate-400">|</span>
+                    <span class="font-mono text-purple-600">${escapeHtml(o.uniqueId)}</span>
+                    <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold ${o.inventoryStatus === 'sold' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}">
+                      ${o.inventoryStatus}
+                    </span>
+                  </div>
+                  <button onclick="toggleWorkerPaymentStatus('${o.id}')" class="px-2 py-0.5 rounded font-bold transition text-[11px] ${o.workerPaymentStatus === 'paid' ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800 hover:bg-rose-300'}">
+                    ${o.workerPaymentStatus === 'paid' ? 'Paid' : 'Pay ($' + Number(o.payoutAmount || 0).toFixed(2) + ')'}
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Card Footer with Action -->
+          <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+            <span class="text-xs text-slate-500">
+              ${hasUnpaid ? `Owed: <strong class="text-rose-600">$${w.unpaidAmount.toFixed(2)}</strong>` : 'No outstanding payouts'}
+            </span>
+            <button onclick="markAllWorkerPaid('${escapeHtml(w.name)}')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm ${hasUnpaid ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 text-slate-500 cursor-not-allowed'}">
+              Mark All Paid
+            </button>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+    container.innerHTML = html;
+  }
+
+  // Panel 4: All Records / Master Table
+  function renderAllOrdersPanel(container) {
+    const list = getFilteredOrders();
+    const isAllSelected = list.length > 0 && list.every(o => state.selectedIds.has(o.id));
+
+    let html = `
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <!-- Panel Header & Batch Actions -->
+        <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+              Master Orders Table
+            </h2>
+            <p class="text-sm text-slate-500 mt-0.5">Comprehensive view of all worker submissions, status flags, and metadata.</p>
+          </div>
+
+          <!-- Batch Action Controls -->
+          <div class="flex flex-wrap items-center gap-2">
+            ${state.selectedIds.size > 0 ? `
+              <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-900">
+                <span>${state.selectedIds.size} Selected</span>
+                <span class="text-indigo-300">|</span>
+                <button onclick="batchAction('markSold')" class="hover:text-indigo-600 font-bold underline">Mark Sold</button>
+                <button onclick="batchAction('markUnsold')" class="hover:text-indigo-600 font-bold underline">Mark Unsold</button>
+                <button onclick="batchAction('markFulfilled')" class="hover:text-indigo-600 font-bold underline">Mark Fulfilled</button>
+                <button onclick="batchAction('markPaid')" class="hover:text-indigo-600 font-bold underline">Mark Paid</button>
+                <button onclick="batchAction('delete')" class="text-rose-600 hover:text-rose-800 font-bold underline">Delete</button>
+              </div>
+            ` : ''}
+            <button onclick="openAddModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+              <span>+</span> Add Order
+            </button>
+          </div>
+        </div>
+    `;
+
+    if (list.length === 0) {
+      html += `
+        <div class="p-12 text-center">
+          <p class="text-slate-500 mb-4">No records found matching your filters.</p>
+          <button onclick="clearSearch()" class="text-indigo-600 font-medium text-sm hover:underline">Reset Search Filters</button>
+        </div>
+      </div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600">
+          <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
+            <tr>
+              <th class="py-3.5 px-4 w-10">
+                <input type="checkbox" onchange="toggleSelectAll(this.checked)" ${isAllSelected ? 'checked' : ''} class="rounded text-indigo-600 focus:ring-indigo-500">
+              </th>
+              <th class="py-3.5 px-4">Worker Name</th>
+              <th class="py-3.5 px-4">Order ID</th>
+              <th class="py-3.5 px-4">Order Number</th>
+              <th class="py-3.5 px-4">Unique ID</th>
+              <th class="py-3.5 px-4">Inventory</th>
+              <th class="py-3.5 px-4">Fulfillment</th>
+              <th class="py-3.5 px-4">Worker Status</th>
+              <th class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+    `;
+
+    list.forEach(item => {
+      const isSelected = state.selectedIds.has(item.id);
+      const isSold = item.inventoryStatus === 'sold';
+      const isFulfilled = item.fulfillmentStatus === 'fulfilled';
+      const isPaid = item.workerPaymentStatus === 'paid';
+
+      html += `
+        <tr class="hover:bg-slate-50/80 transition-colors ${isSelected ? 'bg-indigo-50/40' : ''}">
+          <td class="py-3.5 px-4">
+            <input type="checkbox" onchange="toggleSelectOne('${item.id}', this.checked)" ${isSelected ? 'checked' : ''} class="rounded text-indigo-600 focus:ring-indigo-500">
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="font-semibold text-slate-900">${escapeHtml(item.workerName)}</div>
+            ${item.notes ? `<div class="text-xs text-slate-400 truncate max-w-[200px]">${escapeHtml(item.notes)}</div>` : ''}
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-medium text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">${escapeHtml(item.orderId)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.orderId)}', 'Order ID')" title="Copy Order ID" class="copy-btn text-slate-400 hover:text-indigo-600 p-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono text-slate-700 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">${escapeHtml(item.orderNumber)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.orderNumber)}', 'Order Number')" title="Copy Order Number" class="copy-btn text-slate-400 hover:text-indigo-600 p-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono text-xs text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 font-semibold">${escapeHtml(item.uniqueId)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(item.uniqueId)}', 'Unique ID')" title="Copy Unique ID" class="copy-btn text-slate-400 hover:text-indigo-600 p-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <!-- Inventory Toggle -->
+          <td class="py-3.5 px-4">
+            <button onclick="toggleInventoryStatus('${item.id}')" class="px-2.5 py-1 rounded-full text-xs font-semibold transition ${isSold ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'}">
+              ${isSold ? 'Sold' : 'Unsold'}
+            </button>
+          </td>
+
+          <!-- Fulfillment Toggle -->
+          <td class="py-3.5 px-4">
+            ${isSold ? `
+              <button onclick="toggleFulfillmentStatus('${item.id}')" class="px-2.5 py-1 rounded-full text-xs font-semibold transition ${isFulfilled ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'}">
+                ${isFulfilled ? 'Fulfilled' : 'Unfulfilled'}
+              </button>
+            ` : `
+              <span class="text-xs text-slate-400 italic">Pending Sale</span>
+            `}
+          </td>
+
+          <!-- Worker Paid Toggle -->
+          <td class="py-3.5 px-4">
+            <button onclick="toggleWorkerPaymentStatus('${item.id}')" class="px-2.5 py-1 rounded-full text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 hover:bg-rose-200'}">
+              ${isPaid ? 'Paid' : 'Unpaid'}
+            </button>
+          </td>
+
+          <td class="py-3.5 px-4 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-1">
+              <button onclick="editOrder('${item.id}')" title="Edit" class="text-slate-400 hover:text-slate-700 p-1 rounded hover:bg-slate-100 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              </button>
+              <button onclick="deleteOrder('${item.id}')" title="Delete" class="text-slate-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+    container.innerHTML = html;
+  }
+
+  // Selection & Batch Action handling
+  window.toggleSelectAll = function(checked) {
+    const list = getFilteredOrders();
+    if (checked) {
+      list.forEach(o => state.selectedIds.add(o.id));
+    } else {
+      state.selectedIds.clear();
+    }
+    render();
+  };
+
+  window.toggleSelectOne = function(id, checked) {
+    if (checked) {
+      state.selectedIds.add(id);
+    } else {
+      state.selectedIds.delete(id);
+    }
+    render();
+  };
+
+  window.batchAction = function(action) {
+    if (state.selectedIds.size === 0) return;
+    const ids = Array.from(state.selectedIds);
+    const now = new Date().toISOString();
+
+    if (action === 'delete') {
+      if (confirm(`Delete ${ids.length} selected orders?`)) {
+        state.orders = state.orders.filter(o => !state.selectedIds.has(o.id));
+        state.selectedIds.clear();
+        saveState();
+        render();
+        showToast(`Deleted ${ids.length} orders`, 'info');
+      }
+      return;
+    }
+
+    state.orders.forEach(o => {
+      if (state.selectedIds.has(o.id)) {
+        if (action === 'markSold') {
+          o.inventoryStatus = 'sold';
+          if (!o.soldAt) o.soldAt = now;
+        } else if (action === 'markUnsold') {
+          o.inventoryStatus = 'unsold';
+          o.soldAt = null;
+          o.fulfillmentStatus = 'unfulfilled';
+        } else if (action === 'markFulfilled') {
+          o.fulfillmentStatus = 'fulfilled';
+          o.fulfilledAt = now;
+        } else if (action === 'markPaid') {
+          o.workerPaymentStatus = 'paid';
+          o.paidAt = now;
+        }
+      }
+    });
+
+    saveState();
+    render();
+    showToast(`Updated ${ids.length} orders`, 'success');
+  };
+
+  // Add / Edit Modal
+  window.openAddModal = function() {
+    document.getElementById('modal-title').textContent = 'Add New Worker Submission';
+    document.getElementById('order-form').reset();
+    document.getElementById('edit-order-id').value = '';
+    document.getElementById('order-modal').classList.remove('hidden');
+    document.getElementById('input-worker-name').focus();
+  };
+
+  window.closeModal = function() {
+    document.getElementById('order-modal').classList.add('hidden');
+  };
+
+  window.editOrder = function(id) {
+    const item = state.orders.find(o => o.id === id);
+    if (!item) return;
+
+    document.getElementById('modal-title').textContent = 'Edit Submission Details';
+    document.getElementById('edit-order-id').value = item.id;
+    document.getElementById('input-worker-name').value = item.workerName || '';
+    document.getElementById('input-order-id').value = item.orderId || '';
+    document.getElementById('input-order-number').value = item.orderNumber || '';
+    document.getElementById('input-unique-id').value = item.uniqueId || '';
+    document.getElementById('input-payout').value = item.payoutAmount || 15;
+    document.getElementById('input-inventory-status').value = item.inventoryStatus || 'unsold';
+    document.getElementById('input-fulfillment-status').value = item.fulfillmentStatus || 'unfulfilled';
+    document.getElementById('input-worker-status').value = item.workerPaymentStatus || 'unpaid';
+    document.getElementById('input-notes').value = item.notes || '';
+
+    document.getElementById('order-modal').classList.remove('hidden');
+    document.getElementById('input-worker-name').focus();
+  };
+
+  window.handleFormSubmit = function(e, addAnother = false) {
+    if (e) e.preventDefault();
+
+    const editId = document.getElementById('edit-order-id').value;
+    const workerName = document.getElementById('input-worker-name').value.trim();
+    const orderId = document.getElementById('input-order-id').value.trim();
+    const orderNumber = document.getElementById('input-order-number').value.trim();
+    const uniqueId = document.getElementById('input-unique-id').value.trim();
+    const payoutAmount = parseFloat(document.getElementById('input-payout').value) || 0;
+    const inventoryStatus = document.getElementById('input-inventory-status').value;
+    const fulfillmentStatus = document.getElementById('input-fulfillment-status').value;
+    const workerPaymentStatus = document.getElementById('input-worker-status').value;
+    const notes = document.getElementById('input-notes').value.trim();
+
+    if (!workerName || !orderId || !orderNumber || !uniqueId) {
+      showToast('Please fill in Worker Name, Order ID, Order Number, and Unique ID', 'warning');
+      return;
+    }
+
+    if (editId) {
+      // Editing existing
+      const existing = state.orders.find(o => o.id === editId);
+      if (existing) {
+        existing.workerName = workerName;
+        existing.orderId = orderId;
+        existing.orderNumber = orderNumber;
+        existing.uniqueId = uniqueId;
+        existing.payoutAmount = payoutAmount;
+        existing.inventoryStatus = inventoryStatus;
+        existing.fulfillmentStatus = fulfillmentStatus;
+        existing.workerPaymentStatus = workerPaymentStatus;
+        existing.notes = notes;
+        showToast(`Order ${orderId} updated successfully`, 'success');
+      }
+    } else {
+      // Creating new
+      const newOrder = {
+        id: 'ord-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        workerName,
+        orderId,
+        orderNumber,
+        uniqueId,
+        payoutAmount,
+        inventoryStatus,
+        fulfillmentStatus,
+        workerPaymentStatus,
+        notes,
+        createdAt: new Date().toISOString(),
+        soldAt: inventoryStatus === 'sold' ? new Date().toISOString() : null,
+        fulfilledAt: fulfillmentStatus === 'fulfilled' ? new Date().toISOString() : null,
+        paidAt: workerPaymentStatus === 'paid' ? new Date().toISOString() : null,
+      };
+      state.orders.unshift(newOrder);
+      showToast(`Added Order ${orderId} by ${workerName}`, 'success');
+    }
+
+    saveState();
+    render();
+
+    if (addAnother) {
+      // Reset inputs except worker name for rapid entry
+      document.getElementById('input-order-id').value = '';
+      document.getElementById('input-order-number').value = '';
+      document.getElementById('input-unique-id').value = '';
+      document.getElementById('input-notes').value = '';
+      document.getElementById('input-order-id').focus();
+    } else {
+      closeModal();
+    }
+  };
+
+  // Bulk Import Modal
+  window.openBulkModal = function() {
+    document.getElementById('bulk-modal').classList.remove('hidden');
+    document.getElementById('bulk-textarea').value = '';
+    document.getElementById('bulk-preview').innerHTML = '<span class="text-slate-400">Preview will appear here once you paste data.</span>';
+  };
+
+  window.closeBulkModal = function() {
+    document.getElementById('bulk-modal').classList.add('hidden');
+  };
+
+  window.parseBulkText = function() {
+    const raw = document.getElementById('bulk-textarea').value.trim();
+    if (!raw) {
+      document.getElementById('bulk-preview').innerHTML = '<span class="text-slate-400">Preview will appear here once you paste data.</span>';
+      return [];
+    }
+
+    const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const parsed = [];
+
+    lines.forEach((line, idx) => {
+      // Split by tab, comma, or pipe
+      let parts = [];
+      if (line.includes('\t')) parts = line.split('\t');
+      else if (line.includes('|')) parts = line.split('|');
+      else parts = line.split(',');
+
+      parts = parts.map(p => p.trim());
+
+      if (parts.length >= 4) {
+        parsed.push({
+          workerName: parts[0],
+          orderId: parts[1],
+          orderNumber: parts[2],
+          uniqueId: parts[3],
+          payoutAmount: parts[4] ? parseFloat(parts[4]) || 15.00 : 15.00,
+          inventoryStatus: 'unsold',
+          fulfillmentStatus: 'unfulfilled',
+          workerPaymentStatus: 'unpaid',
+          notes: parts[5] || 'Bulk import'
+        });
+      }
+    });
+
+    const previewContainer = document.getElementById('bulk-preview');
+    if (parsed.length === 0) {
+      previewContainer.innerHTML = `<span class="text-rose-600 font-medium">Could not parse valid rows. Format each line as: Worker Name, Order ID, Order Number, Unique ID</span>`;
+    } else {
+      previewContainer.innerHTML = `
+        <div class="text-xs font-semibold text-emerald-700 mb-2">Detected ${parsed.length} valid record(s):</div>
+        <div class="max-h-40 overflow-y-auto space-y-1 text-xs font-mono text-slate-700">
+          ${parsed.map((p, i) => `
+            <div class="p-1 bg-slate-50 border border-slate-200 rounded flex justify-between">
+              <span><strong>${i+1}.</strong> ${escapeHtml(p.workerName)} | ${escapeHtml(p.orderId)} | ${escapeHtml(p.orderNumber)} | ${escapeHtml(p.uniqueId)}</span>
+              <span class="text-slate-400">$${p.payoutAmount.toFixed(2)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    return parsed;
+  };
+
+  window.importBulkData = function() {
+    const parsed = parseBulkText();
+    if (parsed.length === 0) {
+      showToast('No valid rows to import.', 'warning');
+      return;
+    }
+
+    const now = new Date().toISOString();
+    parsed.forEach(item => {
+      state.orders.unshift({
+        id: 'ord-' + Date.now() + '-' + Math.floor(Math.random() * 10000),
+        ...item,
+        createdAt: now,
+        soldAt: null,
+        fulfilledAt: null,
+        paidAt: null
+      });
+    });
+
+    saveState();
+    render();
+    closeBulkModal();
+    showToast(`Successfully imported ${parsed.length} orders!`, 'success');
+  };
+
+  // Export to CSV
+  window.exportCSV = function() {
+    if (state.orders.length === 0) {
+      showToast('No orders to export', 'warning');
+      return;
+    }
+
+    const headers = ['ID', 'Worker Name', 'Order ID', 'Order Number', 'Unique ID', 'Inventory Status', 'Fulfillment Status', 'Worker Payment Status', 'Payout Amount', 'Notes', 'Created At', 'Sold At', 'Fulfilled At', 'Paid At'];
+    
+    const rows = state.orders.map(o => [
+      o.id,
+      `"${(o.workerName || '').replace(/"/g, '""')}"`,
+      `"${(o.orderId || '').replace(/"/g, '""')}"`,
+      `"${(o.orderNumber || '').replace(/"/g, '""')}"`,
+      `"${(o.uniqueId || '').replace(/"/g, '""')}"`,
+      o.inventoryStatus,
+      o.fulfillmentStatus,
+      o.workerPaymentStatus,
+      o.payoutAmount || 0,
+      `"${(o.notes || '').replace(/"/g, '""')}"`,
+      o.createdAt || '',
+      o.soldAt || '',
+      o.fulfilledAt || '',
+      o.paidAt || ''
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `order_inventory_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Exported CSV successfully', 'success');
+  };
+
+  // Export & Import JSON Backup
+  window.exportJSON = function() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.orders, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `order_inventory_backup_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('JSON backup exported', 'success');
+  };
+
+  window.importJSON = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        if (Array.isArray(parsed)) {
+          state.orders = parsed;
+          saveState();
+          render();
+          showToast(`Imported ${parsed.length} records from backup`, 'success');
+        } else {
+          showToast('Invalid JSON file format (expected array)', 'danger');
+        }
+      } catch (err) {
+        showToast('Failed to parse JSON file', 'danger');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
+  // Clear data or reload demo
+  window.resetToDemoData = function() {
+    if (confirm('Load demo sample data? This will overwrite current entries.')) {
+      state.orders = [...DEMO_DATA];
+      state.selectedIds.clear();
+      saveState();
+      render();
+      showToast('Loaded demo data', 'info');
+    }
+  };
+
+  window.clearAllData = function() {
+    if (confirm('Are you sure you want to delete ALL orders? This cannot be undone.')) {
+      state.orders = [];
+      state.selectedIds.clear();
+      saveState();
+      render();
+      showToast('All orders cleared', 'warning');
+    }
+  };
+
+  window.clearSearch = function() {
+    state.searchQuery = '';
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) searchInput.value = '';
+    render();
+  };
+
+  // Event Listeners setup
+  function setupEventListeners() {
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        state.searchQuery = e.target.value;
+        render();
+      });
+    }
+
+    // Keyboard shortcut for adding: Ctrl+K or '+'
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        const modal = document.getElementById('order-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          handleFormSubmit(e, false);
+        }
+      }
+    });
+  }
+
+  // Run on load
+  document.addEventListener('DOMContentLoaded', init);
+})();
