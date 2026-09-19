@@ -412,9 +412,13 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`\n======================================================`);
-  console.log(`🚀 OrderFlow Dashboard & API running at: http://localhost:${PORT}`);
-  console.log(`🤖 Telegram Bot Engine initialized`);
-  console.log(`======================================================\n`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`\n======================================================`);
+    console.log(`🚀 OrderFlow Dashboard & API running at: http://localhost:${PORT}`);
+    console.log(`🤖 Telegram Bot Engine initialized`);
+    console.log(`======================================================\n`);
+  });
+}
+
+module.exports = server;
