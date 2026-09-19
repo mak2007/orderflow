@@ -1468,26 +1468,30 @@ body {
         (o.workerName && o.workerName.toLowerCase() === worker.name.toLowerCase())
       );
 
-      const totalOrders = workerOrders.length;
-      const completedOrders = workerOrders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
+      const localTotal = workerOrders.length;
+      const localCompleted = workerOrders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
+      const completedOrders = (worker.completedOrders !== undefined && worker.completedOrders !== null)
+        ? Math.max(localCompleted, Number(worker.completedOrders))
+        : localCompleted;
+      const totalOrders = Math.max(localTotal, (Number(worker.completedOrders) || 0) + (Number(worker.failCount) || 0));
       const soldOrders = workerOrders.filter(o => o.inventoryStatus === 'sold').length;
       const unsoldCount = workerOrders.filter(o => o.inventoryStatus === 'unsold').length;
 
-      // Success Rate Calculation: Check if admin manually decided the rate!
+      // Success Rate Calculation: Check if admin manually decided the rate or extracted from Masi!
       const isCustomRate = worker.customSuccessRate !== null && worker.customSuccessRate !== undefined && worker.customSuccessRate !== '';
       const rateNum = isCustomRate 
         ? Math.min(100, Math.max(0, Number(worker.customSuccessRate))) 
-        : (totalOrders > 0 ? ((completedOrders / totalOrders) * 100) : 0);
+        : (totalOrders > 0 ? ((completedOrders / totalOrders) * 100) : (Number(worker.successRate) || 0));
       const successRate = rateNum.toFixed(1);
 
       // Financials
       const baseRate = Number(worker.rate) || 15.00;
-      const totalEarned = workerOrders
-        .filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled')
-        .reduce((sum, o) => sum + (Number(o.payoutAmount) || baseRate), 0);
+      const totalEarned = completedOrders * baseRate;
 
       const unpaidOrders = workerOrders.filter(o => o.workerPaymentStatus === 'unpaid');
-      const unpaidAmount = unpaidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || baseRate), 0);
+      const unpaidAmount = unpaidOrders.length > 0 
+        ? unpaidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || baseRate), 0)
+        : 0;
 
       const isLinked = Boolean(worker.telegramId);
 

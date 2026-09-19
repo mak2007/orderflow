@@ -338,24 +338,30 @@ Your order is now live on the dashboard and waiting to be sold!
       (o.workerName && o.workerName.toLowerCase() === worker.name.toLowerCase())
     );
 
-    const totalOrders = orders.length;
+    const localTotal = orders.length;
+    const localCompleted = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
+    const completedOrders = (worker.completedOrders !== undefined && worker.completedOrders !== null)
+      ? Math.max(localCompleted, Number(worker.completedOrders))
+      : localCompleted;
+    const totalOrders = Math.max(localTotal, (Number(worker.completedOrders) || 0) + (Number(worker.failCount) || 0));
     const soldOrders = orders.filter(o => o.inventoryStatus === 'sold').length;
     const unsoldCount = orders.filter(o => o.inventoryStatus === 'unsold').length;
-    const completedOrders = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
+    const unfulfilledSold = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'unfulfilled').length;
+
     // Success Rate calculation: Admin decided rate takes priority if set, else auto-calculate
     let successRate = '0.0';
     const isCustomRate = worker.customSuccessRate !== null && worker.customSuccessRate !== undefined && worker.customSuccessRate !== '';
     if (isCustomRate) {
       successRate = Number(worker.customSuccessRate).toFixed(1);
     } else {
-      successRate = totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) : '0.0';
+      successRate = totalOrders > 0 
+        ? ((completedOrders / totalOrders) * 100).toFixed(1) 
+        : (worker.successRate !== undefined ? Number(worker.successRate).toFixed(1) : '0.0');
     }
 
     // Payout calculations
     const defaultRate = Number(worker.rate) || 15.00;
-    const totalEarned = orders
-      .filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled')
-      .reduce((sum, o) => sum + (Number(o.payoutAmount) || defaultRate), 0);
+    const totalEarned = completedOrders * defaultRate;
 
     const paidTotal = orders
       .filter(o => o.workerPaymentStatus === 'paid')
