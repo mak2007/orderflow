@@ -300,31 +300,41 @@ const server = http.createServer(async (req, res) => {
         if (!worker) return sendJson(res, 404, { success: false, error: 'Worker not found' });
 
         const now = new Date().toISOString();
-        let totalPaidAmount = 0;
-        let paidCount = 0;
+        const rate = Number(worker.rate) || Number(db.settings.defaultRate) || 15.00;
+        const completed = Number(worker.completedOrders) || 0;
+        const previousPaid = Number(worker.paidAmount) || 0;
+        const totalEarned = completed * rate;
+        const unpaidAmount = Math.max(0, totalEarned - previousPaid);
+        const unpaidCount = Math.max(0, completed - (Number(worker.paidCount) || 0));
 
-        db.orders.forEach(o => {
-          if ((o.workerKey === worker.key || o.workerName === worker.name) && o.workerPaymentStatus !== 'paid') {
-            o.workerPaymentStatus = 'paid';
-            o.paidAt = now;
-            totalPaidAmount += (Number(o.payoutAmount) || worker.rate);
-            paidCount++;
-          }
-        });
+        worker.paidAmount = totalEarned;
+        worker.paidCount = completed;
+        worker.lastPaidAt = now;
+
+        // Also update any orders if exist
+        if (db.orders && Array.isArray(db.orders)) {
+          db.orders.forEach(o => {
+            if (o.workerKey === worker.key || o.workerName === worker.name) {
+              o.workerPaymentStatus = 'paid';
+              o.paidAt = now;
+            }
+          });
+        }
 
         dbManager.saveDb();
 
         // Send Telegram payout alert if linked
         let telegramSent = false;
-        if (worker.telegramId && totalPaidAmount > 0) {
-          telegramSent = await botEngine.sendPayoutNotification(worker.key, totalPaidAmount, paidCount);
+        if (worker.telegramId && unpaidAmount > 0) {
+          telegramSent = await botEngine.sendPayoutNotification(worker.key, unpaidAmount, unpaidCount);
         }
 
         return sendJson(res, 200, {
           success: true,
-          paidCount,
-          totalPaidAmount,
-          telegramSent
+          paidCount: unpaidCount,
+          totalPaidAmount: unpaidAmount,
+          telegramSent,
+          worker
         });
       }
 
