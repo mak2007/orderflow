@@ -20,7 +20,7 @@
       botUsername: '',
       lastError: null
     },
-    currentTab: 'unsold', // 'unsold', 'sold', 'keys', 'workers', 'all'
+    currentTab: 'keys', // 'keys', 'workers', 'unsold', 'sold', 'all'
     keysViewMode: 'grouped', // 'grouped' (Group by Guy) or 'individual' (All Keys)
     teamAssignTab: 'paste',
     searchQuery: '',
@@ -323,9 +323,11 @@
     state.currentTab = tabName;
     document.querySelectorAll('.tab-btn').forEach(btn => {
       if (btn.dataset.tab === tabName) {
-        btn.classList.add('active');
+        btn.classList.add('active', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+        btn.classList.remove('text-slate-600');
       } else {
-        btn.classList.remove('active');
+        btn.classList.remove('active', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+        btn.classList.add('text-slate-600');
       }
     });
     render();
@@ -388,28 +390,60 @@
     render();
   }
 
-  // Update top KPI cards
+  // Update top KPI cards (Masi Team & Worker Performance Hub)
   function renderKPIs() {
-    const total = state.orders.length;
-    const unsold = state.orders.filter(o => o.inventoryStatus === 'unsold').length;
-    const sold = state.orders.filter(o => o.inventoryStatus === 'sold').length;
-    const unfulfilled = state.orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'unfulfilled').length;
+    const guys = getGroupedGuys();
+    const totalKeys = state.workers.length;
     
-    const unpaidOrders = state.orders.filter(o => o.workerPaymentStatus === 'unpaid');
-    const unpaidCount = unpaidOrders.length;
-    const unpaidSum = unpaidOrders.reduce((acc, curr) => acc + (Number(curr.payoutAmount) || 15), 0);
+    // Total Completed Orders (sum across all guys / keys)
+    const totalCompletedOrders = guys.reduce((sum, g) => sum + (Number(g.completedOrders) || 0), 0);
+    
+    // Total Orders across all guys
+    const totalAllOrders = guys.reduce((sum, g) => sum + (Number(g.totalOrders) || 0), 0);
+    
+    // Team success rate (weighted percentage or average)
+    let teamSuccessRate = '0%';
+    if (totalAllOrders > 0) {
+      teamSuccessRate = `${((totalCompletedOrders / totalAllOrders) * 100).toFixed(1)}%`;
+    } else {
+      const workersWithRate = state.workers.filter(w => Number(w.successRate) > 0 || Number(w.customSuccessRate) > 0);
+      if (workersWithRate.length > 0) {
+        const avg = workersWithRate.reduce((acc, w) => acc + (Number(w.customSuccessRate || w.successRate) || 0), 0) / workersWithRate.length;
+        teamSuccessRate = `${avg.toFixed(1)}%`;
+      }
+    }
+    
+    // Total Calculated Pay earned across all guys
+    const totalPay = guys.reduce((sum, g) => sum + (Number(g.totalEarned) || 0), 0);
+    
+    // Total Unique Guys
+    const totalGuys = guys.length;
 
+    // Update DOM elements for the Masi Team Hub KPI cards
+    const elKeys = document.getElementById('kpi-total-keys');
+    const elCompleted = document.getElementById('kpi-completed-orders');
+    const elSuccess = document.getElementById('kpi-team-success');
+    const elPay = document.getElementById('kpi-total-pay');
+    const elGuys = document.getElementById('kpi-team-guys');
+
+    if (elKeys) elKeys.textContent = totalKeys;
+    if (elCompleted) elCompleted.textContent = totalCompletedOrders.toLocaleString();
+    if (elSuccess) elSuccess.textContent = teamSuccessRate;
+    if (elPay) elPay.textContent = `$${totalPay.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (elGuys) elGuys.textContent = totalGuys;
+
+    // Fallback for previous element IDs if present
     const elTotal = document.getElementById('kpi-total');
     const elUnsold = document.getElementById('kpi-unsold');
     const elSold = document.getElementById('kpi-sold');
-    const elUnfulfilled = document.getElementById('kpi-unfulfilled');
-    const elUnpaid = document.getElementById('kpi-unpaid');
+    if (elTotal) elTotal.textContent = totalKeys;
+    if (elUnsold) elUnsold.textContent = totalCompletedOrders;
+    if (elSold) elSold.textContent = totalGuys;
 
-    if (elTotal) elTotal.textContent = total;
-    if (elUnsold) elUnsold.textContent = unsold;
-    if (elSold) elSold.textContent = sold;
-    if (elUnfulfilled) elUnfulfilled.textContent = unfulfilled;
-    if (elUnpaid) elUnpaid.textContent = `${unpaidCount} ($${unpaidSum.toFixed(2)})`;
+    // Tab badges
+    const unsold = state.orders.filter(o => o.inventoryStatus === 'unsold').length;
+    const sold = state.orders.filter(o => o.inventoryStatus === 'sold').length;
+    const unpaidOrders = state.orders.filter(o => o.workerPaymentStatus === 'unpaid');
 
     const badgeUnsold = document.getElementById('tab-badge-unsold');
     const badgeSold = document.getElementById('tab-badge-sold');
@@ -419,9 +453,9 @@
 
     if (badgeUnsold) badgeUnsold.textContent = unsold;
     if (badgeSold) badgeSold.textContent = sold;
-    if (badgeKeys) badgeKeys.textContent = state.workers.length;
-    if (badgeWorkers) badgeWorkers.textContent = unpaidCount;
-    if (badgeAll) badgeAll.textContent = total;
+    if (badgeKeys) badgeKeys.textContent = totalKeys;
+    if (badgeWorkers) badgeWorkers.textContent = unpaidOrders.length;
+    if (badgeAll) badgeAll.textContent = state.orders.length;
   }
 
   // Worker datalist
