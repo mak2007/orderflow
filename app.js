@@ -822,8 +822,11 @@
       const soldOrders = workerOrders.filter(o => o.inventoryStatus === 'sold').length;
       const unsoldCount = workerOrders.filter(o => o.inventoryStatus === 'unsold').length;
 
-      // Success Rate Calculation
-      const rateNum = totalOrders > 0 ? ((completedOrders / totalOrders) * 100) : 0;
+      // Success Rate Calculation: Check if admin manually decided the rate!
+      const isCustomRate = worker.customSuccessRate !== null && worker.customSuccessRate !== undefined && worker.customSuccessRate !== '';
+      const rateNum = isCustomRate 
+        ? Math.min(100, Math.max(0, Number(worker.customSuccessRate))) 
+        : (totalOrders > 0 ? ((completedOrders / totalOrders) * 100) : 0);
       const successRate = rateNum.toFixed(1);
 
       // Financials
@@ -846,7 +849,7 @@
       } else if (rateNum >= 50) {
         rateColor = 'text-amber-700 bg-amber-100';
         progressColor = 'bg-amber-500';
-      } else if (totalOrders > 0) {
+      } else if (totalOrders > 0 || isCustomRate) {
         rateColor = 'text-rose-700 bg-rose-100';
         progressColor = 'bg-rose-500';
       }
@@ -891,20 +894,26 @@
               `}
             </div>
 
-            <!-- Success Rate Metric Bar -->
+            <!-- Success Rate Metric Bar with Admin Override -->
             <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
               <div class="flex items-center justify-between text-xs font-bold mb-1.5">
-                <span class="text-slate-600 flex items-center gap-1">
-                  <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                  Fulfillment Success Rate:
+                <span class="text-slate-700 flex items-center gap-1.5">
+                  <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  Success Rate:
+                  ${isCustomRate ? `<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800">Admin Decided</span>` : `<span class="text-[10px] font-medium px-1.5 py-0.2 rounded bg-slate-200 text-slate-600">Auto</span>`}
                 </span>
-                <span class="px-2 py-0.5 rounded font-mono ${rateColor}">${successRate}%</span>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded font-mono font-bold ${rateColor}">${successRate}%</span>
+                  <button onclick="openDecideRateModal('${worker.id}')" title="Decide Success Rate" class="px-2 py-0.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded transition">
+                    🎯 Set Rate
+                  </button>
+                </div>
               </div>
-              <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                <div class="${progressColor} h-2 rounded-full transition-all duration-500" style="width: ${rateNum}%"></div>
+              <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                <div class="${progressColor} h-2.5 rounded-full transition-all duration-500" style="width: ${rateNum}%"></div>
               </div>
               <div class="flex justify-between text-[11px] text-slate-400 mt-1">
-                <span>${completedOrders} Completed & Fulfilled</span>
+                <span>${completedOrders} Fulfilled</span>
                 <span>${totalOrders} Total Submitted</span>
               </div>
             </div>
@@ -1555,6 +1564,7 @@
     document.getElementById('input-new-worker-name').value = worker.name || '';
     document.getElementById('input-new-worker-key').value = worker.key || '';
     document.getElementById('input-new-worker-rate').value = worker.rate || 15.00;
+    document.getElementById('input-new-worker-success-rate').value = (worker.customSuccessRate !== null && worker.customSuccessRate !== undefined) ? worker.customSuccessRate : '';
 
     document.getElementById('worker-modal').classList.remove('hidden');
   };
@@ -1564,6 +1574,8 @@
     const name = document.getElementById('input-new-worker-name').value.trim();
     const key = document.getElementById('input-new-worker-key').value.trim();
     const rate = parseFloat(document.getElementById('input-new-worker-rate').value) || 15.00;
+    const rawSuccessRate = document.getElementById('input-new-worker-success-rate').value.trim();
+    const customSuccessRate = rawSuccessRate !== '' ? Math.min(100, Math.max(0, parseFloat(rawSuccessRate))) : null;
 
     if (!name || !key) {
       showToast('Worker Name and Key are required', 'warning');
@@ -1576,13 +1588,14 @@
         worker.name = name;
         worker.key = key;
         worker.rate = rate;
+        worker.customSuccessRate = customSuccessRate;
       }
       if (state.isApiOnline) {
         try {
           await fetch(`${API_BASE}/workers/${editId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, key, rate })
+            body: JSON.stringify({ name, key, rate, customSuccessRate })
           });
         } catch (e) { console.error('API worker update error', e); }
       }
@@ -1593,6 +1606,7 @@
         name,
         key,
         rate,
+        customSuccessRate,
         telegramId: null,
         telegramUsername: null,
         linkedAt: null,
@@ -1614,6 +1628,55 @@
     saveToLocalStorage();
     render();
     closeWorkerModal();
+  };
+
+  // Quick Decide Success Rate Modal Handlers
+  window.openDecideRateModal = function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId);
+    if (!worker) return;
+    document.getElementById('decide-rate-worker-id').value = worker.id;
+    document.getElementById('decide-rate-worker-name').textContent = `${worker.name} (${worker.key})`;
+    const currentRate = (worker.customSuccessRate !== null && worker.customSuccessRate !== undefined) ? worker.customSuccessRate : '';
+    document.getElementById('decide-rate-input').value = currentRate;
+    document.getElementById('decide-rate-modal').classList.remove('hidden');
+    document.getElementById('decide-rate-input').focus();
+  };
+
+  window.closeDecideRateModal = function() {
+    document.getElementById('decide-rate-modal').classList.add('hidden');
+  };
+
+  window.setQuickRate = function(val) {
+    document.getElementById('decide-rate-input').value = (val !== null && val !== undefined) ? val : '';
+  };
+
+  window.saveDecidedRate = async function() {
+    const workerId = document.getElementById('decide-rate-worker-id').value;
+    const worker = state.workers.find(w => w.id === workerId);
+    if (!worker) return;
+
+    const rawVal = document.getElementById('decide-rate-input').value.trim();
+    const rateVal = rawVal !== '' ? Math.min(100, Math.max(0, parseFloat(rawVal))) : null;
+
+    worker.customSuccessRate = rateVal;
+    saveToLocalStorage();
+    render();
+    closeDecideRateModal();
+
+    const label = rateVal !== null ? `${rateVal}%` : 'Auto Calculated';
+    showToast(`Assigned Success Rate of ${label} to ${worker.name}!`, 'success');
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/workers/${worker.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customSuccessRate: rateVal })
+        });
+      } catch (e) {
+        console.error('API rate update error', e);
+      }
+    }
   };
 
   window.deleteWorkerKey = async function(workerId) {

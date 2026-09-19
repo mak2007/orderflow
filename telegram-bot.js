@@ -342,10 +342,14 @@ Your order is now live on the dashboard and waiting to be sold!
     const soldOrders = orders.filter(o => o.inventoryStatus === 'sold').length;
     const unsoldCount = orders.filter(o => o.inventoryStatus === 'unsold').length;
     const completedOrders = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
-    const unfulfilledSold = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'unfulfilled').length;
-
-    // Success Rate calculation: completed / total submitted
-    const successRate = totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) : '0.0';
+    // Success Rate calculation: Admin decided rate takes priority if set, else auto-calculate
+    let successRate = '0.0';
+    const isCustomRate = worker.customSuccessRate !== null && worker.customSuccessRate !== undefined && worker.customSuccessRate !== '';
+    if (isCustomRate) {
+      successRate = Number(worker.customSuccessRate).toFixed(1);
+    } else {
+      successRate = totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) : '0.0';
+    }
 
     // Payout calculations
     const defaultRate = Number(worker.rate) || 15.00;
@@ -378,7 +382,7 @@ Your order is now live on the dashboard and waiting to be sold!
 • ⚠️ *Sold (Awaiting Delivery):* ${unfulfilledSold}
 • 🟡 *Unsold in Stock:* ${unsoldCount}
 
-🎯 *Success Rate:* *${successRate}%*
+🎯 *Success Rate:* *${successRate}%*${isCustomRate ? ' _(Admin Decided)_' : ''}
 ━━━━━━━━━━━━━━━━━━━━
 💰 *Payout Summary:*
 • *Total Earned:* $${totalEarned.toFixed(2)}

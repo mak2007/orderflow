@@ -216,6 +216,7 @@ const server = http.createServer(async (req, res) => {
           telegramId: body.telegramId || null,
           telegramUsername: body.telegramUsername || null,
           rate: Number(body.rate) || 15.00,
+          customSuccessRate: (body.customSuccessRate !== undefined && body.customSuccessRate !== '') ? Number(body.customSuccessRate) : null,
           linkedAt: body.telegramId ? new Date().toISOString() : null,
           status: 'active'
         };

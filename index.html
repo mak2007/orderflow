@@ -382,6 +382,14 @@
           <input type="number" step="0.5" id="input-new-worker-rate" value="15.00" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
 
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Admin Decided Success Rate (%)</label>
+            <span class="text-[11px] text-indigo-600 font-medium">Leave empty for auto</span>
+          </div>
+          <input type="number" step="0.5" min="0" max="100" id="input-new-worker-success-rate" placeholder="e.g. 95 (Blank = Auto calculated)" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
         <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
           <button type="button" onclick="closeWorkerModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
             Cancel
@@ -389,6 +397,45 @@
           <button type="button" onclick="saveWorkerKey()" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition">
             Save Worker Key
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Decide Success Rate Modal -->
+  <div id="decide-rate-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-100">
+      <div class="p-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center justify-between">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <span>🎯</span> Set Worker Success Rate
+        </h3>
+        <button onclick="closeDecideRateModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="decide-rate-worker-id">
+        <div>
+          <div class="text-xs text-slate-500 mb-1">Worker: <strong id="decide-rate-worker-name" class="text-slate-800"></strong></div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Assign Success Rate (%)</label>
+          <div class="relative">
+            <input type="number" step="0.5" min="0" max="100" id="decide-rate-input" placeholder="e.g. 92" class="w-full px-3 py-2 text-xl font-bold text-slate-800 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            <span class="absolute right-3 top-2.5 text-slate-400 font-bold">%</span>
+          </div>
+
+          <!-- Quick Preset Buttons -->
+          <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+            <button type="button" onclick="setQuickRate(100)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">100%</button>
+            <button type="button" onclick="setQuickRate(95)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">95%</button>
+            <button type="button" onclick="setQuickRate(90)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">90%</button>
+            <button type="button" onclick="setQuickRate(80)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-amber-100 text-amber-800 hover:bg-amber-200 transition">80%</button>
+            <button type="button" onclick="setQuickRate('')" class="px-2.5 py-1 text-xs font-medium rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Reset to Auto</button>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500">
+          This exact success rate will be shown in the dashboard and reported to the worker when they type <code>/stats</code> in Telegram!
+        </p>
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <button type="button" onclick="closeDecideRateModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
+          <button type="button" onclick="saveDecidedRate()" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition">Apply Rate</button>
         </div>
       </div>
     </div>
