@@ -165,8 +165,10 @@ class TelegramBotEngine {
       await this.handleStart(chatId, from, args[0]);
     } else if (command === '/link' || command === '/register') {
       await this.handleLink(chatId, from, args[0]);
-    } else if (command === '/request' || command === '/payout') {
+    } else if (command === '/request' || command === '/payout' || command === '/withdraw') {
       await this.handlePayoutRequest(chatId, from, args[0]);
+    } else if (command === '/reqforleftover' || command === '/leftover' || command === '/withdrawleftover') {
+      await this.handleLeftoverRequest(chatId, from);
     } else if (command === '/submit' || command === '/add') {
       await this.handleSubmit(chatId, from, args);
     } else if (command === '/stats' || command === '/myorders') {
@@ -201,17 +203,18 @@ class TelegramBotEngine {
     const welcomeText = `
 👋 *Welcome to the Worker Bill Bot!*
 
-🧾 *Get your bill & request payouts instantly:*
+🧾 *Track completed orders & request withdrawals:*
 
 Just send your worker key like this:
 \`WORKER-XXXX-XXXX-XXXX-XXXX\`
 
 Commands:
 • \`/bill YOUR_KEY\` — Generate live bill with recent orders
-• \`/request\` — Request payout settlement from administrator
+• \`/balance\` — Check settled orders (e.g. 20/20) & leftover balance
+• \`/withdraw <orders>\` — Request payout for specific number of orders
+• \`/reqforleftover\` — Request withdrawal for all leftover orders
 • \`/refresh\` — Re-fetch live stats & update bill
 • \`/link YOUR_KEY\` — Save your key to this account
-• \`/balance\` — Check completed orders & settlement status
 • \`/help\` — All commands
 
 _Synced live with masi.cc.cd_ 🔄
@@ -400,23 +403,32 @@ Your order is now live on the dashboard and waiting to be sold!
 
     const primaryWorker = workers[0];
     const completed = Number(primaryWorker.completedOrders) || 0;
+    const paidCount = Number(primaryWorker.paidCount) || 0;
+    const leftover = Math.max(0, completed - paidCount);
     const todayDone = Number(primaryWorker.todayDone) || 0;
-    const isSettled = primaryWorker.paymentStatus === 'paid' || ((Number(primaryWorker.paidCount) || 0) >= completed && completed > 0);
+    const isSettled = (completed > 0 && paidCount >= completed) || primaryWorker.paymentStatus === 'paid';
 
     let keysList = workers.map(w => `\`${w.key}\``).join(', ');
 
     const balanceMsg = `
-💳 *Your Performance & Payout Status*
+💳 *Your Performance & Settlement Status*
 ━━━━━━━━━━━━━━━━━━━━━━━━
 👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
 🔑 *Keys:* ${keysList}
-📦 *Completed Orders:* ${completed}
-🌅 *Today Done:* ${todayDone}
 
-💰 *Status:*
-${isSettled ? '• ✅ *Paid & Settled*' : (completed > 0 ? '• ⏳ *Pending Settlement by Admin*' : '• ⚪ *No Orders Yet*')}
-${isSettled && primaryWorker.lastPaidAt ? `• 📅 *Last Settled:* ${new Date(primaryWorker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}
-_Orders are verified live with Masi. Admin settles payouts directly._
+📊 *Orders Settlement:*
+• 📦 *Total Completed:* *${completed}* orders
+• ✅ *Total Settled:* *${paidCount}/${completed}*
+• ⏳ *Leftover Unsettled:* *${leftover}* order(s)
+• 🌅 *Today Done:* ${todayDone}
+
+📌 *Status:*
+${isSettled ? `• ✅ *Fully Settled (${completed}/${completed})*` : (leftover > 0 ? `• ⏳ *${leftover} Leftover Orders Pending Settlement*` : '• ⚪ *No Orders Yet*')}
+${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawal Request:* ${primaryWorker.payoutRequestedOrders || leftover} order(s)\n` : ''}${isSettled && primaryWorker.lastPaidAt ? `• 📅 *Last Settled:* ${new Date(primaryWorker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}
+💡 *Withdrawal Options:*
+• \`/withdraw <orders>\` — Request payout for specific number of orders (e.g. \`/withdraw 5\`)
+• \`/reqforleftover\` — Request withdrawal for all ${leftover} leftover orders
+• \`/bill\` — View live bill & recent orders
 `;
     await this.sendMessage(chatId, balanceMsg);
   }
@@ -426,15 +438,19 @@ _Orders are verified live with Masi. Admin settles payouts directly._
     const helpMsg = `
 🤖 *Worker Bill Bot — Commands:*
 
-🧾 *Billing & Live Sync:*
+🧾 *Billing & Orders:*
 • Send your key directly → instant live bill with recent orders
 • \`/bill [YOUR_KEY]\` — Generate live bill with recent completed orders
+• \`/balance\` — Check settled orders (e.g. 20/20) & leftover balance
 • \`/refresh\` — Re-fetch live stats from masi.cc.cd & update bill
 • \`/stats\` — View latest performance overview
 
+💸 *Withdrawals:*
+• \`/withdraw <number>\` — Request withdrawal for specific order count (e.g. \`/withdraw 10\`)
+• \`/reqforleftover\` — Request withdrawal for all remaining leftover orders
+
 🔗 *Account:*
 • \`/link YOUR_KEY\` — Save your key to this Telegram account
-• \`/balance\` — Check completed orders & settlement status
 
 📦 *Orders:*
 • \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit order
@@ -533,11 +549,13 @@ _Orders are verified live with Masi. Admin settles payouts directly._
     const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
     const completed = Number(worker.completedOrders) || (completedOrders ? completedOrders.length : 0);
+    const paidCount = Number(worker.paidCount) || 0;
+    const leftover = Math.max(0, completed - paidCount);
     const d7Done = Number(worker.d7Done) || 0;
     const todayDone = Number(worker.todayDone) || 0;
 
-    const isSettled = worker.paymentStatus === 'paid' || ((Number(worker.paidCount) || 0) >= completed && completed > 0);
-    const statusText = isSettled ? '✅ *Paid & Settled*' : (completed > 0 ? '⏳ *Pending Settlement*' : '⚪ *No Orders Yet*');
+    const isSettled = (completed > 0 && paidCount >= completed) || worker.paymentStatus === 'paid';
+    const statusText = isSettled ? `✅ *Fully Settled (${completed}/${completed})*` : (leftover > 0 ? `⏳ *${leftover} Leftover Orders Pending Settlement*` : '⚪ *No Orders Yet*');
 
     // Format recent completed orders
     let recentOrdersSection = '';
@@ -586,8 +604,10 @@ ${completedOrders.length > 10 ? `_...and ${completedOrders.length - 10} more com
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
 💰 *SETTLEMENT STATUS:*
+• 📊 *Progress:* *${paidCount}/${completed}* orders settled
+• ⏳ *Leftover Unsettled:* *${leftover}* order(s)
 • 📌 *Status:* ${statusText}
-${isSettled && worker.lastPaidAt ? `• 📅 *Settled Date:* ${new Date(worker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
+${worker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Request:* ${worker.payoutRequestedOrders || leftover} order(s)\n` : ''}${isSettled && worker.lastPaidAt ? `• 📅 *Settled Date:* ${new Date(worker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
 _🔄 Synced live with masi.cc.cd_
 `;
   }
@@ -676,8 +696,8 @@ _🔄 Synced live with masi.cc.cd_
     await this.sendMessage(chatId, billText);
   }
 
-  // Command: /request — worker requests payout settlement from admin
-  async handlePayoutRequest(chatId, from, rawAmount) {
+  // Command: /withdraw or /request [orders] — worker requests withdrawal for specified orders
+  async handlePayoutRequest(chatId, from, rawOrders) {
     const workers = this.findWorkersForUser(chatId, from);
     const worker = workers[0] || this.findWorkerByChatId(chatId);
 
@@ -691,27 +711,101 @@ _🔄 Synced live with masi.cc.cd_
     if (from && from.username) worker.telegramUsername = `@${from.username}`;
 
     const completed = Number(worker.completedOrders) || 0;
-    const isSettled = worker.paymentStatus === 'paid' || ((Number(worker.paidCount) || 0) >= completed && completed > 0);
+    const paidCount = Number(worker.paidCount) || 0;
+    const leftover = Math.max(0, completed - paidCount);
 
-    if (isSettled) {
-      await this.sendMessage(chatId, `ℹ️ *Already Settled!*\nAll your completed tasks (${completed} orders) are already marked as Paid & Settled.`);
+    if (completed === 0) {
+      await this.sendMessage(chatId, `⚪ *No Completed Orders Yet!*\nDo some tasks first to complete orders.`);
       return;
     }
 
+    if (leftover <= 0) {
+      await this.sendMessage(chatId, `ℹ️ *Already Settled!*\nAll your completed tasks (*${completed}/${completed}*) are already marked as Paid & Settled.`);
+      return;
+    }
+
+    let requestedOrders = leftover;
+    let requestType = 'all';
+
+    if (rawOrders && rawOrders.trim()) {
+      const parsed = parseInt(rawOrders.trim(), 10);
+      if (isNaN(parsed) || parsed <= 0) {
+        await this.sendMessage(chatId, `⚠️ *Invalid Order Count!*\nPlease specify a positive number of orders to withdraw.\n_Example: \`/withdraw 10\` or \`/reqforleftover\`_`);
+        return;
+      }
+      if (parsed > leftover) {
+        await this.sendMessage(chatId, `⚠️ *Request Exceeds Leftover Balance!*\n• Total Completed: *${completed}*\n• Already Settled: *${paidCount}/${completed}*\n• Leftover Available: *${leftover}* order(s)\n\nYou cannot request ${parsed} orders. Please request up to *${leftover}* orders (e.g. \`/withdraw ${leftover}\` or \`/reqforleftover\`).`);
+        return;
+      }
+      requestedOrders = parsed;
+      requestType = 'custom';
+    }
+
+    worker.payoutRequestedOrders = requestedOrders;
+    worker.payoutRequestType = requestType;
     worker.payoutRequestedAt = new Date().toISOString();
     worker.payoutRequestStatus = 'pending';
     this.dbManager.saveDb();
 
     const ackMsg = `
-✅ *PAYOUT REQUEST SUBMITTED!*
+✅ *WITHDRAWAL REQUEST SUBMITTED!*
 ━━━━━━━━━━━━━━━━━━━━━━━━
 👤 *Worker:* ${worker.personName || worker.name}
 🔑 *Key:* \`${worker.key}\`
-📦 *Completed Orders:* ${completed}
+
+📦 *Requested to Withdraw:* *${requestedOrders}* order(s)
+📊 *Current Status:* *${paidCount}/${completed}* settled
+⏳ *Remaining After Payout:* *${leftover - requestedOrders}* order(s)
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 
 ⏳ *Status:* *Sent to Admin on Dashboard*
-Your administrator has been notified to settle your ${completed} completed orders. You will get an instant alert message here as soon as payout is cleared!
+Your administrator has been notified to settle your *${requestedOrders}* requested orders. You will receive an instant alert here as soon as payout is processed!
+━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+    await this.sendMessage(chatId, ackMsg);
+  }
+
+  // Command: /reqforleftover — worker requests withdrawal for all remaining unsettled orders
+  async handleLeftoverRequest(chatId, from) {
+    const workers = this.findWorkersForUser(chatId, from);
+    const worker = workers[0] || this.findWorkerByChatId(chatId);
+
+    if (!worker) {
+      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease send your worker key first (e.g. \`WORKER-XXXX-XXXX-XXXX-XXXX\`) so we can link your profile.`);
+      return;
+    }
+
+    // Auto-update Telegram ID & Username
+    worker.telegramId = chatId.toString();
+    if (from && from.username) worker.telegramUsername = `@${from.username}`;
+
+    const completed = Number(worker.completedOrders) || 0;
+    const paidCount = Number(worker.paidCount) || 0;
+    const leftover = Math.max(0, completed - paidCount);
+
+    if (leftover <= 0) {
+      await this.sendMessage(chatId, `ℹ️ *No Leftover Balance!*\nAll your completed tasks (*${completed}/${completed}*) are already paid and settled.`);
+      return;
+    }
+
+    worker.payoutRequestedOrders = leftover;
+    worker.payoutRequestType = 'leftover';
+    worker.payoutRequestedAt = new Date().toISOString();
+    worker.payoutRequestStatus = 'pending';
+    this.dbManager.saveDb();
+
+    const ackMsg = `
+✅ *LEFTOVER WITHDRAWAL REQUESTED!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Worker:* ${worker.personName || worker.name}
+🔑 *Key:* \`${worker.key}\`
+
+📦 *Leftover Orders to Settle:* *${leftover}* order(s)
+📊 *Current Status:* *${paidCount}/${completed}* settled
+📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+
+⏳ *Status:* *Sent to Admin on Dashboard*
+Your administrator has been notified to settle your *${leftover}* leftover orders. You will receive an instant alert here as soon as payout is processed!
 ━━━━━━━━━━━━━━━━━━━━━━━━
 `;
     await this.sendMessage(chatId, ackMsg);

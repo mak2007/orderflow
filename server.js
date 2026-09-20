@@ -357,12 +357,26 @@ const requestHandler = async (req, res) => {
 
         const now = new Date().toISOString();
         const completed = Number(worker.completedOrders) || 0;
+        const currentPaid = Number(worker.paidCount) || 0;
+        const newlyPaid = Math.max(0, completed - currentPaid);
 
         worker.paymentStatus = 'paid';
         worker.paidCount = completed;
         worker.lastPaidAt = now;
         worker.payoutRequestStatus = 'approved';
-        worker.payoutRequestedAmount = 0;
+        worker.payoutRequestedOrders = 0;
+
+        if (!Array.isArray(worker.paymentHistory)) {
+          worker.paymentHistory = [];
+        }
+        worker.paymentHistory.unshift({
+          id: `pay-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          date: now,
+          ordersPaid: newlyPaid || completed,
+          note: 'Marked full settlement (20/20)',
+          paidCountAfter: completed,
+          totalCompleted: completed
+        });
 
         // Also update any orders if exist
         if (db.orders && Array.isArray(db.orders)) {
@@ -390,7 +404,7 @@ const requestHandler = async (req, res) => {
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Hi ${worker.personName || worker.name}! Your payout has been completed and marked as settled by your administrator.
 
-📦 *Completed Orders:* *${completed}*
+📦 *Completed Orders Settled:* *${completed}/${completed}*
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Thank you for your work!
@@ -401,6 +415,8 @@ Thank you for your work!
         return sendJson(res, 200, {
           success: true,
           completedOrders: completed,
+          paidCount: worker.paidCount,
+          fraction: `${worker.paidCount}/${completed}`,
           telegramSent,
           worker
         });
@@ -416,6 +432,8 @@ Thank you for your work!
         worker.paidAmount = 0;
         worker.paidCount = 0;
         worker.lastPaidAt = null;
+        worker.payoutRequestStatus = null;
+        worker.payoutRequestedOrders = 0;
 
         if (db.orders && Array.isArray(db.orders)) {
           db.orders.forEach(o => {
@@ -439,12 +457,34 @@ Thank you for your work!
 
         const now = new Date().toISOString();
         const completed = Number(worker.completedOrders) || 0;
+        const currentPaid = Number(worker.paidCount) || 0;
+        const requested = Number(worker.payoutRequestedOrders) || 0;
 
-        worker.paymentStatus = 'paid';
-        worker.paidCount = completed;
+        let ordersSettled = 0;
+        if (requested > 0) {
+          ordersSettled = requested;
+          worker.paidCount = Math.min(completed, currentPaid + requested);
+        } else {
+          ordersSettled = Math.max(0, completed - currentPaid);
+          worker.paidCount = completed;
+        }
+
+        worker.paymentStatus = (worker.paidCount >= completed && completed > 0) ? 'paid' : 'unpaid';
         worker.lastPaidAt = now;
         worker.payoutRequestStatus = 'approved';
-        worker.payoutRequestedAmount = 0;
+        worker.payoutRequestedOrders = 0;
+
+        if (!Array.isArray(worker.paymentHistory)) {
+          worker.paymentHistory = [];
+        }
+        worker.paymentHistory.unshift({
+          id: `pay-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          date: now,
+          ordersPaid: ordersSettled,
+          note: worker.payoutRequestType === 'leftover' ? 'Leftover balance withdrawal cleared' : `Approved withdrawal of ${ordersSettled} orders`,
+          paidCountAfter: worker.paidCount,
+          totalCompleted: completed
+        });
 
         dbManager.saveDb();
 
@@ -458,11 +498,12 @@ Thank you for your work!
 
         if (tgChatId) {
           const alertMsg = `
-🎉 *PAYOUT APPROVED & CLEARED!*
+🎉 *WITHDRAWAL APPROVED & CLEARED!*
 ━━━━━━━━━━━━━━━━━━━━━━━━
-Hi ${worker.personName || worker.name}! Your administrator has approved your payout:
+Hi ${worker.personName || worker.name}! Your administrator has approved your withdrawal:
 
-📦 *Completed Orders:* *${completed}*
+📦 *Orders Settled Now:* *${ordersSettled}* order(s)
+📊 *Overall Progress:* *${worker.paidCount}/${completed}* settled
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Thank you for your work!
@@ -470,7 +511,91 @@ Thank you for your work!
           telegramSent = await botEngine.sendMessage(tgChatId, alertMsg);
         }
 
-        return sendJson(res, 200, { success: true, completedOrders: completed, worker, telegramSent });
+        return sendJson(res, 200, {
+          success: true,
+          ordersSettled,
+          paidCount: worker.paidCount,
+          totalCompleted: completed,
+          fraction: `${worker.paidCount}/${completed}`,
+          worker,
+          telegramSent
+        });
+      }
+
+      // POST /api/workers/:id/record-payment (Log custom payment with notes & orders settled: "I paid him this that")
+      if (req.method === 'POST' && parsedUrl.includes('/record-payment')) {
+        const id = parsedUrl.split('/')[3];
+        const body = await parseJsonBody(req);
+        const worker = db.workers.find(w => w.id === id || w.key === id);
+        if (!worker) return sendJson(res, 404, { success: false, error: 'Worker not found' });
+
+        const now = new Date().toISOString();
+        const completed = Number(worker.completedOrders) || 0;
+        const currentPaid = Number(worker.paidCount) || 0;
+        const note = (body.note || body.notes || '').trim();
+
+        let ordersCount = Number(body.ordersCount) || 0;
+        if (body.markAllSettled || ordersCount >= (completed - currentPaid)) {
+          ordersCount = Math.max(0, completed - currentPaid);
+          worker.paidCount = completed;
+        } else {
+          worker.paidCount = Math.min(completed, currentPaid + ordersCount);
+        }
+
+        worker.paymentStatus = (worker.paidCount >= completed && completed > 0) ? 'paid' : 'unpaid';
+        worker.lastPaidAt = now;
+        worker.payoutRequestStatus = 'approved';
+        worker.payoutRequestedOrders = 0;
+
+        if (!Array.isArray(worker.paymentHistory)) {
+          worker.paymentHistory = [];
+        }
+
+        const paymentRecord = {
+          id: `pay-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          date: now,
+          ordersPaid: ordersCount,
+          note: note || 'Settled by administrator',
+          paidCountAfter: worker.paidCount,
+          totalCompleted: completed
+        };
+        worker.paymentHistory.unshift(paymentRecord);
+
+        dbManager.saveDb();
+
+        // Send instant Telegram notification to worker
+        let telegramSent = false;
+        let tgChatId = worker.telegramId;
+        if (!tgChatId && worker.telegramUsername) {
+          const match = db.workers.find(w => w.telegramUsername && w.telegramUsername.toLowerCase() === worker.telegramUsername.toLowerCase() && w.telegramId);
+          if (match) tgChatId = match.telegramId;
+        }
+
+        if (tgChatId) {
+          const alertMsg = `
+🎉 *PAYMENT RECORDED & SETTLED!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+Hi ${worker.personName || worker.name}! Your administrator recorded a payout:
+
+📦 *Orders Settled Now:* *${ordersCount}* order(s)
+📊 *Overall Status:* *${worker.paidCount}/${completed}* settled
+${note ? `📝 *Admin Note:* ${note}\n` : ''}📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+━━━━━━━━━━━━━━━━━━━━━━━━
+Thank you for your work!
+`;
+          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg);
+        }
+
+        return sendJson(res, 200, {
+          success: true,
+          ordersSettled: ordersCount,
+          paidCount: worker.paidCount,
+          totalCompleted: completed,
+          fraction: `${worker.paidCount}/${completed}`,
+          paymentRecord,
+          worker,
+          telegramSent
+        });
       }
 
       // POST /api/workers/:id/message (Send direct Telegram message to worker)

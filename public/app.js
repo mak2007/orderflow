@@ -287,14 +287,32 @@
       const successRate = rateNum.toFixed(1);
 
       // Settle check: worker is paid & settled if all keys with orders are paid
-      const isSettled = completedOrders > 0 && guy.keys.every(k => {
+      const paidCount = guy.keys.reduce((sum, k) => {
         const c = Number(k.completedOrders) || 0;
-        if (c === 0) return true;
-        return k.paymentStatus === 'paid' || (Number(k.paidCount) || 0) >= c;
-      });
+        const p = Number(k.paidCount) || (k.paymentStatus === 'paid' ? c : 0);
+        return sum + Math.min(c, p);
+      }, 0);
+      const leftover = Math.max(0, completedOrders - paidCount);
+      const fraction = `${paidCount}/${completedOrders}`;
+      const isSettled = completedOrders > 0 && paidCount >= completedOrders;
 
-      // Payout requests from Telegram (/request)
+      // Payout & Withdrawal requests from Telegram (/withdraw, /reqforleftover, /request)
       const hasPendingPayoutRequest = guy.keys.some(k => k.payoutRequestStatus === 'pending');
+      const requestedOrders = guy.keys.reduce((sum, k) => {
+        if (k.payoutRequestStatus === 'pending') {
+          return sum + (Number(k.payoutRequestedOrders) || Math.max(0, (Number(k.completedOrders) || 0) - (Number(k.paidCount) || 0)));
+        }
+        return sum;
+      }, 0);
+
+      // Aggregated payment history
+      const allHistory = [];
+      guy.keys.forEach(k => {
+        if (Array.isArray(k.paymentHistory)) {
+          allHistory.push(...k.paymentHistory.map(h => ({ ...h, workerKey: k.key })));
+        }
+      });
+      allHistory.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
       let rateColor = 'text-slate-600 bg-slate-100';
       let progressColor = 'bg-slate-400';
@@ -312,6 +330,9 @@
       return {
         ...guy,
         completedOrders,
+        paidCount,
+        leftover,
+        fraction,
         todayDone,
         d7Done,
         totalOrders,
@@ -321,7 +342,9 @@
         rateColor,
         progressColor,
         isSettled,
-        hasPendingPayoutRequest
+        hasPendingPayoutRequest,
+        requestedOrders,
+        paymentHistory: allHistory
       };
     }).sort((a, b) => (Number(b.completedOrders) || 0) - (Number(a.completedOrders) || 0));
   }
@@ -476,6 +499,30 @@
             ${guys.length} Guys | ${state.workers.length} Keys Total
           </div>
         </div>
+        <!-- Pending Requested Withdrawals Banner (if any) -->
+        ${(() => {
+          const pendingGuys = guys.filter(g => g.hasPendingPayoutRequest);
+          if (pendingGuys.length === 0) return '';
+          const totalRequestedOrders = pendingGuys.reduce((sum, g) => sum + (g.requestedOrders || 0), 0);
+          return `
+            <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 border border-amber-500 rounded-xl p-4 text-slate-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl animate-bounce">🔔</span>
+                <div>
+                  <div class="text-xs font-black uppercase tracking-wider text-amber-950">Pending Withdrawal Requests (${pendingGuys.length} Worker${pendingGuys.length > 1 ? 's' : ''})</div>
+                  <div class="text-xs text-amber-900 mt-0.5">Total requested: <strong class="font-black text-slate-950">${totalRequestedOrders} orders</strong> across active workers. Click on any profile to review & record payout.</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                ${pendingGuys.slice(0, 4).map(pg => `
+                  <button onclick="openGuyProfileModal('${escapeHtml(pg.id)}')" class="px-3 py-1 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg shadow-xs transition flex items-center gap-1.5">
+                    <span>💳</span> ${escapeHtml(pg.displayName)} (${pg.requestedOrders || 0} orders)
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        })()}
     `;
 
     if (guys.length === 0) {
@@ -501,22 +548,22 @@
         <div id="${cardDomId}" data-guy-id="${escapeHtml(guy.id)}" ondragover="handleKeyDragOver(event)" ondragleave="handleKeyDragLeave(event)" ondrop="handleKeyDrop(event, '${escapeHtml(guy.id)}')" class="bg-white rounded-xl shadow-sm border ${guy.isSettled ? 'paid-card-settled' : 'border-slate-200'} hover:border-indigo-400 transition-all overflow-hidden flex flex-col justify-between relative">
           ${guy.isSettled ? `
             <div class="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest py-0.5 px-3 text-center flex items-center justify-center gap-1">
-              <span>✓</span> PAYMENT COMPLETED & SETTLED
+              <span>✓</span> PAYMENT COMPLETED & SETTLED (${guy.fraction})
             </div>
           ` : ''}
           <div class="p-5">
-            <!-- Pending Payout Request Alert (from /request in bot) -->
+            <!-- Pending Payout Request Alert (from /withdraw or /reqforleftover in bot) -->
             ${guy.hasPendingPayoutRequest ? `
-              <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-400 rounded-xl p-3 mb-4 flex items-center justify-between gap-2 shadow-xs">
+              <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-400 rounded-xl p-3 mb-4 flex items-center justify-between gap-2 shadow-xs cursor-pointer hover:border-amber-500 transition" onclick="openGuyProfileModal('${escapeHtml(guy.id)}')">
                 <div class="flex items-center gap-2.5">
-                  <span class="text-xl">🔔</span>
+                  <span class="text-xl animate-pulse">🔔</span>
                   <div>
-                    <div class="text-[11px] font-black uppercase tracking-wider text-amber-900">Payout Requested!</div>
-                    <div class="text-xs text-amber-800 font-medium">Worker requested settlement for <strong class="font-extrabold text-slate-900">${guy.completedOrders} completed orders</strong></div>
+                    <div class="text-[11px] font-black uppercase tracking-wider text-amber-900">Withdrawal Requested!</div>
+                    <div class="text-xs text-amber-800 font-medium">Worker requested: <strong class="font-extrabold text-slate-900 text-sm">${guy.requestedOrders} orders</strong> (${guy.fraction} settled)</div>
                   </div>
                 </div>
-                <button onclick="approveGuyPayout('${escapeHtml(guy.id)}')" class="px-3.5 py-1.5 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1 whitespace-nowrap">
-                  <span>✓</span> Approve & Pay
+                <button onclick="event.stopPropagation(); openGuyProfileModal('${escapeHtml(guy.id)}')" class="px-3.5 py-1.5 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1 whitespace-nowrap">
+                  <span>💳</span> Review & Pay
                 </button>
               </div>
             ` : ''}
@@ -524,12 +571,12 @@
             <!-- Header: Guy Name & Telegram -->
             <div class="flex items-start justify-between gap-3 mb-4">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${guy.isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm cursor-pointer" onclick="openGuyKeysModal('${escapeHtml(guy.id)}')">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${guy.isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm cursor-pointer hover:opacity-90 transition" onclick="openGuyProfileModal('${escapeHtml(guy.id)}')">
                   ${escapeHtml((guy.displayName || 'G').charAt(0).toUpperCase())}
                 </div>
                 <div>
                   <h3 class="font-extrabold text-slate-900 text-base leading-tight flex items-center gap-2">
-                    <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" class="text-left font-extrabold text-slate-900 text-base leading-tight hover:text-indigo-600 transition flex items-center gap-2">
+                    <button onclick="openGuyProfileModal('${escapeHtml(guy.id)}')" class="text-left font-extrabold text-slate-900 text-base leading-tight hover:text-emerald-700 transition flex items-center gap-2">
                       <span class="${guy.isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(guy.displayName)}</span>
                     </button>
                     <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" title="Click to view & manage keys" class="text-[10px] px-2 py-0.5 rounded-full font-bold cursor-pointer transition ${guy.isSettled ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'}">
@@ -562,16 +609,14 @@
                 </div>
               </div>
 
-              <!-- Success Rate Badge -->
-              <div class="text-right">
-                <span class="px-2.5 py-1 rounded-full text-xs font-black ${guy.rateColor} border border-current/20">
+              <!-- Settlement Fraction & Success Rate Badge -->
+              <div class="text-right flex flex-col items-end gap-1">
+                <button onclick="openGuyProfileModal('${escapeHtml(guy.id)}')" title="View payout profile & settlement" class="font-mono text-xs font-black px-2.5 py-1 rounded-full border cursor-pointer hover:shadow-xs transition ${guy.isSettled ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : (guy.leftover > 0 ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-slate-100 text-slate-700 border-slate-200')}">
+                  ${guy.fraction} ${guy.isSettled ? '✓' : (guy.leftover > 0 ? `(${guy.leftover} left)` : '')}
+                </button>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${guy.rateColor} border border-current/20">
                   ${guy.successRate}% Success
                 </span>
-                ${guy.isCustomRate ? `
-                  <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">Admin Decided</div>
-                ` : `
-                  <div class="text-[10px] text-slate-400 mt-0.5">Masi Official</div>
-                `}
               </div>
             </div>
 
@@ -629,21 +674,27 @@
           <!-- Card Actions Footer -->
           <div class="p-3 ${guy.isSettled ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50 border-slate-200'} border-t flex items-center justify-between gap-2 flex-wrap">
             <div class="flex items-center gap-2">
-              ${guy.isSettled ? `
-                <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 rounded-md flex items-center gap-1">
-                  <span>✓</span> Paid & Settled
-                </span>
-              ` : `
-                <span class="px-2.5 py-1 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-md">
-                  ⏳ Unpaid (${guy.completedOrders} orders)
-                </span>
-              `}
+              <button onclick="openGuyProfileModal('${escapeHtml(guy.id)}')" title="View settlement profile & details" class="cursor-pointer text-left">
+                ${guy.isSettled ? `
+                  <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 rounded-md flex items-center gap-1">
+                    <span>✓</span> ${guy.fraction} Fully Settled
+                  </span>
+                ` : `
+                  <span class="px-2.5 py-1 text-xs font-bold text-amber-800 bg-amber-50 border border-amber-300 rounded-md flex items-center gap-1">
+                    <span>⏳</span> ${guy.fraction} Paid (${guy.leftover} Leftover)
+                  </span>
+                `}
+              </button>
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap">
+              <button onclick="openGuyProfileModal('${escapeHtml(guy.id)}')" title="View profile, requested orders & log payments" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition flex items-center gap-1">
+                <span>💳</span> Profile & Pay
+              </button>
+
               ${(!guy.isSettled && guy.completedOrders > 0) ? `
-                <button onclick="markGuyPaid('${escapeHtml(guy.id)}')" title="Mark completed orders as paid and notify via Telegram" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1">
-                  <span>✓</span> Mark Paid / Complete ${isLinked ? '📲' : ''}
+                <button onclick="markGuyPaid('${escapeHtml(guy.id)}')" title="Mark all completed orders as paid and notify via Telegram" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1">
+                  <span>✓</span> Settle All (${guy.completedOrders}/${guy.completedOrders}) ${isLinked ? '📲' : ''}
                 </button>
               ` : ''}
               ${(guy.isSettled && guy.completedOrders > 0) ? `
@@ -709,7 +760,9 @@
 
         <!-- Keys Table Container -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div clas              <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th class="py-3.5 px-4 font-bold">Worker & Guy Name</th>
                   <th class="py-3.5 px-4 font-bold">Worker Key</th>
@@ -746,7 +799,11 @@
 
       const completed = Number(w.completedOrders) || 0;
       const todayDone = Number(w.todayDone) || 0;
-      const isPaidKey = completed > 0 && (w.paymentStatus === 'paid' || (Number(w.paidCount) || 0) >= completed);
+      const paidCount = Math.min(completed, Number(w.paidCount) || (w.paymentStatus === 'paid' ? completed : 0));
+      const leftover = Math.max(0, completed - paidCount);
+      const isPaidKey = completed > 0 && paidCount >= completed;
+      const hasPendingReq = w.payoutRequestStatus === 'pending';
+      const requested = Number(w.payoutRequestedOrders) || 0;
 
       html += `
         <tr class="hover:bg-slate-50/80 transition group ${isPaidKey ? 'paid-row-settled' : ''}">
@@ -783,12 +840,12 @@
           </td>
 
           <!-- Completed Orders -->
-          <td class="py-3 px-4 text-center font-bold text-emerald-700">
+          <td class="py-3 px-4 text-center font-bold text-emerald-700 font-mono">
             <span class="${isPaidKey ? 'line-through opacity-60' : ''}">${completed}</span>
           </td>
 
           <!-- Today Done -->
-          <td class="py-3 px-4 text-center font-semibold text-sky-700">
+          <td class="py-3 px-4 text-center font-semibold text-sky-700 font-mono">
             ${todayDone}
           </td>
 
@@ -803,16 +860,27 @@
           <!-- Status -->
           <td class="py-3 px-4 text-center">
             ${isPaidKey ? `
-              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
-                <span>✓</span> Paid
+              <span class="inline-flex items-center gap-1 text-[11px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full font-mono">
+                <span>✓</span> ${paidCount}/${completed} Settled
+              </span>
+            ` : (paidCount > 0 ? `
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-800 bg-sky-100 border border-sky-300 px-2 py-0.5 rounded-full font-mono" title="${leftover} leftover orders to settle">
+                <span>⚡</span> ${paidCount}/${completed} (${leftover} left)
               </span>
             ` : (completed > 0 ? `
-              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
-                <span>⏳</span> Unpaid
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full font-mono">
+                <span>⏳</span> 0/${completed} Unpaid
               </span>
             ` : `
-              <span class="text-[11px] text-slate-400 font-medium">—</span>
-            `)}
+              <span class="text-[11px] text-slate-400 font-mono font-medium">0/0</span>
+            `))}
+            ${hasPendingReq ? `
+              <div class="mt-1">
+                <span class="inline-flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-50 border border-amber-300 px-1.5 py-0.5 rounded animate-pulse">
+                  <span>🔔</span> Req: ${requested > 0 ? requested : leftover}
+                </span>
+              </div>
+            ` : ''}
           </td>
 
           <!-- Actions -->
@@ -2349,6 +2417,309 @@
     render();
     closeSetTgModal();
     showToast(`Attached ${tg} to ${guy.displayName}!`, 'success');
+  };
+
+  // ==========================================
+  // GUY PROFILE PAYOUT & WITHDRAWAL MODAL
+  // ==========================================
+  window.openGuyProfileModal = function(guyId) {
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    window.__currentProfileGuyId = guyId;
+
+    const modal = document.getElementById('guy-profile-modal');
+    if (!modal) return;
+
+    const avatar = document.getElementById('profile-modal-avatar');
+    const nameEl = document.getElementById('profile-modal-name');
+    const tgEl = document.getElementById('profile-modal-tg');
+    const keysBadge = document.getElementById('profile-modal-keys-badge');
+
+    if (avatar) avatar.textContent = (guy.displayName || 'W')[0].toUpperCase();
+    if (nameEl) nameEl.textContent = guy.displayName;
+    if (tgEl) {
+      if (guy.telegramUsername) {
+        tgEl.innerHTML = `<a href="https://t.me/${guy.telegramUsername.replace('@', '')}" target="_blank" class="hover:underline">${escapeHtml(guy.telegramUsername)}</a>`;
+      } else {
+        tgEl.innerHTML = `<span class="text-slate-400 font-normal italic">No @handle</span>`;
+      }
+    }
+    if (keysBadge) {
+      keysBadge.textContent = `${guy.keys.length} ${guy.keys.length === 1 ? 'Key' : 'Keys'}`;
+    }
+
+    // Settlement Progress (X/Y Fraction)
+    const fracEl = document.getElementById('profile-settled-fraction');
+    const badgeEl = document.getElementById('profile-settled-badge');
+    const detailEl = document.getElementById('profile-settled-detail');
+    const leftoverBig = document.getElementById('profile-leftover-big');
+
+    if (fracEl) fracEl.textContent = `${guy.paidCount}/${guy.completedOrders}`;
+    if (leftoverBig) leftoverBig.textContent = `${guy.leftover}`;
+    if (detailEl) {
+      detailEl.textContent = `${guy.completedOrders} completed • ${guy.paidCount} settled • ${guy.leftover} leftover`;
+    }
+
+    if (badgeEl) {
+      if (guy.isSettled) {
+        badgeEl.className = 'text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900 border border-emerald-300';
+        badgeEl.textContent = 'SETTLED ✓';
+      } else if (guy.paidCount > 0 && guy.leftover > 0) {
+        badgeEl.className = 'text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-sky-200 text-sky-900 border border-sky-300';
+        badgeEl.textContent = `PARTIAL (${guy.leftover} left)`;
+      } else if (guy.completedOrders > 0) {
+        badgeEl.className = 'text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300';
+        badgeEl.textContent = 'UNPAID';
+      } else {
+        badgeEl.className = 'text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-600';
+        badgeEl.textContent = 'NO ORDERS';
+      }
+    }
+
+    // Pending Withdrawal Request Alert Box
+    const reqBox = document.getElementById('profile-payout-request-box');
+    const reqOrdersVal = document.getElementById('profile-requested-orders-val');
+    const reqTime = document.getElementById('profile-requested-time');
+
+    if (reqBox) {
+      if (guy.hasPendingPayoutRequest) {
+        reqBox.classList.remove('hidden');
+        if (reqOrdersVal) reqOrdersVal.textContent = `${guy.requestedOrders} orders`;
+        if (reqTime) {
+          const pendingKey = guy.keys.find(k => k.payoutRequestStatus === 'pending');
+          reqTime.textContent = pendingKey?.payoutRequestedAt
+            ? new Date(pendingKey.payoutRequestedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : 'Pending';
+        }
+      } else {
+        reqBox.classList.add('hidden');
+      }
+    }
+
+    // Payment Form Inputs
+    const payOrdersInput = document.getElementById('profile-pay-orders-input');
+    const payNoteInput = document.getElementById('profile-pay-note-input');
+    const markAllCheck = document.getElementById('profile-mark-all-check');
+    const leftoverMarkText = document.getElementById('profile-leftover-mark-text');
+
+    if (leftoverMarkText) leftoverMarkText.textContent = `${guy.leftover}`;
+
+    if (payOrdersInput) {
+      if (guy.hasPendingPayoutRequest && guy.requestedOrders > 0) {
+        payOrdersInput.value = guy.requestedOrders;
+      } else if (guy.leftover > 0) {
+        payOrdersInput.value = guy.leftover;
+      } else {
+        payOrdersInput.value = '';
+      }
+      payOrdersInput.max = guy.leftover;
+    }
+
+    if (payNoteInput) {
+      payNoteInput.value = '';
+    }
+
+    if (markAllCheck) {
+      markAllCheck.checked = Boolean(guy.leftover > 0 && (!guy.requestedOrders || guy.requestedOrders >= guy.leftover));
+    }
+
+    // Payment History Log
+    const historyList = document.getElementById('profile-payment-history-list');
+    const paymentCount = document.getElementById('profile-payment-count');
+    const history = guy.paymentHistory || [];
+
+    if (paymentCount) paymentCount.textContent = `${history.length} record${history.length === 1 ? '' : 's'}`;
+
+    if (historyList) {
+      if (history.length === 0) {
+        historyList.innerHTML = `
+          <div class="text-xs text-slate-400 p-4 bg-slate-50 rounded-xl text-center border border-dashed border-slate-200">
+            No payments or settlements recorded for this worker yet.
+          </div>
+        `;
+      } else {
+        historyList.innerHTML = history.map(h => {
+          const dateStr = h.date ? new Date(h.date).toLocaleString('en-IN', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }) : 'Recently';
+
+          return `
+            <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-2xs hover:border-emerald-300 transition">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-emerald-600 font-bold text-xs">✓</span>
+                  <span class="font-extrabold text-xs text-slate-900">+${h.ordersPaid || 0} orders settled</span>
+                  ${(h.paidCountAfter !== undefined && h.totalCompleted !== undefined) ? `
+                    <span class="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                      ${h.paidCountAfter}/${h.totalCompleted}
+                    </span>
+                  ` : ''}
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">${dateStr}</span>
+              </div>
+              ${h.note ? `
+                <div class="text-xs text-slate-600 mt-1 pl-4 border-l-2 border-slate-200 italic">
+                  "${escapeHtml(h.note)}"
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    modal.classList.remove('hidden');
+  };
+
+  window.closeGuyProfileModal = function() {
+    const modal = document.getElementById('guy-profile-modal');
+    if (modal) modal.classList.add('hidden');
+    window.__currentProfileGuyId = null;
+  };
+
+  window.toggleProfileMarkAll = function(isChecked) {
+    const guyId = window.__currentProfileGuyId;
+    if (!guyId) return;
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    const ordersInput = document.getElementById('profile-pay-orders-input');
+    if (!ordersInput) return;
+
+    if (isChecked) {
+      ordersInput.value = guy.leftover > 0 ? guy.leftover : '';
+    } else {
+      if (Number(ordersInput.value) === guy.leftover) {
+        ordersInput.value = '';
+      }
+    }
+  };
+
+  window.submitRecordProfilePayment = async function() {
+    const guyId = window.__currentProfileGuyId;
+    if (!guyId) return;
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    const ordersInput = document.getElementById('profile-pay-orders-input');
+    const noteInput = document.getElementById('profile-pay-note-input');
+    const markAllCheck = document.getElementById('profile-mark-all-check');
+    const btn = document.getElementById('btn-submit-record-payment');
+
+    const markAllSettled = markAllCheck ? markAllCheck.checked : false;
+    let ordersCount = ordersInput ? Number(ordersInput.value) : 0;
+    const note = (noteInput ? noteInput.value : '').trim();
+
+    if (!markAllSettled && (!ordersCount || ordersCount <= 0)) {
+      showToast('Please specify the number of orders settled or check "Mark all leftover orders as fully paid"', 'warning');
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span style="display:inline-block;animation:spin 1s linear infinite">↻</span> Saving...`;
+    }
+
+    // Find the worker key to record payment on (prefer pending request or primary key)
+    const primaryWorker = guy.keys.find(k => k.payoutRequestStatus === 'pending') || guy.keys[0];
+    if (!primaryWorker) {
+      showToast('No worker key found for this guy', 'danger');
+      if (btn) { btn.disabled = false; btn.innerHTML = `<span>💾</span> Save Payment & Notify Worker via Telegram`; }
+      return;
+    }
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/${primaryWorker.id}/record-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ordersCount: ordersCount,
+            note: note,
+            markAllSettled: markAllSettled
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          await fetchServerState();
+          openGuyProfileModal(guyId);
+          showToast(`✓ Settled ${data.ordersPaid !== undefined ? data.ordersPaid : ordersCount} orders for ${guy.displayName}! Telegram notification sent.`, 'success');
+          return;
+        } else {
+          showToast(data.error || 'Failed to record payment', 'danger');
+        }
+      } catch (e) {
+        console.error('Error recording payment:', e);
+        showToast('Error recording payment', 'danger');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span>💾</span> Save Payment & Notify Worker via Telegram`;
+        }
+      }
+    }
+
+    // Local fallback
+    const targetKey = state.workers.find(w => w.key === primaryWorker.key);
+    if (targetKey) {
+      const completed = Number(targetKey.completedOrders) || 0;
+      const currentPaid = Number(targetKey.paidCount) || 0;
+      let settled = ordersCount;
+      if (markAllSettled || settled >= (completed - currentPaid)) {
+        settled = Math.max(0, completed - currentPaid);
+        targetKey.paidCount = completed;
+      } else {
+        targetKey.paidCount = Math.min(completed, currentPaid + settled);
+      }
+      targetKey.paymentStatus = (targetKey.paidCount >= completed && completed > 0) ? 'paid' : 'unpaid';
+      targetKey.payoutRequestStatus = 'approved';
+      targetKey.payoutRequestedOrders = 0;
+
+      if (!Array.isArray(targetKey.paymentHistory)) targetKey.paymentHistory = [];
+      targetKey.paymentHistory.unshift({
+        id: `pay-${Date.now()}`,
+        date: new Date().toISOString(),
+        ordersPaid: settled,
+        note: note || 'Settled by administrator',
+        paidCountAfter: targetKey.paidCount,
+        totalCompleted: completed
+      });
+    }
+
+    saveToLocalStorage();
+    render();
+    openGuyProfileModal(guyId);
+    showToast(`✓ Settled orders for ${guy.displayName}!`, 'success');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>💾</span> Save Payment & Notify Worker via Telegram`;
+    }
+  };
+
+  window.submitApproveProfileRequest = async function() {
+    const guyId = window.__currentProfileGuyId;
+    if (!guyId) return;
+    await approveGuyPayout(guyId);
+    openGuyProfileModal(guyId);
+  };
+
+  window.openProfileMsgModal = function() {
+    const guyId = window.__currentProfileGuyId;
+    if (!guyId) return;
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    closeGuyProfileModal();
+    const primaryKey = guy.keys[0];
+    openSendMsgModal(primaryKey?.id || '', guy.displayName, guy.telegramUsername || '');
   };
 
   // Search input and global drag event listeners

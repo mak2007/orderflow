@@ -135,9 +135,28 @@
       "paymentStatus": "unpaid",
       "paidCount": 0,
       "lastPaidAt": null,
-      "payoutRequestStatus": "approved",
+      "payoutRequestStatus": null,
       "payoutRequestedAmount": 0,
-      "paidAmount": 0
+      "paidAmount": 0,
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789934842201-560",
+          "date": "2026-09-20T20:07:22.201Z",
+          "ordersPaid": 1,
+          "note": "Cleared leftover order via cash",
+          "paidCountAfter": 3,
+          "totalCompleted": 3
+        },
+        {
+          "id": "pay-1789934838120-159",
+          "date": "2026-09-20T20:07:18.120Z",
+          "ordersPaid": 2,
+          "note": "Paid 2 orders UPI ref 998811",
+          "paidCountAfter": 2,
+          "totalCompleted": 3
+        }
+      ]
     },
     {
       "id": "w-masi-5",
