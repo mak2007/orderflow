@@ -1,19 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/state.js", "use": "@vercel/node" },
-    { "src": "api/index.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "app.js", "use": "@vercel/static" },
-    { "src": "styles.css", "use": "@vercel/static" },
-    { "src": "orderflow-standalone.html", "use": "@vercel/static" },
-    { "src": "data/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/state", "dest": "/api/state.js" },
-    { "src": "/api/(.*)", "dest": "/api/index.js" },
-    { "src": "/data/(.*)", "dest": "/data/$1" },
-    { "src": "/(.*\\.(js|css|html|json|png|ico|svg))", "dest": "/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/state", "destination": "/api/state.js" },
+    { "source": "/api/(.*)", "destination": "/api/index.js" }
   ]
 }
