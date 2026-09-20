@@ -171,10 +171,19 @@ class TelegramBotEngine {
       await this.handleStats(chatId, from);
     } else if (command === '/pay' || command === '/balance') {
       await this.handleBalance(chatId, from);
+    } else if (command === '/bill' || command === '/invoice') {
+      await this.handleBill(chatId, from, args[0]);
+    } else if (command === '/refresh') {
+      await this.handleRefreshAndBill(chatId, from);
     } else if (command === '/help') {
       await this.handleHelp(chatId);
+    } else if (!text.startsWith('/')) {
+      // Worker just types their key directly (no command needed)
+      const possibleKey = text.trim().toUpperCase();
+      if (possibleKey.startsWith('WORKER-') || possibleKey.startsWith('KEY-')) {
+        await this.handleBill(chatId, from, text.trim());
+      }
     } else {
-      // Unknown command
       if (text.startsWith('/')) {
         await this.sendMessage(chatId, `❓ Unknown command: \`${command}\`\nSend /help to see all available commands.`);
       }
@@ -184,14 +193,22 @@ class TelegramBotEngine {
   // Command: /start
   async handleStart(chatId, from) {
     const welcomeText = `
-👋 *Welcome to OrderFlow & Inventory Bot!*
+👋 *Welcome to the Worker Bill Bot!*
 
-To link your Telegram account to your worker profile, send:
-👉 \`/link YOUR_KEY\`
+🧾 *Get your bill instantly — just send your key:*
 
-_Example: \`/link KEY-ALEX-9921\`_
+Just paste your worker key like this:
+\`WORKER-XXXX-XXXX-XXXX-XXXX\`
 
-Once linked, you can submit orders directly from here, track your fulfillment success rate, and view your calculated payouts!
+Or use commands:
+• \`/bill YOUR_KEY\` — Generate your bill instantly
+• \`/refresh\` — Re-fetch live stats & update your bill
+• \`/link YOUR_KEY\` — Save your key (so you don't type it each time)
+• \`/stats\` — View full performance breakdown
+• \`/balance\` — Check unpaid earnings
+• \`/help\` — All commands
+
+_Worker stats are pulled live from masi.cc.cd_ 🔄
 `;
     await this.sendMessage(chatId, welcomeText);
   }
@@ -490,17 +507,211 @@ _Payments are recorded and verified by your administrator._
   // Command: /help
   async handleHelp(chatId) {
     const helpMsg = `
-🤖 *OrderFlow Bot Commands:*
+🤖 *Worker Bill Bot — Commands:*
 
-• \`/start\` — Welcome message & setup instructions
-• \`/link YOUR_KEY\` — Connect your worker key to this Telegram account
-• \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit new order
-• \`/stats\` — View your orders count, success rate & earnings
-• \`/balance\` — Check unpaid payout balance
-• \`/help\` — Show this help message
+🧾 *Billing:*
+• Just paste your key → instant bill
+• \`/bill YOUR_KEY\` — Generate bill for any key
+• \`/refresh\` — Pull latest live stats & regenerate bill
+
+🔗 *Account:*
+• \`/link YOUR_KEY\` — Save your key to this account
+• \`/stats\` — Full performance breakdown
+• \`/balance\` — Unpaid earnings balance
+
+📦 *Orders:*
+• \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit order
+
+• \`/help\` — Show this message
 `;
     await this.sendMessage(chatId, helpMsg);
   }
+
+  // ── BILL GENERATION ──────────────────────────────────────────────────────
+
+  // Build the bill text from a worker record (uses masi live data if present)
+  buildBillText(worker, db) {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+    const rate = Number(worker.rate) || Number(db.settings && db.settings.defaultRate) || 15;
+    const completed = Number(worker.completedOrders) || 0;
+    const failed = Number(worker.failCount) || 0;
+    const total = completed + failed;
+    const successRate = total > 0 ? ((completed / total) * 100).toFixed(1) : (Number(worker.successRate) || 0).toFixed(1);
+    const d7Done = Number(worker.d7Done) || 0;
+    const d7Fail = Number(worker.d7Fail) || 0;
+    const d7Rate = Number(worker.d7Rate) || (d7Done + d7Fail > 0 ? ((d7Done / (d7Done + d7Fail)) * 100).toFixed(1) : 0);
+    const todayDone = Number(worker.todayDone) || 0;
+
+    const totalEarned = completed * rate;
+    const paidAmount = Number(worker.paidAmount) || 0;
+    const unpaid = Math.max(0, totalEarned - paidAmount);
+
+    // Performance badge
+    const rateNum = parseFloat(successRate);
+    let badge = '⚪ New';
+    if (rateNum >= 80) badge = '🏆 Top Performer';
+    else if (rateNum >= 60) badge = '🟢 Good';
+    else if (rateNum >= 40) badge = '🟡 Average';
+    else if (total > 0) badge = '🔴 Needs Improvement';
+
+    const paidStatus = unpaid <= 0 && totalEarned > 0 ? '✅ FULLY PAID' : (unpaid > 0 ? `🔴 ₹${unpaid.toFixed(2)} PENDING` : '—');
+
+    return `
+🧾 *WORKER PERFORMANCE BILL*
+━━━━━━━━━━━━━━━━━━━━━━━━
+📅 *Date:* ${dateStr} ${timeStr}
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 *Name:* ${worker.personName || worker.name}
+🔑 *Key:* \`${worker.key}\`
+⭐ *Status:* ${badge}
+📍 *Online:* ${worker.online ? '🟢 Yes' : '⚪ No'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+📦 *ALL-TIME PERFORMANCE:*
+• ✅ Completed: *${completed}*
+• ❌ Failed/Released: *${failed}*
+• 📊 Total Attempted: *${total}*
+• 🎯 Success Rate: *${successRate}%*
+
+📅 *LAST 7 DAYS:*
+• ✅ Done: *${d7Done}*
+• ❌ Fail: *${d7Fail}*
+• 🎯 Rate: *${typeof d7Rate === 'number' ? d7Rate.toFixed(1) : d7Rate}%*
+
+🌅 *TODAY:*
+• ✅ Completed: *${todayDone}*
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+💰 *EARNINGS BILL:*
+• 💵 Rate per Order: *$${rate.toFixed(2)}*
+• 📦 Orders Completed: *${completed}*
+• 💴 Total Earned: *$${totalEarned.toFixed(2)}*
+• 🟢 Already Paid: *$${paidAmount.toFixed(2)}*
+• ${paidStatus}
+━━━━━━━━━━━━━━━━━━━━━━━━
+_Live data from masi.cc.cd_ 🔄
+`;
+  }
+
+  // Command: /bill [KEY] — generate bill for a key (or linked account)
+  async handleBill(chatId, from, rawKey) {
+    const db = this.dbManager.getDb();
+    let worker = null;
+
+    if (rawKey) {
+      // Look up by provided key
+      const key = rawKey.trim();
+      worker = db.workers.find(w => w.key && w.key.toUpperCase() === key.toUpperCase());
+      if (!worker) {
+        await this.sendMessage(chatId, `❌ *Key not found:* \`${key}\`\n\nMake sure you paste the full key exactly.\n_Example: \`WORKER-XXXX-XXXX-XXXX-XXXX\`_`);
+        return;
+      }
+    } else {
+      // Use linked account
+      const workers = this.findWorkersForUser(chatId, from);
+      if (!workers || workers.length === 0) {
+        await this.sendMessage(chatId, `⚠️ *No key linked!*\n\nSend your key directly:\n\`WORKER-XXXX-XXXX-XXXX-XXXX\`\n\nOr link it: \`/link YOUR_KEY\``);
+        return;
+      }
+      worker = workers[0];
+    }
+
+    // Send "fetching" notification
+    await this.sendMessage(chatId, `⏳ Fetching live data for *${worker.name}*...`);
+
+    // Try to refresh from masi live
+    try {
+      const { callMasiApi } = require('./sync-masi');
+      const bossKey = db.settings && db.settings.bossKey;
+      if (bossKey) {
+        // Find this specific worker from masi team
+        const teamData = await callMasiApi('api/worker/team', bossKey, {});
+        const teamList = teamData.team || [];
+        const liveWorker = teamList.find(w =>
+          (w.access_key && w.access_key.toUpperCase() === worker.key.toUpperCase()) ||
+          (w.name && w.name.toLowerCase() === worker.name.toLowerCase())
+        );
+        if (liveWorker) {
+          const d7 = (liveWorker.recent && liveWorker.recent.d7) || {};
+          worker.completedOrders = Number(liveWorker.completed_count || 0);
+          worker.failCount = Number(liveWorker.release_count || 0) + Number(liveWorker.expired_count || 0) + Number(liveWorker.not_landed_count || 0);
+          worker.successRate = liveWorker.success_rate !== undefined ? Number(liveWorker.success_rate) : (d7.rate !== undefined ? Number(d7.rate) : 0);
+          worker.d7Done = Number(d7.ok || 0);
+          worker.d7Fail = Number(d7.fail || 0);
+          worker.d7Rate = Number(d7.rate || 0);
+          worker.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
+          worker.online = Boolean(liveWorker.online);
+          worker.lastSyncedAt = new Date().toISOString();
+          this.dbManager.saveDb();
+        }
+      }
+    } catch (e) {
+      // Non-fatal — use cached data
+      console.warn('[Bill] Could not fetch live masi data:', e.message);
+    }
+
+    const billText = this.buildBillText(worker, db);
+    await this.sendMessage(chatId, billText);
+  }
+
+  // Command: /refresh — refresh live stats for linked account then show bill
+  async handleRefreshAndBill(chatId, from) {
+    const db = this.dbManager.getDb();
+    const workers = this.findWorkersForUser(chatId, from);
+
+    if (!workers || workers.length === 0) {
+      await this.sendMessage(chatId, `⚠️ *No key linked!*\n\nSend your key: \`WORKER-XXXX-XXXX-XXXX-XXXX\`\nOr: \`/link YOUR_KEY\``);
+      return;
+    }
+
+    await this.sendMessage(chatId, `🔄 *Refreshing live data from masi.cc.cd...*`);
+
+    const bossKey = db.settings && db.settings.bossKey;
+    let refreshed = 0;
+
+    if (bossKey) {
+      try {
+        const { callMasiApi } = require('./sync-masi');
+        const teamData = await callMasiApi('api/worker/team', bossKey, {});
+        const teamList = teamData.team || [];
+
+        for (const w of workers) {
+          const liveWorker = teamList.find(lw =>
+            (lw.access_key && lw.access_key.toUpperCase() === w.key.toUpperCase()) ||
+            (lw.name && lw.name.toLowerCase() === w.name.toLowerCase())
+          );
+          if (liveWorker) {
+            const d7 = (liveWorker.recent && liveWorker.recent.d7) || {};
+            w.completedOrders = Number(liveWorker.completed_count || 0);
+            w.failCount = Number(liveWorker.release_count || 0) + Number(liveWorker.expired_count || 0) + Number(liveWorker.not_landed_count || 0);
+            w.successRate = liveWorker.success_rate !== undefined ? Number(liveWorker.success_rate) : 0;
+            w.d7Done = Number(d7.ok || 0);
+            w.d7Fail = Number(d7.fail || 0);
+            w.d7Rate = Number(d7.rate || 0);
+            w.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
+            w.online = Boolean(liveWorker.online);
+            w.lastSyncedAt = new Date().toISOString();
+            refreshed++;
+          }
+        }
+        this.dbManager.saveDb();
+      } catch (e) {
+        await this.sendMessage(chatId, `⚠️ Could not reach masi.cc.cd — showing cached data.`);
+      }
+    } else {
+      await this.sendMessage(chatId, `⚠️ No Boss Key set on server. Showing cached data.`);
+    }
+
+    // Show bill for primary worker
+    const billText = this.buildBillText(workers[0], db);
+    await this.sendMessage(chatId, billText);
+  }
+
+  // ── END BILL SECTION ────────────────────────────────────────────────────
 
   // Send Automated Payout Notification when Admin marks as Paid
   async sendPayoutNotification(workerKey, amount, ordersCount) {
