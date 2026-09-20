@@ -3,7 +3,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const TelegramBotEngine = require('./telegram-bot');
-const { extractMasiData } = require('./sync-masi');
+const { extractMasiData, extractMasi24hData } = require('./sync-masi');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
@@ -705,6 +705,28 @@ Thank you for your work!
             overview: masiData.overview,
             workers: masiData.workers,
             ordersCount: masiData.orders.length
+          });
+        } catch (err) {
+          return sendJson(res, 400, { success: false, error: err.message });
+        }
+      }
+
+      // GET /api/masi/24h or POST /api/masi/extract-24h (Extract ONLY the last 24 hours of data)
+      if ((req.method === 'GET' && parsedUrl.startsWith('/api/masi/24h')) || (req.method === 'POST' && parsedUrl === '/api/masi/extract-24h')) {
+        let bossKey = (db.settings && db.settings.bossKey) || 'WORKER-B030-0827-9A88-4A04';
+        let range = '24h';
+
+        if (req.method === 'POST') {
+          const body = await parseJsonBody(req);
+          if (body.bossKey) bossKey = body.bossKey;
+          if (body.range) range = body.range;
+        }
+
+        try {
+          const data24h = await extractMasi24hData(bossKey, range);
+          return sendJson(res, 200, {
+            success: true,
+            ...data24h
           });
         } catch (err) {
           return sendJson(res, 400, { success: false, error: err.message });

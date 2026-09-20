@@ -228,9 +228,12 @@
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "personName": "Alam",
       "updatedAt": "2026-09-19T22:01:54.911Z",
-      "paidAmount": 390,
-      "paidCount": 26,
-      "lastPaidAt": "2026-09-20T01:48:51.275Z"
+      "paidAmount": 0,
+      "paidCount": 0,
+      "lastPaidAt": null,
+      "paymentStatus": "unpaid",
+      "payoutRequestStatus": null,
+      "payoutRequestedOrders": 0
     },
     {
       "id": "w-masi-9",
@@ -254,9 +257,12 @@
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "personName": "Alam",
       "updatedAt": "2026-09-19T22:01:54.912Z",
-      "paidAmount": 225,
-      "paidCount": 15,
-      "lastPaidAt": "2026-09-20T01:48:51.278Z"
+      "paidAmount": 0,
+      "paidCount": 0,
+      "lastPaidAt": null,
+      "paymentStatus": "unpaid",
+      "payoutRequestStatus": null,
+      "payoutRequestedOrders": 0
     },
     {
       "id": "w-masi-10",
@@ -543,7 +549,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.910Z"
+      "updatedAt": "2026-09-20T20:35:03.910Z",
+      "paymentStatus": "paid",
+      "paidCount": 1,
+      "lastPaidAt": "2026-09-20T20:37:26.839Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646839-759",
+          "date": "2026-09-20T20:37:26.839Z",
+          "ordersPaid": 1,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 1,
+          "totalCompleted": 1
+        }
+      ]
     },
     {
       "id": "w-masi-23",
@@ -566,7 +587,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.910Z"
+      "updatedAt": "2026-09-20T20:35:03.910Z",
+      "paymentStatus": "paid",
+      "paidCount": 4,
+      "lastPaidAt": "2026-09-20T20:37:26.856Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646856-548",
+          "date": "2026-09-20T20:37:26.856Z",
+          "ordersPaid": 4,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 4,
+          "totalCompleted": 4
+        }
+      ]
     },
     {
       "id": "w-masi-24",
@@ -589,7 +625,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "paidCount": 3,
+      "lastPaidAt": "2026-09-20T20:37:26.861Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646861-836",
+          "date": "2026-09-20T20:37:26.861Z",
+          "ordersPaid": 3,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 3,
+          "totalCompleted": 3
+        }
+      ]
     },
     {
       "id": "w-masi-25",
@@ -696,7 +747,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "paidCount": 1,
+      "lastPaidAt": "2026-09-20T20:37:26.869Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646869-537",
+          "date": "2026-09-20T20:37:26.869Z",
+          "ordersPaid": 1,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 1,
+          "totalCompleted": 1
+        }
+      ]
     },
     {
       "id": "w-masi-30",
@@ -1409,7 +1475,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "updatedAt": "2026-09-20T20:35:03.911Z",
+      "paymentStatus": "paid",
+      "paidCount": 2,
+      "lastPaidAt": "2026-09-20T20:37:26.875Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646875-294",
+          "date": "2026-09-20T20:37:26.875Z",
+          "ordersPaid": 2,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 2,
+          "totalCompleted": 2
+        }
+      ]
     },
     {
       "id": "w-masi-64",
@@ -1453,7 +1534,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "paidCount": 7,
+      "lastPaidAt": "2026-09-20T20:37:26.880Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646880-794",
+          "date": "2026-09-20T20:37:26.880Z",
+          "ordersPaid": 7,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 7,
+          "totalCompleted": 7
+        }
+      ]
     },
     {
       "id": "w-masi-66",
@@ -1476,7 +1572,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "updatedAt": "2026-09-20T20:35:03.911Z",
+      "paymentStatus": "paid",
+      "paidCount": 4,
+      "lastPaidAt": "2026-09-20T20:37:26.888Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646888-710",
+          "date": "2026-09-20T20:37:26.888Z",
+          "ordersPaid": 4,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 4,
+          "totalCompleted": 4
+        }
+      ]
     },
     {
       "id": "w-masi-67",
@@ -1520,7 +1631,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "paidCount": 1,
+      "lastPaidAt": "2026-09-20T20:37:26.893Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646893-176",
+          "date": "2026-09-20T20:37:26.893Z",
+          "ordersPaid": 1,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 1,
+          "totalCompleted": 1
+        }
+      ]
     },
     {
       "id": "w-masi-69",
@@ -1542,7 +1668,22 @@
       "source": "masi",
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
-      "personName": "Lokesh"
+      "personName": "Lokesh",
+      "paymentStatus": "paid",
+      "paidCount": 0,
+      "lastPaidAt": "2026-09-20T20:37:26.900Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646900-771",
+          "date": "2026-09-20T20:37:26.900Z",
+          "ordersPaid": 0,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 0,
+          "totalCompleted": 0
+        }
+      ]
     },
     {
       "id": "w-masi-70",
@@ -1566,8 +1707,21 @@
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "paidAmount": 15,
       "paidCount": 1,
-      "lastPaidAt": "2026-09-20T01:50:39.289Z",
-      "personName": "Lokesh"
+      "lastPaidAt": "2026-09-20T20:37:26.911Z",
+      "personName": "Lokesh",
+      "paymentStatus": "paid",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646911-751",
+          "date": "2026-09-20T20:37:26.911Z",
+          "ordersPaid": 1,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 1,
+          "totalCompleted": 1
+        }
+      ]
     },
     {
       "id": "w-masi-71",
@@ -1589,7 +1743,22 @@
       "source": "masi",
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
-      "personName": "Lokesh"
+      "personName": "Lokesh",
+      "paymentStatus": "paid",
+      "paidCount": 0,
+      "lastPaidAt": "2026-09-20T20:37:26.918Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646918-400",
+          "date": "2026-09-20T20:37:26.918Z",
+          "ordersPaid": 0,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 0,
+          "totalCompleted": 0
+        }
+      ]
     },
     {
       "id": "w-masi-72",
@@ -1636,7 +1805,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "paidCount": 13,
+      "lastPaidAt": "2026-09-20T20:37:26.923Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646923-192",
+          "date": "2026-09-20T20:37:26.923Z",
+          "ordersPaid": 13,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 13,
+          "totalCompleted": 13
+        }
+      ]
     },
     {
       "id": "w-masi-74",
@@ -1659,10 +1843,23 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "paidAmount": 60,
-      "paidCount": 4,
-      "lastPaidAt": "2026-09-20T01:50:32.650Z",
+      "paidCount": 5,
+      "lastPaidAt": "2026-09-20T20:37:26.928Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646928-646",
+          "date": "2026-09-20T20:37:26.928Z",
+          "ordersPaid": 1,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 5,
+          "totalCompleted": 5
+        }
+      ]
     },
     {
       "id": "w-masi-75",
@@ -2480,7 +2677,22 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.958Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.906Z"
+      "updatedAt": "2026-09-20T20:35:03.906Z",
+      "paymentStatus": "paid",
+      "paidCount": 4,
+      "lastPaidAt": "2026-09-20T20:37:26.936Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646936-741",
+          "date": "2026-09-20T20:37:26.936Z",
+          "ordersPaid": 4,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 4,
+          "totalCompleted": 4
+        }
+      ]
     },
     {
       "id": "w-masi-113",
@@ -2524,10 +2736,23 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.958Z",
       "paidAmount": 90,
-      "paidCount": 6,
-      "lastPaidAt": "2026-09-20T02:09:48.203Z",
+      "paidCount": 9,
+      "lastPaidAt": "2026-09-20T20:37:26.941Z",
       "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646941-446",
+          "date": "2026-09-20T20:37:26.941Z",
+          "ordersPaid": 3,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 9,
+          "totalCompleted": 9
+        }
+      ]
     },
     {
       "id": "w-masi-115",
@@ -2797,7 +3022,7 @@
       "personName": "Lokesh",
       "rate": 15,
       "completedOrders": 2,
-      "paidCount": 0,
+      "paidCount": 2,
       "paidAmount": 0,
       "failCount": 0,
       "successRate": 0,
@@ -2807,7 +3032,21 @@
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-20T20:35:03.910Z",
-      "updatedAt": "2026-09-20T20:35:03.910Z"
+      "updatedAt": "2026-09-20T20:35:03.910Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.946Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646946-785",
+          "date": "2026-09-20T20:37:26.946Z",
+          "ordersPaid": 2,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 2,
+          "totalCompleted": 2
+        }
+      ]
     },
     {
       "id": "w-lokesh-1789936503911-328",
@@ -2826,7 +3065,21 @@
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-20T20:35:03.911Z",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "updatedAt": "2026-09-20T20:35:03.911Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.953Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646953-614",
+          "date": "2026-09-20T20:37:26.953Z",
+          "ordersPaid": 0,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 0,
+          "totalCompleted": 0
+        }
+      ]
     },
     {
       "id": "w-lokesh-1789936503911-494",
@@ -2835,7 +3088,7 @@
       "personName": "Lokesh",
       "rate": 15,
       "completedOrders": 4,
-      "paidCount": 0,
+      "paidCount": 4,
       "paidAmount": 0,
       "failCount": 0,
       "successRate": 0,
@@ -2845,7 +3098,21 @@
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-20T20:35:03.911Z",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "updatedAt": "2026-09-20T20:35:03.911Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.958Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646958-445",
+          "date": "2026-09-20T20:37:26.958Z",
+          "ordersPaid": 4,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 4,
+          "totalCompleted": 4
+        }
+      ]
     },
     {
       "id": "w-lokesh-1789936503911-60",
@@ -2864,7 +3131,21 @@
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-20T20:35:03.911Z",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "updatedAt": "2026-09-20T20:35:03.911Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.962Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646962-160",
+          "date": "2026-09-20T20:37:26.962Z",
+          "ordersPaid": 0,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 0,
+          "totalCompleted": 0
+        }
+      ]
     },
     {
       "id": "w-lokesh-1789936503911-103",
@@ -2883,7 +3164,21 @@
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-20T20:35:03.911Z",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "updatedAt": "2026-09-20T20:35:03.911Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.969Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646969-109",
+          "date": "2026-09-20T20:37:26.969Z",
+          "ordersPaid": 0,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 0,
+          "totalCompleted": 0
+        }
+      ]
     },
     {
       "id": "w-lokesh-1789936503911-76",
@@ -2902,7 +3197,21 @@
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-20T20:35:03.911Z",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "updatedAt": "2026-09-20T20:35:03.911Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.974Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646974-237",
+          "date": "2026-09-20T20:37:26.974Z",
+          "ordersPaid": 0,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 0,
+          "totalCompleted": 0
+        }
+      ]
     },
     {
       "id": "w-lokesh-1789936503912-604",
@@ -2911,7 +3220,7 @@
       "personName": "Lokesh",
       "rate": 15,
       "completedOrders": 1,
-      "paidCount": 0,
+      "paidCount": 1,
       "paidAmount": 0,
       "failCount": 0,
       "successRate": 0,
@@ -2921,7 +3230,21 @@
       "status": "active",
       "source": "custom",
       "createdAt": "2026-09-20T20:35:03.912Z",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.977Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646977-765",
+          "date": "2026-09-20T20:37:26.977Z",
+          "ordersPaid": 1,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 1,
+          "totalCompleted": 1
+        }
+      ]
     },
     {
       "id": "w-lokesh-1789936503912-771",
@@ -2930,7 +3253,7 @@
       "personName": "Lokesh",
       "rate": 15,
       "completedOrders": 1,
-      "paidCount": 0,
+      "paidCount": 1,
       "paidAmount": 0,
       "failCount": 0,
       "successRate": 0,
@@ -2940,7 +3263,21 @@
       "status": "active",
       "source": "custom",
       "createdAt": "2026-09-20T20:35:03.912Z",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "updatedAt": "2026-09-20T20:35:03.912Z",
+      "paymentStatus": "paid",
+      "lastPaidAt": "2026-09-20T20:37:26.983Z",
+      "payoutRequestStatus": "approved",
+      "payoutRequestedOrders": 0,
+      "paymentHistory": [
+        {
+          "id": "pay-1789936646983-348",
+          "date": "2026-09-20T20:37:26.983Z",
+          "ordersPaid": 1,
+          "note": "Marked full settlement (20/20)",
+          "paidCountAfter": 1,
+          "totalCompleted": 1
+        }
+      ]
     }
   ],
   "orders": [
