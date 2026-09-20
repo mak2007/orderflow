@@ -46,8 +46,14 @@
 
         <!-- Bot Status & Top Action Buttons -->
         <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Quick TG Connect Button -->
+          <button onclick="openQuickTgModal()" title="Quick Connect to Telegram" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 rounded-lg shadow-sm transition transform active:scale-95">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-2.02 1.28-5.7 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.89.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.21-.04.38z"/></svg>
+            <span>Quick TG Connect</span>
+          </button>
+
           <!-- Live Telegram Bot Status Pill -->
-          <button onclick="openBotConfigModal()" id="bot-status-pill" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+          <button onclick="openBotConfigModal()" id="bot-status-pill" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
             <span class="w-2 h-2 rounded-full bg-slate-400"></span>
             <span id="bot-status-text">Bot Offline</span>
           </button>
@@ -203,6 +209,94 @@
   </main>
 
 
+
+  <!-- Quick Telegram Connect Modal -->
+  <div id="quick-tg-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-in">
+      <div class="p-5 bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-extrabold flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-2.02 1.28-5.7 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.89.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.21-.04.38z"/></svg>
+            Quick Telegram Connect
+          </h3>
+          <p class="text-xs text-sky-100 mt-0.5">Link worker keys, assign @usernames & connect the Telegram bot</p>
+        </div>
+        <button onclick="closeQuickTgModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <!-- Quick TG Tabs -->
+      <div class="px-6 pt-3 flex items-center gap-4 border-b border-slate-200 bg-slate-50 text-xs font-bold">
+        <button onclick="switchQuickTgTab('worker')" id="btn-quick-tg-worker" class="pb-2.5 border-b-2 border-sky-600 text-sky-700 transition">
+          🔗 Link Worker / Key
+        </button>
+        <button onclick="switchQuickTgTab('bot')" id="btn-quick-tg-bot" class="pb-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition">
+          🤖 Connect Bot Token
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <!-- TAB 1: Link Worker -->
+        <div id="quick-tg-panel-worker" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Select Worker / Key *</label>
+            <input type="text" id="quick-tg-key-input" list="quickTgWorkerList" placeholder="Type worker name or paste KEY..." oninput="onQuickTgKeySelected(this.value)" class="w-full text-xs font-mono px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <datalist id="quickTgWorkerList"></datalist>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Telegram Username *</label>
+              <input type="text" id="quick-tg-username" placeholder="@username" oninput="updateQuickTgInvitePreview()" class="w-full text-xs font-mono px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Guy / Team Name</label>
+              <input type="text" id="quick-tg-guy-name" placeholder="e.g. Alam" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Shareable 1-Click Link Preview -->
+          <div id="quick-tg-invite-card" class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-xs space-y-2">
+            <div class="font-bold text-sky-900 flex items-center justify-between">
+              <span>📲 1-Click Worker Invite Link:</span>
+              <button type="button" onclick="copyQuickTgInviteLink()" class="text-sky-600 hover:text-sky-800 font-bold underline">Copy Link</button>
+            </div>
+            <div id="quick-tg-invite-text" class="font-mono text-[11px] bg-white p-2 rounded border border-sky-200 text-slate-700 break-all select-all">
+              https://t.me/share/url?text=/link%20KEY
+            </div>
+            <p class="text-[11px] text-sky-700">Send this link to your worker on Telegram. When they click it, Telegram opens and connects their key instantly!</p>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between border-t border-slate-200">
+            <button type="button" onclick="closeQuickTgModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
+            <button type="button" onclick="saveQuickTgWorkerLink()" class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
+              <span>✓</span> Connect & Save Key
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 2: Connect Bot Token -->
+        <div id="quick-tg-panel-bot" class="space-y-4 hidden">
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+            <div class="font-bold text-slate-800">Quick Bot Setup (30 Seconds):</div>
+            <p class="text-slate-600 text-[11px]">1. Open Telegram, search <b>@BotFather</b> and type <code>/newbot</code>.<br>2. Copy the token you receive and paste it below:</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Bot HTTP API Token</label>
+            <input type="password" id="quick-tg-bot-token" placeholder="123456789:ABCdefGhIJKlmNoPQRstuv..." class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+
+          <div class="pt-2 flex items-center justify-between border-t border-slate-200">
+            <button type="button" onclick="closeQuickTgModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
+            <button type="button" onclick="saveQuickTgBotToken()" class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
+              <span>⚡</span> Connect Bot Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Telegram Bot Configuration Modal -->
   <div id="bot-config-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">

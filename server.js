@@ -96,7 +96,7 @@ function sendJson(res, statusCode, data) {
 }
 
 // Server handler
-const server = http.createServer(async (req, res) => {
+const requestHandler = async (req, res) => {
   // Handle CORS Preflight
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
@@ -466,7 +466,9 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': contentType });
     fs.createReadStream(filePath).pipe(res);
   });
-});
+};
+
+const server = http.createServer(requestHandler);
 
 if (require.main === module) {
   server.listen(PORT, () => {
@@ -477,4 +479,10 @@ if (require.main === module) {
   });
 }
 
-module.exports = server;
+module.exports = (req, res) => {
+  if (req && res) {
+    return requestHandler(req, res);
+  }
+  return server;
+};
+
