@@ -1385,16 +1385,17 @@
 
   window.extractFromMasi = async function() {
     const key = (document.getElementById('masi-boss-key').value || '').trim();
-    const btn = document.getElementById('btn-masi-extract');
+    const btn = document.getElementById('btn-masi-fetch');
     const syncBtn = document.getElementById('btn-masi-sync');
-    const statsContainer = document.getElementById('masi-stats');
+    const previewDiv = document.getElementById('masi-extract-preview');
     if (!key) {
       showToast('Please enter a Boss Key', 'warning');
       return;
     }
 
     btn.disabled = true;
-    btn.innerHTML = `<span class="animate-spin inline-block mr-1">↻</span> Extracting from masi.cc.cd...`;
+    btn.innerHTML = `<span style="display:inline-block;animation:spin 1s linear infinite">↻</span> Extracting...`;
+    if (previewDiv) previewDiv.innerHTML = `<span class="text-indigo-500 font-semibold">⏳ Connecting to masi.cc.cd...</span>`;
 
     try {
       const res = await fetch(`${API_BASE}/masi/extract`, {
@@ -1404,24 +1405,44 @@
       });
       const data = await res.json();
       btn.disabled = false;
-      btn.innerHTML = 'Extract & Analyze';
+      btn.innerHTML = 'Extract Data';
 
       if (data.success && data.workers) {
         window.__tempMasiWorkers = data.workers;
         if (syncBtn) syncBtn.disabled = false;
-        statsContainer.classList.remove('hidden');
-        document.getElementById('masi-worker-count').textContent = data.workers.length;
-        document.getElementById('masi-active-count').textContent = data.workers.filter(w => (Number(w.completedOrders) || 0) > 0).length;
-        
-        const totalCompleted = data.workers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
-        document.getElementById('masi-completed-count').textContent = totalCompleted;
+        const withOrders = data.workers.filter(w => (Number(w.completedOrders) || Number(w.completedCount) || 0) > 0);
+        const totalCompleted = data.workers.reduce((s, w) => s + (Number(w.completedOrders) || Number(w.completedCount) || 0), 0);
+        if (previewDiv) {
+          previewDiv.innerHTML = `
+            <div class="flex gap-4 flex-wrap mb-3">
+              <div class="bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2 text-center">
+                <div class="text-lg font-black text-indigo-700">${data.workers.length}</div>
+                <div class="text-[10px] text-indigo-500 uppercase font-bold">Total Workers</div>
+              </div>
+              <div class="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center">
+                <div class="text-lg font-black text-emerald-700">${withOrders.length}</div>
+                <div class="text-[10px] text-emerald-500 uppercase font-bold">With Orders</div>
+              </div>
+              <div class="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-center">
+                <div class="text-lg font-black text-amber-700">${totalCompleted}</div>
+                <div class="text-[10px] text-amber-500 uppercase font-bold">Total Completed</div>
+              </div>
+            </div>
+            <div class="text-emerald-600 font-bold mb-1">✓ Ready to sync ${data.workers.length} workers! Click "Sync & Import" below.</div>
+            <div class="max-h-32 overflow-y-auto text-[11px] text-slate-500">
+              ${withOrders.slice(0, 10).map(w => `<div>• <b>${w.name}</b> — ${w.completedOrders || w.completedCount || 0} done (${(w.successRate || 0).toFixed(1)}%)</div>`).join('')}
+              ${withOrders.length > 10 ? `<div class="text-slate-400">...and ${withOrders.length - 10} more</div>` : ''}
+            </div>`;
+        }
         showToast(`Extracted ${data.workers.length} workers from masi.cc.cd!`, 'success');
       } else {
+        if (previewDiv) previewDiv.innerHTML = `<span class="text-red-500 font-semibold">❌ ${data.error || 'Failed to extract from Masi'}</span>`;
         showToast(data.error || 'Failed to extract from Masi', 'danger');
       }
     } catch (e) {
       btn.disabled = false;
-      btn.innerHTML = 'Extract & Analyze';
+      btn.innerHTML = 'Extract Data';
+      if (previewDiv) previewDiv.innerHTML = `<span class="text-red-500 font-semibold">❌ Error connecting to server</span>`;
       showToast('Error connecting to Masi endpoint', 'danger');
     }
   };
