@@ -360,6 +360,70 @@ const requestHandler = async (req, res) => {
         });
       }
 
+      // POST /api/workers/:id/mark-unpaid (Reset worker payment status to unpaid)
+      if (req.method === 'POST' && parsedUrl.includes('/mark-unpaid')) {
+        const id = parsedUrl.split('/')[3];
+        const worker = db.workers.find(w => w.id === id || w.key === id);
+        if (!worker) return sendJson(res, 404, { success: false, error: 'Worker not found' });
+
+        worker.paidAmount = 0;
+        worker.paidCount = 0;
+        worker.lastPaidAt = null;
+
+        if (db.orders && Array.isArray(db.orders)) {
+          db.orders.forEach(o => {
+            if (o.workerKey === worker.key || o.workerName === worker.name) {
+              o.workerPaymentStatus = 'unpaid';
+              o.paidAt = null;
+            }
+          });
+        }
+
+        dbManager.saveDb();
+        return sendJson(res, 200, { success: true, worker });
+      }
+
+      // POST /api/workers/:id/message (Send direct Telegram message to worker)
+      if (req.method === 'POST' && parsedUrl.includes('/message')) {
+        const id = parsedUrl.split('/')[3];
+        const body = await parseJsonBody(req);
+        const { text } = body;
+        if (!text || !text.trim()) {
+          return sendJson(res, 400, { success: false, error: 'Message text required' });
+        }
+
+        const worker = db.workers.find(w => w.id === id || w.key === id);
+        if (!worker) return sendJson(res, 404, { success: false, error: 'Worker not found' });
+
+        // Find telegram chat ID
+        let tgChatId = worker.telegramId;
+        if (!tgChatId && worker.telegramUsername) {
+          const match = db.workers.find(w => 
+            w.telegramUsername && 
+            w.telegramUsername.toLowerCase() === worker.telegramUsername.toLowerCase() && 
+            w.telegramId
+          );
+          if (match) tgChatId = match.telegramId;
+        }
+
+        if (!tgChatId) {
+          return sendJson(res, 400, {
+            success: false,
+            error: `Worker "${worker.name}" has not linked Telegram yet. Give them key "${worker.key}" to send to the bot.`
+          });
+        }
+
+        try {
+          const sent = await botEngine.sendMessage(tgChatId, `💬 *Message from Admin:*\n\n${text.trim()}`);
+          if (!sent) {
+            return sendJson(res, 500, { success: false, error: botEngine.lastError || 'Failed to send message via Telegram' });
+          }
+          return sendJson(res, 200, { success: true, message: 'Message delivered to Telegram' });
+        } catch (err) {
+          return sendJson(res, 500, { success: false, error: err.message });
+        }
+      }
+
       // POST /api/bot/config
       if (req.method === 'POST' && parsedUrl === '/api/bot/config') {
         const body = await parseJsonBody(req);
@@ -418,18 +482,20 @@ const requestHandler = async (req, res) => {
 
         let workerList = [];
 
+        const effectiveBossKey = (bossKey || (db.settings && db.settings.bossKey) || 'WORKER-B030-0827-9A88-4A04').trim();
+
         // Accept pre-extracted workers from client (avoids double API call)
         if (Array.isArray(masiWorkers) && masiWorkers.length > 0) {
           workerList = masiWorkers;
-        } else if (bossKey) {
+        } else if (effectiveBossKey) {
           try {
-            const masiData = await extractMasiData(bossKey);
+            const masiData = await extractMasiData(effectiveBossKey);
             workerList = masiData.workers;
           } catch (err) {
             return sendJson(res, 400, { success: false, error: err.message });
           }
         } else {
-          return sendJson(res, 400, { success: false, error: 'Either bossKey or masiWorkers array required' });
+          return sendJson(res, 400, { success: false, error: 'Boss Key is required' });
         }
 
         let importedWorkers = 0;

@@ -17,7 +17,7 @@
       "status": "active",
       "paidAmount": 0,
       "paidCount": 0,
-      "lastPaidAt": "2026-09-20T00:36:06.294Z"
+      "lastPaidAt": null
     },
     {
       "id": "w-2",
@@ -68,7 +68,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.974Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-2",
@@ -89,7 +89,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-3",
@@ -110,7 +110,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-4",
@@ -119,10 +119,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
-      "failCount": 1,
-      "successRate": 50,
-      "customSuccessRate": 50,
+      "completedOrders": 3,
+      "failCount": 2,
+      "successRate": 60,
+      "customSuccessRate": 60,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -131,7 +131,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-5",
@@ -152,7 +152,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-6",
@@ -161,10 +161,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 1,
+      "failCount": 3,
+      "successRate": 25,
+      "customSuccessRate": 25,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -173,7 +173,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-7",
@@ -194,7 +194,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-8",
@@ -215,7 +215,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z",
       "personName": "Alam",
       "updatedAt": "2026-09-19T22:01:54.911Z",
       "paidAmount": 0,
@@ -240,7 +240,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z",
       "personName": "Alam",
       "updatedAt": "2026-09-19T22:01:54.912Z"
     },
@@ -263,7 +263,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-11",
@@ -284,7 +284,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-12",
@@ -293,10 +293,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 3,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 1,
+      "failCount": 5,
+      "successRate": 16.7,
+      "customSuccessRate": 16.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -305,7 +305,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-13",
@@ -326,7 +326,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-14",
@@ -347,7 +347,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
     },
     {
       "id": "w-masi-15",
@@ -368,7 +368,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-16",
@@ -378,7 +378,7 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 0,
+      "failCount": 1,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -389,7 +389,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-17",
@@ -410,7 +410,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-18",
@@ -431,7 +431,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-19",
@@ -440,8 +440,8 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 2,
-      "failCount": 6,
+      "completedOrders": 3,
+      "failCount": 9,
       "successRate": 25,
       "customSuccessRate": 25,
       "d7Done": 0,
@@ -452,7 +452,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-20",
@@ -461,10 +461,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 3,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 1,
+      "failCount": 11,
+      "successRate": 8.3,
+      "customSuccessRate": 8.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -473,7 +473,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-21",
@@ -494,7 +494,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-22",
@@ -515,7 +515,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-23",
@@ -524,10 +524,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 4,
+      "failCount": 4,
+      "successRate": 50,
+      "customSuccessRate": 50,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -536,7 +536,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-24",
@@ -545,10 +545,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 2,
-      "failCount": 0,
-      "successRate": 100,
-      "customSuccessRate": 100,
+      "completedOrders": 3,
+      "failCount": 6,
+      "successRate": 33.3,
+      "customSuccessRate": 33.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -557,7 +557,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-25",
@@ -578,7 +578,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-26",
@@ -599,7 +599,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-27",
@@ -620,7 +620,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-28",
@@ -641,7 +641,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-29",
@@ -650,10 +650,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 1,
+      "failCount": 5,
+      "successRate": 16.7,
+      "customSuccessRate": 16.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -662,7 +662,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-30",
@@ -683,7 +683,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-31",
@@ -692,10 +692,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 9,
-      "failCount": 7,
-      "successRate": 56.2,
-      "customSuccessRate": 56.2,
+      "completedOrders": 11,
+      "failCount": 10,
+      "successRate": 52.4,
+      "customSuccessRate": 52.4,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -704,7 +704,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-32",
@@ -725,7 +725,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-33",
@@ -734,10 +734,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 3,
+      "failCount": 1,
+      "successRate": 75,
+      "customSuccessRate": 75,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -746,7 +746,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-34",
@@ -756,9 +756,9 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 1,
-      "failCount": 3,
-      "successRate": 25,
-      "customSuccessRate": 25,
+      "failCount": 4,
+      "successRate": 20,
+      "customSuccessRate": 20,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -767,7 +767,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-35",
@@ -788,7 +788,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-36",
@@ -809,7 +809,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-37",
@@ -830,7 +830,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-38",
@@ -851,7 +851,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-39",
@@ -872,7 +872,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-40",
@@ -893,7 +893,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-41",
@@ -914,7 +914,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.977Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-42",
@@ -923,10 +923,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 6,
-      "failCount": 3,
-      "successRate": 66.7,
-      "customSuccessRate": 66.7,
+      "completedOrders": 16,
+      "failCount": 9,
+      "successRate": 64,
+      "customSuccessRate": 64,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -935,7 +935,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-43",
@@ -956,7 +956,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-44",
@@ -977,7 +977,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-45",
@@ -998,7 +998,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-46",
@@ -1019,7 +1019,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-47",
@@ -1028,19 +1028,19 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 6,
-      "failCount": 4,
-      "successRate": 60,
-      "customSuccessRate": 0,
+      "completedOrders": 8,
+      "failCount": 6,
+      "successRate": 57.1,
+      "customSuccessRate": 57.1,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-49",
@@ -1061,7 +1061,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-50",
@@ -1082,7 +1082,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-51",
@@ -1091,10 +1091,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 13,
+      "completedOrders": 18,
       "failCount": 1,
-      "successRate": 92.9,
-      "customSuccessRate": 92.9,
+      "successRate": 94.7,
+      "customSuccessRate": 94.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1103,7 +1103,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-52",
@@ -1124,7 +1124,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-53",
@@ -1145,7 +1145,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-54",
@@ -1166,7 +1166,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-55",
@@ -1175,19 +1175,19 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
-      "failCount": 5,
-      "successRate": 16.7,
-      "customSuccessRate": 16.7,
+      "completedOrders": 4,
+      "failCount": 6,
+      "successRate": 40,
+      "customSuccessRate": 40,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-56",
@@ -1208,7 +1208,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-57",
@@ -1217,10 +1217,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
-      "failCount": 3,
-      "successRate": 25,
-      "customSuccessRate": 25,
+      "completedOrders": 6,
+      "failCount": 5,
+      "successRate": 54.5,
+      "customSuccessRate": 54.5,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1229,7 +1229,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
     },
     {
       "id": "w-masi-58",
@@ -1239,9 +1239,9 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 1,
-      "failCount": 1,
-      "successRate": 50,
-      "customSuccessRate": 50,
+      "failCount": 4,
+      "successRate": 20,
+      "customSuccessRate": 20,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1250,7 +1250,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-59",
@@ -1271,7 +1271,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-60",
@@ -1281,18 +1281,18 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 7,
-      "failCount": 11,
-      "successRate": 38.9,
-      "customSuccessRate": 38.9,
+      "failCount": 13,
+      "successRate": 35,
+      "customSuccessRate": 35,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-61",
@@ -1313,7 +1313,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-62",
@@ -1334,7 +1334,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-63",
@@ -1343,19 +1343,19 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 2,
+      "failCount": 4,
+      "successRate": 33.3,
+      "customSuccessRate": 33.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-64",
@@ -1376,7 +1376,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-65",
@@ -1385,7 +1385,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
+      "completedOrders": 7,
       "failCount": 0,
       "successRate": 100,
       "customSuccessRate": 100,
@@ -1397,7 +1397,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-66",
@@ -1406,10 +1406,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 1,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 4,
+      "failCount": 7,
+      "successRate": 36.4,
+      "customSuccessRate": 36.4,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1418,7 +1418,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-67",
@@ -1439,7 +1439,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-68",
@@ -1449,7 +1449,7 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 2,
+      "failCount": 7,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -1460,7 +1460,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-69",
@@ -1481,7 +1481,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-70",
@@ -1502,7 +1502,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.978Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-71",
@@ -1512,7 +1512,7 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 0,
+      "failCount": 3,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -1523,7 +1523,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-72",
@@ -1544,7 +1544,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-73",
@@ -1553,10 +1553,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 13,
+      "failCount": 8,
+      "successRate": 61.9,
+      "customSuccessRate": 61.9,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1565,7 +1565,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-74",
@@ -1574,19 +1574,19 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 4,
-      "failCount": 4,
-      "successRate": 50,
-      "customSuccessRate": 50,
+      "completedOrders": 5,
+      "failCount": 8,
+      "successRate": 38.5,
+      "customSuccessRate": 38.5,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-75",
@@ -1595,10 +1595,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 5,
-      "failCount": 12,
-      "successRate": 29.4,
-      "customSuccessRate": 29.4,
+      "completedOrders": 13,
+      "failCount": 16,
+      "successRate": 44.8,
+      "customSuccessRate": 44.8,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1607,7 +1607,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-76",
@@ -1616,10 +1616,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
-      "failCount": 4,
-      "successRate": 20,
-      "customSuccessRate": 20,
+      "completedOrders": 19,
+      "failCount": 10,
+      "successRate": 65.5,
+      "customSuccessRate": 65.5,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1628,7 +1628,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-77",
@@ -1638,18 +1638,18 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 18,
-      "failCount": 14,
-      "successRate": 56.2,
-      "customSuccessRate": 56.2,
+      "failCount": 15,
+      "successRate": 54.5,
+      "customSuccessRate": 54.5,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-78",
@@ -1658,10 +1658,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 3,
-      "failCount": 3,
-      "successRate": 50,
-      "customSuccessRate": 50,
+      "completedOrders": 11,
+      "failCount": 9,
+      "successRate": 55,
+      "customSuccessRate": 55,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1670,7 +1670,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-79",
@@ -1691,7 +1691,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-80",
@@ -1712,7 +1712,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-81",
@@ -1733,7 +1733,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-82",
@@ -1754,7 +1754,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-83",
@@ -1772,10 +1772,10 @@
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-84",
@@ -1784,10 +1784,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 6,
-      "failCount": 10,
-      "successRate": 37.5,
-      "customSuccessRate": 37.5,
+      "completedOrders": 9,
+      "failCount": 11,
+      "successRate": 45,
+      "customSuccessRate": 45,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1796,7 +1796,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-85",
@@ -1817,7 +1817,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-86",
@@ -1827,7 +1827,7 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 1,
+      "failCount": 3,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -1838,7 +1838,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-87",
@@ -1859,7 +1859,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-88",
@@ -1880,7 +1880,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-89",
@@ -1892,7 +1892,7 @@
       "completedOrders": 5,
       "failCount": 5,
       "successRate": 50,
-      "customSuccessRate": 0,
+      "customSuccessRate": 50,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1901,7 +1901,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-91",
@@ -1922,7 +1922,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-92",
@@ -1943,7 +1943,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-93",
@@ -1964,7 +1964,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-94",
@@ -1973,19 +1973,19 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 33,
+      "failCount": 9,
+      "successRate": 78.6,
+      "customSuccessRate": 78.6,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.979Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-95",
@@ -2006,7 +2006,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-96",
@@ -2027,7 +2027,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-97",
@@ -2036,10 +2036,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 1,
+      "failCount": 2,
+      "successRate": 33.3,
+      "customSuccessRate": 33.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2048,7 +2048,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-98",
@@ -2057,10 +2057,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 14,
-      "failCount": 9,
-      "successRate": 60.9,
-      "customSuccessRate": 60.9,
+      "completedOrders": 20,
+      "failCount": 19,
+      "successRate": 51.3,
+      "customSuccessRate": 51.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2069,7 +2069,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-99",
@@ -2090,7 +2090,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
     },
     {
       "id": "w-masi-100",
@@ -2111,7 +2111,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-101",
@@ -2132,7 +2132,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-102",
@@ -2141,19 +2141,19 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 8,
-      "failCount": 10,
-      "successRate": 44.4,
-      "customSuccessRate": 44.4,
+      "completedOrders": 12,
+      "failCount": 11,
+      "successRate": 52.2,
+      "customSuccessRate": 52.2,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-103",
@@ -2174,7 +2174,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-104",
@@ -2195,7 +2195,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-105",
@@ -2216,7 +2216,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-106",
@@ -2237,7 +2237,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-107",
@@ -2247,18 +2247,18 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 1,
-      "failCount": 4,
-      "successRate": 20,
-      "customSuccessRate": 20,
+      "failCount": 8,
+      "successRate": 11.1,
+      "customSuccessRate": 11.1,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
       "online": false,
-      "status": "active",
+      "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-108",
@@ -2267,10 +2267,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 1,
       "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "successRate": 100,
+      "customSuccessRate": 100,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2279,7 +2279,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-109",
@@ -2289,7 +2289,7 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 0,
+      "failCount": 4,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -2300,7 +2300,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-110",
@@ -2321,7 +2321,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-111",
@@ -2342,7 +2342,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-112",
@@ -2351,10 +2351,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 4,
+      "failCount": 2,
+      "successRate": 66.7,
+      "customSuccessRate": 66.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2363,7 +2363,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-113",
@@ -2384,7 +2384,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-114",
@@ -2393,10 +2393,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 6,
-      "failCount": 0,
-      "successRate": 100,
-      "customSuccessRate": 100,
+      "completedOrders": 9,
+      "failCount": 2,
+      "successRate": 81.8,
+      "customSuccessRate": 81.8,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2405,7 +2405,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
     },
     {
       "id": "w-masi-115",
@@ -2426,7 +2426,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-116",
@@ -2447,7 +2447,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-117",
@@ -2468,7 +2468,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-118",
@@ -2489,7 +2489,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-119",
@@ -2510,7 +2510,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-120",
@@ -2520,7 +2520,7 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 0,
+      "failCount": 1,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -2531,7 +2531,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-121",
@@ -2540,10 +2540,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 2,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 41,
+      "failCount": 16,
+      "successRate": 71.9,
+      "customSuccessRate": 71.9,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2552,7 +2552,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-122",
@@ -2562,9 +2562,9 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 2,
-      "failCount": 5,
-      "successRate": 28.6,
-      "customSuccessRate": 28.6,
+      "failCount": 6,
+      "successRate": 25,
+      "customSuccessRate": 25,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2573,7 +2573,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-123",
@@ -2594,7 +2594,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-124",
@@ -2615,7 +2615,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
     },
     {
       "id": "w-masi-125",
@@ -2625,9 +2625,9 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 1,
-      "failCount": 3,
-      "successRate": 25,
-      "customSuccessRate": 25,
+      "failCount": 5,
+      "successRate": 16.7,
+      "customSuccessRate": 16.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2636,7 +2636,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
     },
     {
       "id": "w-masi-126",
@@ -2657,7 +2657,867 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T01:07:21.980Z"
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977569-468",
+      "name": "Alamgir",
+      "key": "WORKER-0419-167E-244C-99F7",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
+    },
+    {
+      "id": "w-1789931977569-519",
+      "name": "Ankara",
+      "key": "WORKER-03B4-04C1-8761-A726",
+      "rate": 15,
+      "completedOrders": 2,
+      "failCount": 3,
+      "successRate": 40,
+      "customSuccessRate": 40,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
+    },
+    {
+      "id": "w-1789931977569-245",
+      "name": "Bastarddd",
+      "key": "WORKER-1959-80EC-410A-6AF8",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
+    },
+    {
+      "id": "w-1789931977569-659",
+      "name": "Bitcjjjjhh",
+      "key": "WORKER-3C29-27CC-D0B7-5FB2",
+      "rate": 15,
+      "completedOrders": 4,
+      "failCount": 3,
+      "successRate": 57.1,
+      "customSuccessRate": 57.1,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
+    },
+    {
+      "id": "w-1789931977569-363",
+      "name": "Blasterrrrrr",
+      "key": "WORKER-1302-FDBC-FDA9-2C9A",
+      "rate": 15,
+      "completedOrders": 12,
+      "failCount": 3,
+      "successRate": 80,
+      "customSuccessRate": 80,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
+    },
+    {
+      "id": "w-1789931977569-602",
+      "name": "Boddjrje",
+      "key": "WORKER-5759-DF31-E926-193B",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 3,
+      "successRate": 25,
+      "customSuccessRate": 25,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.569Z"
+    },
+    {
+      "id": "w-1789931977570-972",
+      "name": "Chandan08",
+      "key": "WORKER-406B-95E3-83DA-3510",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 1,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-634",
+      "name": "Depubeby",
+      "key": "WORKER-F609-BAE7-39CB-5439",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-966",
+      "name": "Djejjeks",
+      "key": "WORKER-49D1-6063-27B2-A808",
+      "rate": 15,
+      "completedOrders": 6,
+      "failCount": 4,
+      "successRate": 60,
+      "customSuccessRate": 60,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-943",
+      "name": "Doubltdot",
+      "key": "WORKER-84BC-4A62-8E4E-94A0",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 3,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-756",
+      "name": "Fastbolt",
+      "key": "WORKER-9248-8E44-9AAF-60DE",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 1,
+      "successRate": 50,
+      "customSuccessRate": 50,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": true,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-135",
+      "name": "Femboy",
+      "key": "WORKER-2187-A8F5-11BB-9858",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-851",
+      "name": "Hashirbappe",
+      "key": "WORKER-F68A-F7FF-7FFD-D42E",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 5,
+      "successRate": 16.7,
+      "customSuccessRate": 16.7,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-452",
+      "name": "Hashirr",
+      "key": "WORKER-362B-A5FD-2B29-B675",
+      "rate": 15,
+      "completedOrders": 8,
+      "failCount": 4,
+      "successRate": 66.7,
+      "customSuccessRate": 66.7,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-107",
+      "name": "He2tv2",
+      "key": "WORKER-7C8E-C1BF-2F4D-024F",
+      "rate": 15,
+      "completedOrders": 6,
+      "failCount": 3,
+      "successRate": 66.7,
+      "customSuccessRate": 66.7,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-256",
+      "name": "Hellxieii",
+      "key": "WORKER-B25D-66C6-25F7-C418",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 1,
+      "successRate": 50,
+      "customSuccessRate": 50,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-263",
+      "name": "Helocus",
+      "key": "WORKER-2D4E-90BE-D4EC-698A",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 0,
+      "successRate": 100,
+      "customSuccessRate": 100,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-787",
+      "name": "Hena",
+      "key": "WORKER-59AB-9C3E-6EB0-D9FD",
+      "rate": 15,
+      "completedOrders": 4,
+      "failCount": 4,
+      "successRate": 50,
+      "customSuccessRate": 50,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-908",
+      "name": "Ho02",
+      "key": "WORKER-94C8-CA14-4C16-D4AE",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 4,
+      "successRate": 20,
+      "customSuccessRate": 20,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-914",
+      "name": "Indialover",
+      "key": "WORKER-6E54-22A1-7FC8-D2FD",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977570-201",
+      "name": "Indielover",
+      "key": "WORKER-DEA6-B332-DC71-297F",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.570Z"
+    },
+    {
+      "id": "w-1789931977571-655",
+      "name": "Jeetolala",
+      "key": "WORKER-B75A-AE09-7B5C-248C",
+      "rate": 15,
+      "completedOrders": 2,
+      "failCount": 4,
+      "successRate": 33.3,
+      "customSuccessRate": 33.3,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
+    },
+    {
+      "id": "w-1789931977571-54",
+      "name": "Jeetulala",
+      "key": "WORKER-FF33-C588-233B-9765",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 1,
+      "successRate": 50,
+      "customSuccessRate": 50,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
+    },
+    {
+      "id": "w-1789931977571-657",
+      "name": "Kitnelegabhai",
+      "key": "WORKER-1D61-1FB8-A428-2391",
+      "rate": 15,
+      "completedOrders": 7,
+      "failCount": 9,
+      "successRate": 43.8,
+      "customSuccessRate": 43.8,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
+    },
+    {
+      "id": "w-1789931977571-848",
+      "name": "LuffyD",
+      "key": "WORKER-BAF8-8A3C-3CA1-5604",
+      "rate": 15,
+      "completedOrders": 15,
+      "failCount": 5,
+      "successRate": 75,
+      "customSuccessRate": 75,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
+    },
+    {
+      "id": "w-1789931977571-275",
+      "name": "Makdoma",
+      "key": "WORKER-8966-E36B-3D6C-B54A",
+      "rate": 15,
+      "completedOrders": 9,
+      "failCount": 5,
+      "successRate": 64.3,
+      "customSuccessRate": 64.3,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "paused",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
+    },
+    {
+      "id": "w-1789931977571-525",
+      "name": "Mbappe",
+      "key": "WORKER-95B0-9B64-24B4-754A",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 1,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
+    },
+    {
+      "id": "w-1789931977571-729",
+      "name": "Mochi",
+      "key": "WORKER-D616-9D08-12CC-54E1",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 1,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.571Z"
+    },
+    {
+      "id": "w-1789931977572-34",
+      "name": "Ss01",
+      "key": "WORKER-79DB-1DC9-9F9D-4395",
+      "rate": 15,
+      "completedOrders": 12,
+      "failCount": 8,
+      "successRate": 60,
+      "customSuccessRate": 60,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "paused",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
+    },
+    {
+      "id": "w-1789931977572-440",
+      "name": "Ss02",
+      "key": "WORKER-3EA9-3172-83F5-8CBD",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 1,
+      "successRate": 50,
+      "customSuccessRate": 50,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
+    },
+    {
+      "id": "w-1789931977572-944",
+      "name": "Ss03",
+      "key": "WORKER-E0EF-B1DA-9487-CD01",
+      "rate": 15,
+      "completedOrders": 7,
+      "failCount": 7,
+      "successRate": 50,
+      "customSuccessRate": 50,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
+    },
+    {
+      "id": "w-1789931977572-600",
+      "name": "Trencher",
+      "key": "WORKER-60FC-CCFA-C29E-C4FF",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.572Z"
+    },
+    {
+      "id": "w-1789931977613-329",
+      "name": "WORKER-A698-9234-ADB2-7EC7",
+      "key": "WORKER-445F-2404-4398-A3CC",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.613Z"
+    },
+    {
+      "id": "w-1789931977614-487",
+      "name": "aafan",
+      "key": "WORKER-A21C-51AE-DB20-E488",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-249",
+      "name": "addy",
+      "key": "WORKER-BCA3-777D-223B-D9E9",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-386",
+      "name": "addy w1",
+      "key": "WORKER-8541-C1F7-7407-CE6E",
+      "rate": 15,
+      "completedOrders": 4,
+      "failCount": 7,
+      "successRate": 36.4,
+      "customSuccessRate": 36.4,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-786",
+      "name": "addy w2",
+      "key": "WORKER-3679-B63F-244A-40C1",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-664",
+      "name": "addy w3",
+      "key": "WORKER-E066-68BB-5788-5D13",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-103",
+      "name": "addy w4",
+      "key": "WORKER-F808-C2F8-80B1-E5CF",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-146",
+      "name": "advait",
+      "key": "WORKER-A20D-55BB-428A-50B5",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-907",
+      "name": "paras w1",
+      "key": "WORKER-C113-B382-50E1-DBE9",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 1,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-876",
+      "name": "sahil",
+      "key": "WORKER-43E4-D0C6-7BBE-A771",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
+    },
+    {
+      "id": "w-1789931977614-590",
+      "name": "zx prime",
+      "key": "WORKER-6676-F4D9-2147-A574",
+      "rate": 15,
+      "completedOrders": 2,
+      "failCount": 1,
+      "successRate": 66.7,
+      "customSuccessRate": 66.7,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:19:37.614Z"
     }
   ],
   "orders": [
@@ -2672,12 +3532,12 @@
       "payoutAmount": 15,
       "inventoryStatus": "unsold",
       "fulfillmentStatus": "unfulfilled",
-      "workerPaymentStatus": "paid",
+      "workerPaymentStatus": "unpaid",
       "notes": "Standard package intake",
       "createdAt": "2026-09-19T22:14:00.000Z",
       "soldAt": null,
       "fulfilledAt": null,
-      "paidAt": "2026-09-20T00:36:06.294Z"
+      "paidAt": null
     },
     {
       "id": "ord-102",
@@ -2708,12 +3568,12 @@
       "payoutAmount": 15,
       "inventoryStatus": "sold",
       "fulfillmentStatus": "fulfilled",
-      "workerPaymentStatus": "paid",
+      "workerPaymentStatus": "unpaid",
       "notes": "Express dispatch completed",
       "createdAt": "2026-09-19T14:00:00.000Z",
       "soldAt": "2026-09-19T18:00:00.000Z",
       "fulfilledAt": "2026-09-19T18:30:00.000Z",
-      "paidAt": "2026-09-20T00:36:06.294Z"
+      "paidAt": null
     },
     {
       "id": "ord-104",
@@ -2762,12 +3622,12 @@
       "payoutAmount": 15,
       "inventoryStatus": "sold",
       "fulfillmentStatus": "fulfilled",
-      "workerPaymentStatus": "paid",
+      "workerPaymentStatus": "unpaid",
       "notes": "Fulfilled, waiting for weekly batch payout",
       "createdAt": "2026-09-17T08:00:00.000Z",
       "soldAt": "2026-09-17T15:00:00.000Z",
       "fulfilledAt": "2026-09-17T16:00:00.000Z",
-      "paidAt": "2026-09-20T00:36:06.294Z"
+      "paidAt": null
     }
   ]
 }
