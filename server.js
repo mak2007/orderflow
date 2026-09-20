@@ -406,10 +406,17 @@ Hi ${worker.personName || worker.name}! Your payout has been completed and marke
 
 📦 *Completed Orders Settled:* *${completed}/${completed}*
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Thank you for your work!
 `;
-          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg);
+          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg, {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '📢 Join Official Channel 1st', url: 'https://t.me/madmax00711' }]
+              ]
+            }
+          });
         }
 
         return sendJson(res, 200, {
@@ -505,10 +512,17 @@ Hi ${worker.personName || worker.name}! Your administrator has approved your wit
 📦 *Orders Settled Now:* *${ordersSettled}* order(s)
 📊 *Overall Progress:* *${worker.paidCount}/${completed}* settled
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Thank you for your work!
 `;
-          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg);
+          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg, {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '📢 Join Official Channel 1st', url: 'https://t.me/madmax00711' }]
+              ]
+            }
+          });
         }
 
         return sendJson(res, 200, {
@@ -580,10 +594,17 @@ Hi ${worker.personName || worker.name}! Your administrator recorded a payout:
 📦 *Orders Settled Now:* *${ordersCount}* order(s)
 📊 *Overall Status:* *${worker.paidCount}/${completed}* settled
 ${note ? `📝 *Admin Note:* ${note}\n` : ''}📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Thank you for your work!
 `;
-          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg);
+          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg, {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '📢 Join Official Channel 1st', url: 'https://t.me/madmax00711' }]
+              ]
+            }
+          });
         }
 
         return sendJson(res, 200, {

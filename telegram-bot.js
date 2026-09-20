@@ -2,6 +2,9 @@
 // Native Node.js HTTPS implementation - Zero external dependencies!
 const https = require('https');
 
+const OFFICIAL_CHANNEL = 'https://t.me/madmax00711';
+const OFFICIAL_CHANNEL_HANDLE = '@madmax00711';
+
 class TelegramBotEngine {
   constructor(dbManager) {
     this.dbManager = dbManager;
@@ -65,6 +68,25 @@ class TelegramBotEngine {
       req.write(postData);
       req.end();
     });
+  }
+
+  // Helper to check if a user is in the required official channel (@madmax00711)
+  async isUserInChannel(userId) {
+    if (!this.botToken || !userId) return null;
+    try {
+      const res = await this.callApi('getChatMember', {
+        chat_id: OFFICIAL_CHANNEL_HANDLE,
+        user_id: userId
+      });
+      if (res && res.status) {
+        return ['creator', 'administrator', 'member', 'restricted'].includes(res.status);
+      }
+    } catch (err) {
+      // If the bot is not yet added as admin to the channel, Telegram returns an error.
+      // We return null so we don't hard-block workers unexpectedly, while still telling them to join.
+      return null;
+    }
+    return false;
   }
 
   // Send a markdown message to a chat
@@ -150,6 +172,42 @@ class TelegramBotEngine {
 
   // Handle incoming update
   async handleUpdate(update) {
+    // Handle inline button callbacks (e.g. "I Have Joined" check)
+    if (update.callback_query) {
+      const cb = update.callback_query;
+      const chatId = cb.message ? cb.message.chat.id : cb.from.id;
+      const data = cb.data;
+
+      try {
+        await this.callApi('answerCallbackQuery', { callback_query_id: cb.id });
+      } catch (e) {}
+
+      if (data === 'check_joined' || data === 'verify_channel') {
+        const inChannel = await this.isUserInChannel(cb.from.id);
+        if (inChannel === false) {
+          await this.sendMessage(chatId, `⚠️ *You have not joined the channel yet!*\n\n👉 Join here: https://t.me/madmax00711\n\nPlease join the channel first, then click "✅ I Have Joined" below!`, {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }],
+                [{ text: '✅ I Have Joined!', callback_data: 'check_joined' }]
+              ]
+            }
+          });
+          return;
+        }
+
+        // Verified or bot not admin yet
+        await this.sendMessage(chatId, `🎉 *Channel Verified! Welcome!*\n\nNow you can access all features:\n• Send your worker key directly (e.g. \`WORKER-XXXX-XXXX-XXXX-XXXX\`)\n• Type \`/bill\` to see your live completed orders\n• Type \`/balance\` to see your settled orders & leftover count\n• Type \`/withdraw <orders>\` or \`/reqforleftover\` to withdraw\n• Type \`/help\` for all commands`, {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '📢 Visit Official Channel', url: OFFICIAL_CHANNEL }]
+            ]
+          }
+        });
+        return;
+      }
+    }
+
     if (!update.message || !update.message.text) return;
 
     const msg = update.message;
@@ -163,6 +221,8 @@ class TelegramBotEngine {
 
     if (command === '/start') {
       await this.handleStart(chatId, from, args[0]);
+    } else if (command === '/channel') {
+      await this.handleChannel(chatId);
     } else if (command === '/link' || command === '/register') {
       await this.handleLink(chatId, from, args[0]);
     } else if (command === '/request' || command === '/payout' || command === '/withdraw') {
@@ -191,6 +251,25 @@ class TelegramBotEngine {
     }
   }
 
+  // Command: /channel — Show official channel link
+  async handleChannel(chatId) {
+    const channelMsg = `
+📢 *OFFICIAL CHANNEL — JOIN 1ST!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+Join our official channel for real-time task announcements, order assignments, and payout receipts:
+
+👉 *Official Channel:* https://t.me/madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+    await this.sendMessage(chatId, channelMsg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Open Official Channel', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
+  }
+
   // Command: /start [payload]
   async handleStart(chatId, from, payload) {
     if (payload) {
@@ -200,8 +279,38 @@ class TelegramBotEngine {
       }
     }
 
+    const inChannel = await this.isUserInChannel(from?.id);
+    if (inChannel === false) {
+      const gateMsg = `
+👋 *Welcome to Worker Bill Bot!*
+
+📢 *ACTION REQUIRED: JOIN OUR OFFICIAL CHANNEL 1ST!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+You must join our official channel before accessing orders and bills:
+👉 https://t.me/madmax00711
+
+_We post all task announcements, order updates & payment receipts there._
+━━━━━━━━━━━━━━━━━━━━━━━━
+1️⃣ Click the button below to join the channel.
+2️⃣ Then tap "✅ I Have Joined" to unlock your dashboard!
+`;
+      await this.sendMessage(chatId, gateMsg, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }],
+            [{ text: '✅ I Have Joined!', callback_data: 'check_joined' }]
+          ]
+        }
+      });
+      return;
+    }
+
     const welcomeText = `
 👋 *Welcome to the Worker Bill Bot!*
+
+📢 *OFFICIAL CHANNEL (JOIN 1ST!):*
+👉 https://t.me/madmax00711
+_Join our official channel for task announcements, order updates & payout receipts!_
 
 🧾 *Track completed orders & request withdrawals:*
 
@@ -215,11 +324,18 @@ Commands:
 • \`/reqforleftover\` — Request withdrawal for all leftover orders
 • \`/refresh\` — Re-fetch live stats & update bill
 • \`/link YOUR_KEY\` — Save your key to this account
+• \`/channel\` — Official channel link
 • \`/help\` — All commands
 
 _Synced live with masi.cc.cd_ 🔄
 `;
-    await this.sendMessage(chatId, welcomeText);
+    await this.sendMessage(chatId, welcomeText, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Command: /link <KEY>
@@ -280,15 +396,27 @@ _Synced live with masi.cc.cd_ 🔄
 ${keysListText}
 ⚡ *Status:* Active Worker Account
 
+📢 *IMPORTANT: JOIN OUR OFFICIAL CHANNEL 1ST!*
+👉 https://t.me/madmax00711
+_Join the channel for task announcements, order assignments & payout receipts._
+
 📌 *What you can do now:*
 • Send your key anytime to get your latest live bill
 • \`/bill\` — View your performance summary & recent completed orders
+• \`/balance\` — Check settled orders (e.g. 20/20) & leftover balance
+• \`/withdraw <num>\` — Request payout for specific order count
+• \`/reqforleftover\` — Request withdrawal for all leftover orders
 • \`/refresh\` — Refresh live data & update bill
-• \`/stats\` — View full performance breakdown
-• \`/balance\` — Check unpaid balance
+• \`/channel\` — Official channel link
 • \`/help\` — See command details
 `;
-    await this.sendMessage(chatId, successMsg);
+    await this.sendMessage(chatId, successMsg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Helper: Find all worker keys assigned to this Telegram user
@@ -425,18 +553,29 @@ Your order is now live on the dashboard and waiting to be sold!
 📌 *Status:*
 ${isSettled ? `• ✅ *Fully Settled (${completed}/${completed})*` : (leftover > 0 ? `• ⏳ *${leftover} Leftover Orders Pending Settlement*` : '• ⚪ *No Orders Yet*')}
 ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawal Request:* ${primaryWorker.payoutRequestedOrders || leftover} order(s)\n` : ''}${isSettled && primaryWorker.lastPaidAt ? `• 📅 *Last Settled:* ${new Date(primaryWorker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
+
 💡 *Withdrawal Options:*
 • \`/withdraw <orders>\` — Request payout for specific number of orders (e.g. \`/withdraw 5\`)
 • \`/reqforleftover\` — Request withdrawal for all ${leftover} leftover orders
 • \`/bill\` — View live bill & recent orders
 `;
-    await this.sendMessage(chatId, balanceMsg);
+    await this.sendMessage(chatId, balanceMsg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Command: /help
   async handleHelp(chatId) {
     const helpMsg = `
 🤖 *Worker Bill Bot — Commands:*
+
+📢 *OFFICIAL CHANNEL (JOIN 1ST!):*
+👉 https://t.me/madmax00711
 
 🧾 *Billing & Orders:*
 • Send your key directly → instant live bill with recent orders
@@ -449,15 +588,22 @@ ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawa
 • \`/withdraw <number>\` — Request withdrawal for specific order count (e.g. \`/withdraw 10\`)
 • \`/reqforleftover\` — Request withdrawal for all remaining leftover orders
 
-🔗 *Account:*
+🔗 *Account & Channel:*
 • \`/link YOUR_KEY\` — Save your key to this Telegram account
+• \`/channel\` — Join official announcements channel
 
 📦 *Orders:*
 • \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit order
 
 • \`/help\` — Show this message
 `;
-    await this.sendMessage(chatId, helpMsg);
+    await this.sendMessage(chatId, helpMsg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // ── LIVE MASI DATA & RECENT ORDERS SYNC ───────────────────────────────────
@@ -608,6 +754,7 @@ ${completedOrders.length > 10 ? `_...and ${completedOrders.length - 10} more com
 • ⏳ *Leftover Unsettled:* *${leftover}* order(s)
 • 📌 *Status:* ${statusText}
 ${worker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Request:* ${worker.payoutRequestedOrders || leftover} order(s)\n` : ''}${isSettled && worker.lastPaidAt ? `• 📅 *Settled Date:* ${new Date(worker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 _🔄 Synced live with masi.cc.cd_
 `;
   }
@@ -693,7 +840,13 @@ _🔄 Synced live with masi.cc.cd_
     }
 
     const billText = this.buildBillText(worker, db, completedOrders);
-    await this.sendMessage(chatId, billText);
+    await this.sendMessage(chatId, billText, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Command: /withdraw or /request [orders] — worker requests withdrawal for specified orders
@@ -760,9 +913,17 @@ _🔄 Synced live with masi.cc.cd_
 
 ⏳ *Status:* *Sent to Admin on Dashboard*
 Your administrator has been notified to settle your *${requestedOrders}* requested orders. You will receive an instant alert here as soon as payout is processed!
+
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 ━━━━━━━━━━━━━━━━━━━━━━━━
 `;
-    await this.sendMessage(chatId, ackMsg);
+    await this.sendMessage(chatId, ackMsg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Command: /reqforleftover — worker requests withdrawal for all remaining unsettled orders
@@ -806,9 +967,17 @@ Your administrator has been notified to settle your *${requestedOrders}* request
 
 ⏳ *Status:* *Sent to Admin on Dashboard*
 Your administrator has been notified to settle your *${leftover}* leftover orders. You will receive an instant alert here as soon as payout is processed!
+
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 ━━━━━━━━━━━━━━━━━━━━━━━━
 `;
-    await this.sendMessage(chatId, ackMsg);
+    await this.sendMessage(chatId, ackMsg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Command: /refresh — refresh live stats for linked account then show bill
@@ -839,10 +1008,17 @@ Hi ${worker.personName || worker.name}! Your administrator has cleared your payo
 
 📦 *Orders Settled:* *${ordersCount}* completed order(s)
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Send \`/stats\` or \`/balance\` to check your updated settlement status. Thank you!
 `;
-    return await this.sendMessage(worker.telegramId, alertMsg);
+    return await this.sendMessage(worker.telegramId, alertMsg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Status for Dashboard

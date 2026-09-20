@@ -71,6 +71,13 @@
 
         <!-- Bot Status & Top Action Buttons -->
         <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Official Channel Button -->
+          <a href="https://t.me/madmax00711" target="_blank" title="Join Official Telegram Channel: @madmax00711" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition shadow-2xs">
+            <span class="text-sm">📢</span>
+            <span class="hidden sm:inline">Channel:</span>
+            <span>@madmax00711</span>
+          </a>
+
           <!-- Quick TG Connect Button -->
           <button onclick="openQuickTgModal()" title="Quick Connect to Telegram" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 rounded-lg shadow-sm transition transform active:scale-95">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-2.02 1.28-5.7 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.89.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.21-.04.38z"/></svg>
@@ -270,6 +277,22 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Guy / Team Name</label>
               <input type="text" id="quick-tg-guy-name" placeholder="e.g. Alam" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Requirement: Join Channel 1st -->
+          <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-xl p-3 text-xs space-y-1.5">
+            <div class="font-extrabold text-amber-900 flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><span>📢</span> <span>Worker Requirement: Join Channel 1st!</span></span>
+              <a href="https://t.me/madmax00711" target="_blank" class="text-sky-700 hover:text-sky-900 font-bold underline text-[11px]">Open Channel</a>
+            </div>
+            <p class="text-[11px] text-amber-800">
+              Every worker must join <a href="https://t.me/madmax00711" target="_blank" class="font-bold underline text-sky-800 font-mono">https://t.me/madmax00711</a> before accessing their tasks & payout bills.
+            </p>
+            <div class="flex items-center gap-2 pt-0.5">
+              <button type="button" onclick="copyToClipboard('https://t.me/madmax00711', 'Channel Link')" class="px-2.5 py-1 bg-amber-200/80 hover:bg-amber-300/80 text-amber-950 font-bold text-[10px] rounded transition">
+                📋 Copy Channel Link
+              </button>
             </div>
           </div>
 

@@ -1572,7 +1572,8 @@
     const inviteText = document.getElementById('quick-tg-invite-text');
     if (!inviteText) return;
     const url = inviteText.textContent.trim();
-    copyToClipboard(url, 'Telegram Worker Invite Link');
+    const fullInvite = `📢 Step 1: Join our Official Channel 1st:\nhttps://t.me/madmax00711\n\n🤖 Step 2: Connect your key to the Bot:\n${url}`;
+    copyToClipboard(fullInvite, 'Worker Invite & Channel Instructions');
   };
 
   window.saveQuickTgWorkerLink = async function() {
