@@ -541,7 +541,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.954Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.954Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.910Z"
     },
     {
       "id": "w-masi-23",
@@ -550,7 +552,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 4,
       "failCount": 0,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -562,7 +564,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.954Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.954Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.910Z"
     },
     {
       "id": "w-masi-24",
@@ -571,7 +575,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 2,
+      "completedOrders": 3,
       "failCount": 0,
       "successRate": 100,
       "customSuccessRate": 100,
@@ -583,7 +587,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.954Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.954Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
       "id": "w-masi-25",
@@ -676,7 +682,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 1,
       "failCount": 0,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -688,7 +694,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.954Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.954Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
       "id": "w-masi-30",
@@ -1387,7 +1395,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 2,
       "failCount": 0,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -1399,7 +1407,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.955Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.955Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.911Z"
     },
     {
       "id": "w-masi-64",
@@ -1429,7 +1439,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
+      "completedOrders": 7,
       "failCount": 0,
       "successRate": 100,
       "customSuccessRate": 100,
@@ -1441,7 +1451,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.955Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.955Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
       "id": "w-masi-66",
@@ -1450,7 +1462,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 4,
       "failCount": 1,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -1462,7 +1474,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.955Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.955Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.911Z"
     },
     {
       "id": "w-masi-67",
@@ -1492,7 +1506,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 1,
       "failCount": 2,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -1504,7 +1518,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.955Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.955Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
       "id": "w-masi-69",
@@ -1525,7 +1541,8 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.955Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.955Z",
+      "personName": "Lokesh"
     },
     {
       "id": "w-masi-70",
@@ -1549,7 +1566,8 @@
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "paidAmount": 15,
       "paidCount": 1,
-      "lastPaidAt": "2026-09-20T01:50:39.289Z"
+      "lastPaidAt": "2026-09-20T01:50:39.289Z",
+      "personName": "Lokesh"
     },
     {
       "id": "w-masi-71",
@@ -1570,7 +1588,8 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.955Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.955Z",
+      "personName": "Lokesh"
     },
     {
       "id": "w-masi-72",
@@ -1603,7 +1622,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 13,
       "failCount": 0,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -1615,7 +1634,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.955Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.955Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
       "id": "w-masi-74",
@@ -1624,7 +1645,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 4,
+      "completedOrders": 5,
       "failCount": 4,
       "successRate": 50,
       "customSuccessRate": 50,
@@ -1639,7 +1660,9 @@
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "paidAmount": 60,
       "paidCount": 4,
-      "lastPaidAt": "2026-09-20T01:50:32.650Z"
+      "lastPaidAt": "2026-09-20T01:50:32.650Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
       "id": "w-masi-75",
@@ -2443,7 +2466,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 4,
       "failCount": 0,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -2455,7 +2478,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.958Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.958Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.906Z"
     },
     {
       "id": "w-masi-113",
@@ -2485,7 +2510,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 6,
+      "completedOrders": 9,
       "failCount": 0,
       "successRate": 100,
       "customSuccessRate": 100,
@@ -2500,7 +2525,9 @@
       "lastSyncedAt": "2026-09-19T21:53:52.958Z",
       "paidAmount": 90,
       "paidCount": 6,
-      "lastPaidAt": "2026-09-20T02:09:48.203Z"
+      "lastPaidAt": "2026-09-20T02:09:48.203Z",
+      "personName": "Lokesh",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
       "id": "w-masi-115",
@@ -2762,6 +2789,158 @@
       "paidAmount": 60,
       "paidCount": 4,
       "lastPaidAt": "2026-09-20T02:12:41.387Z"
+    },
+    {
+      "id": "w-lokesh-1789936503910-888",
+      "name": "zx prime",
+      "key": "WORKER-6676-F4D9-2147-A574",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 2,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-20T20:35:03.910Z",
+      "updatedAt": "2026-09-20T20:35:03.910Z"
+    },
+    {
+      "id": "w-lokesh-1789936503911-328",
+      "name": "addy w3",
+      "key": "WORKER-E066-68BB-5788-5D13",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 0,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-20T20:35:03.911Z",
+      "updatedAt": "2026-09-20T20:35:03.911Z"
+    },
+    {
+      "id": "w-lokesh-1789936503911-494",
+      "name": "addy w1",
+      "key": "WORKER-8541-C1F7-7407-CE6E",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 4,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-20T20:35:03.911Z",
+      "updatedAt": "2026-09-20T20:35:03.911Z"
+    },
+    {
+      "id": "w-lokesh-1789936503911-60",
+      "name": "addy w2",
+      "key": "WORKER-3679-B63F-244A-40C1",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 0,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": true,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-20T20:35:03.911Z",
+      "updatedAt": "2026-09-20T20:35:03.911Z"
+    },
+    {
+      "id": "w-lokesh-1789936503911-103",
+      "name": "addy",
+      "key": "WORKER-BCA3-777D-223B-D9E9",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 0,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-20T20:35:03.911Z",
+      "updatedAt": "2026-09-20T20:35:03.911Z"
+    },
+    {
+      "id": "w-lokesh-1789936503911-76",
+      "name": "paras w1",
+      "key": "WORKER-C113-B382-50E1-DBE9",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 0,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-20T20:35:03.911Z",
+      "updatedAt": "2026-09-20T20:35:03.911Z"
+    },
+    {
+      "id": "w-lokesh-1789936503912-604",
+      "name": "Lokesh-2BDD",
+      "key": "WORKER-79CB-C0AF-22A2-2BDD",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 1,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "custom",
+      "createdAt": "2026-09-20T20:35:03.912Z",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
+    },
+    {
+      "id": "w-lokesh-1789936503912-771",
+      "name": "Lokesh-5B8F",
+      "key": "WORKER-C0FC-E82A-3F32-5B8F",
+      "personName": "Lokesh",
+      "rate": 15,
+      "completedOrders": 1,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "custom",
+      "createdAt": "2026-09-20T20:35:03.912Z",
+      "updatedAt": "2026-09-20T20:35:03.912Z"
     }
   ],
   "orders": [
