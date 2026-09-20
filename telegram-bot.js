@@ -162,9 +162,11 @@ class TelegramBotEngine {
     const args = parts.slice(1);
 
     if (command === '/start') {
-      await this.handleStart(chatId, from);
+      await this.handleStart(chatId, from, args[0]);
     } else if (command === '/link' || command === '/register') {
       await this.handleLink(chatId, from, args[0]);
+    } else if (command === '/request' || command === '/payout') {
+      await this.handlePayoutRequest(chatId, from, args[0]);
     } else if (command === '/submit' || command === '/add') {
       await this.handleSubmit(chatId, from, args);
     } else if (command === '/stats' || command === '/myorders') {
@@ -187,25 +189,32 @@ class TelegramBotEngine {
     }
   }
 
-  // Command: /start
-  async handleStart(chatId, from) {
+  // Command: /start [payload]
+  async handleStart(chatId, from, payload) {
+    if (payload) {
+      const cleanKey = payload.replace(/^link_/, '').trim();
+      if (cleanKey) {
+        return await this.handleLink(chatId, from, cleanKey);
+      }
+    }
+
     const welcomeText = `
 👋 *Welcome to the Worker Bill Bot!*
 
-🧾 *Get your bill instantly — just send your key:*
+🧾 *Get your bill & request payouts instantly:*
 
-Just paste your worker key like this:
+Just send your worker key like this:
 \`WORKER-XXXX-XXXX-XXXX-XXXX\`
 
-Or use commands:
-• \`/bill YOUR_KEY\` — Generate your bill instantly
-• \`/refresh\` — Re-fetch live stats & update your bill
-• \`/link YOUR_KEY\` — Save your key (so you don't type it each time)
-• \`/stats\` — View full performance breakdown
+Commands:
+• \`/bill YOUR_KEY\` — Generate live bill with recent orders
+• \`/request [amount]\` — Request payout from your administrator
+• \`/refresh\` — Re-fetch live stats & update bill
+• \`/link YOUR_KEY\` — Save your key to this account
 • \`/balance\` — Check unpaid earnings
 • \`/help\` — All commands
 
-_Worker stats are pulled live from masi.cc.cd_ 🔄
+_Synced live with masi.cc.cd_ 🔄
 `;
     await this.sendMessage(chatId, welcomeText);
   }
@@ -663,7 +672,14 @@ _🔄 Synced live with masi.cc.cd_
       worker.d7Fail = Number(d7.fail || 0);
       worker.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
       worker.online = Boolean(liveWorker.online);
-      worker.lastSyncedAt = new Date().toISOString();
+      // Always auto-link Telegram Chat ID and username so admin can reply from dashboard
+      if (chatId) {
+        worker.telegramId = chatId.toString();
+        if (from && from.username) {
+          worker.telegramUsername = `@${from.username}`;
+        }
+        worker.linkedAt = new Date().toISOString();
+      }
 
       this.dbManager.saveDb();
     }
@@ -673,8 +689,68 @@ _🔄 Synced live with masi.cc.cd_
       return;
     }
 
+    // Even if no liveWorker, if worker exists in db, link telegram
+    if (chatId && !worker.telegramId) {
+      worker.telegramId = chatId.toString();
+      if (from && from.username) worker.telegramUsername = `@${from.username}`;
+      worker.linkedAt = new Date().toISOString();
+      this.dbManager.saveDb();
+    }
+
     const billText = this.buildBillText(worker, db, completedOrders);
     await this.sendMessage(chatId, billText);
+  }
+
+  // Command: /request [amount] — worker requests payout from admin
+  async handlePayoutRequest(chatId, from, rawAmount) {
+    const workers = this.findWorkersForUser(chatId, from);
+    const worker = workers[0] || this.findWorkerByChatId(chatId);
+
+    if (!worker) {
+      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease send your worker key first (e.g. \`WORKER-XXXX-XXXX-XXXX-XXXX\`) so we can link your profile.`);
+      return;
+    }
+
+    // Auto-update Telegram ID & Username
+    worker.telegramId = chatId.toString();
+    if (from && from.username) worker.telegramUsername = `@${from.username}`;
+
+    const db = this.dbManager.getDb();
+    const rate = Number(worker.rate) || 15;
+    const completed = Number(worker.completedOrders) || 0;
+    const totalEarned = completed * rate;
+    const paidAmount = Number(worker.paidAmount) || 0;
+    const unpaid = Math.max(0, totalEarned - paidAmount);
+
+    if (unpaid <= 0) {
+      await this.sendMessage(chatId, `ℹ️ *No Pending Balance!*\nAll your completed tasks are already paid. Total Cleared: ₹${paidAmount.toFixed(2)}.`);
+      return;
+    }
+
+    let reqAmount = rawAmount ? Number(rawAmount) : unpaid;
+    if (isNaN(reqAmount) || reqAmount <= 0) {
+      reqAmount = unpaid;
+    }
+
+    worker.payoutRequestedAmount = reqAmount;
+    worker.payoutRequestedAt = new Date().toISOString();
+    worker.payoutRequestStatus = 'pending';
+    this.dbManager.saveDb();
+
+    const ackMsg = `
+✅ *PAYOUT REQUEST SUBMITTED!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Worker:* ${worker.personName || worker.name}
+🔑 *Key:* \`${worker.key}\`
+💰 *Requested Amount:* *₹${reqAmount.toFixed(2)}*
+📦 *Completed Orders:* ${completed}
+📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+
+⏳ *Status:* *Sent to Admin on Dashboard*
+Your administrator has been notified. You will get an instant alert message here as soon as your payout is cleared!
+━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+    await this.sendMessage(chatId, ackMsg);
   }
 
   // Command: /refresh — refresh live stats for linked account then show bill

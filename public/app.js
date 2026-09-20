@@ -289,6 +289,10 @@
       const paidAmount = guy.keys.reduce((sum, k) => sum + (Number(k.paidAmount) || 0), 0);
       const unpaidAmount = Math.max(0, totalEarned - paidAmount);
 
+      // Payout requests from Telegram (/request)
+      const payoutRequestedAmount = guy.keys.reduce((sum, k) => sum + (Number(k.payoutRequestedAmount) || 0), 0);
+      const hasPendingPayoutRequest = guy.keys.some(k => k.payoutRequestStatus === 'pending' && (Number(k.payoutRequestedAmount) || 0) > 0);
+
       let rateColor = 'text-slate-600 bg-slate-100';
       let progressColor = 'bg-slate-400';
       if (rateNum >= 80) {
@@ -313,9 +317,11 @@
         progressColor,
         totalEarned,
         paidAmount,
-        unpaidAmount
+        unpaidAmount,
+        payoutRequestedAmount,
+        hasPendingPayoutRequest
       };
-    });
+    }).sort((a, b) => (Number(b.completedOrders) || 0) - (Number(a.completedOrders) || 0));
   }
 
   // Render application
@@ -377,7 +383,7 @@
     if (elKeys) elKeys.textContent = totalKeys;
     if (elCompleted) elCompleted.textContent = totalCompletedOrders.toLocaleString();
     if (elSuccess) elSuccess.textContent = teamSuccessRate;
-    if (elPay) elPay.textContent = `$${totalPay.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (elPay) elPay.textContent = `₹${totalPay.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     if (elGuys) elGuys.textContent = totalGuys;
 
     // Badges
@@ -387,30 +393,36 @@
 
     if (badgeGuys) badgeGuys.textContent = totalGuys;
     if (badgeKeys) badgeKeys.textContent = totalKeys;
-    if (badgeWorkers) badgeWorkers.textContent = `$${totalPay.toFixed(0)}`;
+    if (badgeWorkers) badgeWorkers.textContent = `₹${totalPay.toFixed(0)}`;
   }
 
-  // Filter guys or workers by global search
+  // Filter guys or workers by global search (Always sorted highest to lowest completed orders)
   function filterGuys(guys) {
-    if (!state.searchQuery.trim()) return guys;
-    const q = state.searchQuery.trim().toLowerCase();
-    return guys.filter(g => 
-      (g.displayName && g.displayName.toLowerCase().includes(q)) ||
-      (g.personName && g.personName.toLowerCase().includes(q)) ||
-      (g.telegramUsername && g.telegramUsername.toLowerCase().includes(q)) ||
-      g.keys.some(k => (k.key && k.key.toLowerCase().includes(q)) || (k.name && k.name.toLowerCase().includes(q)))
-    );
+    let list = guys;
+    if (state.searchQuery.trim()) {
+      const q = state.searchQuery.trim().toLowerCase();
+      list = guys.filter(g => 
+        (g.displayName && g.displayName.toLowerCase().includes(q)) ||
+        (g.personName && g.personName.toLowerCase().includes(q)) ||
+        (g.telegramUsername && g.telegramUsername.toLowerCase().includes(q)) ||
+        g.keys.some(k => (k.key && k.key.toLowerCase().includes(q)) || (k.name && k.name.toLowerCase().includes(q)))
+      );
+    }
+    return [...list].sort((a, b) => (Number(b.completedOrders) || 0) - (Number(a.completedOrders) || 0));
   }
 
   function filterWorkers(workers) {
-    if (!state.searchQuery.trim()) return workers;
-    const q = state.searchQuery.trim().toLowerCase();
-    return workers.filter(w =>
-      (w.name && w.name.toLowerCase().includes(q)) ||
-      (w.key && w.key.toLowerCase().includes(q)) ||
-      (w.personName && w.personName.toLowerCase().includes(q)) ||
-      (w.telegramUsername && w.telegramUsername.toLowerCase().includes(q))
-    );
+    let list = workers;
+    if (state.searchQuery.trim()) {
+      const q = state.searchQuery.trim().toLowerCase();
+      list = workers.filter(w =>
+        (w.name && w.name.toLowerCase().includes(q)) ||
+        (w.key && w.key.toLowerCase().includes(q)) ||
+        (w.personName && w.personName.toLowerCase().includes(q)) ||
+        (w.telegramUsername && w.telegramUsername.toLowerCase().includes(q))
+      );
+    }
+    return [...list].sort((a, b) => (Number(b.completedOrders) || 0) - (Number(a.completedOrders) || 0));
   }
 
   // ==========================================
@@ -480,40 +492,69 @@
     guys.forEach(guy => {
       const isLinked = Boolean(guy.telegramId);
       const isSettled = guy.completedOrders > 0 ? guy.unpaidAmount === 0 : false;
+      const cardDomId = 'guy-card-' + String(guy.id).replace(/[^a-zA-Z0-9_-]/g, '_');
 
       html += `
-        <div class="bg-white rounded-xl shadow-sm border ${isSettled ? 'paid-card-settled' : 'border-slate-200'} hover:border-indigo-300 transition-all overflow-hidden flex flex-col justify-between relative">
+        <div id="${cardDomId}" data-guy-id="${escapeHtml(guy.id)}" ondragover="handleKeyDragOver(event)" ondragleave="handleKeyDragLeave(event)" ondrop="handleKeyDrop(event, '${escapeHtml(guy.id)}')" class="bg-white rounded-xl shadow-sm border ${isSettled ? 'paid-card-settled' : 'border-slate-200'} hover:border-indigo-400 transition-all overflow-hidden flex flex-col justify-between relative">
           ${isSettled ? `
             <div class="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest py-0.5 px-3 text-center flex items-center justify-center gap-1">
               <span>✓</span> PAYMENT COMPLETED & SETTLED
             </div>
           ` : ''}
           <div class="p-5">
+            <!-- Pending Payout Request Alert (from /request in bot) -->
+            ${guy.hasPendingPayoutRequest ? `
+              <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-400 rounded-xl p-3 mb-4 flex items-center justify-between gap-2 shadow-xs">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-xl">🔔</span>
+                  <div>
+                    <div class="text-[11px] font-black uppercase tracking-wider text-amber-900">Payout Requested!</div>
+                    <div class="text-xs text-amber-800 font-medium">Worker requested <strong class="font-extrabold text-slate-900">₹${guy.payoutRequestedAmount.toFixed(2)}</strong></div>
+                  </div>
+                </div>
+                <button onclick="approveGuyPayout('${escapeHtml(guy.id)}', ${guy.payoutRequestedAmount})" class="px-3.5 py-1.5 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1 whitespace-nowrap">
+                  <span>✓</span> Approve & Pay
+                </button>
+              </div>
+            ` : ''}
+
             <!-- Header: Guy Name & Telegram -->
             <div class="flex items-start justify-between gap-3 mb-4">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm cursor-pointer" onclick="openGuyKeysModal('${escapeHtml(guy.id)}')">
                   ${escapeHtml((guy.displayName || 'G').charAt(0).toUpperCase())}
                 </div>
                 <div>
                   <h3 class="font-extrabold text-slate-900 text-base leading-tight flex items-center gap-2">
-                    <span class="${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(guy.displayName)}</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${isSettled ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">
-                      ${guy.keys.length} ${guy.keys.length === 1 ? 'Key' : 'Keys'}
-                    </span>
+                    <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" class="text-left font-extrabold text-slate-900 text-base leading-tight hover:text-indigo-600 transition flex items-center gap-2">
+                      <span class="${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(guy.displayName)}</span>
+                    </button>
+                    <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" title="Click to view & manage keys" class="text-[10px] px-2 py-0.5 rounded-full font-bold cursor-pointer transition ${isSettled ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'}">
+                      ${guy.keys.length} ${guy.keys.length === 1 ? 'Key' : 'Keys'} 🔍
+                    </button>
                   </h3>
-                  <div class="flex items-center gap-2 text-xs mt-1">
+
+                  <!-- Prominent Telegram Display -->
+                  <div class="flex items-center gap-2 text-xs mt-1.5 flex-wrap">
                     ${guy.telegramUsername ? `
-                      <a href="https://t.me/${guy.telegramUsername.replace('@', '')}" target="_blank" class="text-sky-600 hover:underline font-mono font-semibold flex items-center gap-1">
-                        <span>💬</span> ${escapeHtml(guy.telegramUsername)}
+                      <a href="https://t.me/${guy.telegramUsername.replace('@', '')}" target="_blank" class="inline-flex items-center gap-1 text-sky-600 hover:underline font-mono font-bold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                        <span>✈️</span> ${escapeHtml(guy.telegramUsername)}
                       </a>
                     ` : `
-                      <span class="text-slate-400 font-mono">No @telegram handle</span>
+                      <button onclick="openSetTgModal('${escapeHtml(guy.id)}', '${escapeHtml(guy.displayName)}')" class="text-slate-400 hover:text-sky-600 text-[11px] font-medium border border-dashed border-slate-300 hover:border-sky-400 px-2 py-0.5 rounded transition">
+                        + Add @telegram
+                      </button>
                     `}
-                    <span>•</span>
-                    <span class="${isLinked ? 'text-emerald-600 font-semibold' : 'text-slate-400'}">
-                      ${isLinked ? '🟢 Linked in Bot' : '⚪ Not Linked'}
-                    </span>
+                    <span class="text-slate-300">•</span>
+                    ${isLinked ? `
+                      <span class="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-bold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Connected
+                      </span>
+                    ` : `
+                      <button onclick="openQuickTgModal('${escapeHtml(guy.keys[0]?.key || '')}', '${escapeHtml(guy.displayName || '')}')" title="Worker hasn't started bot yet" class="inline-flex items-center gap-1 text-[11px] text-amber-700 font-medium hover:underline">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> ⚪ Bot Not Started
+                      </button>
+                    `}
                   </div>
                 </div>
               </div>
@@ -531,17 +572,18 @@
               </div>
             </div>
 
-            <!-- Assigned Keys Chips List -->
+            <!-- Assigned Keys Chips List (Draggable between worker cards) -->
             <div class="mb-4">
               <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                <span>Assigned Keys (${guy.keys.length})</span>
-                <span class="text-slate-400 font-normal">Click key to copy</span>
+                <span onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" class="cursor-pointer hover:text-indigo-600">Assigned Keys (${guy.keys.length})</span>
+                <span class="text-[10px] text-indigo-600 font-normal">Drag key to move to another worker</span>
               </div>
-              <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 bg-slate-50 rounded-lg border border-slate-200">
                 ${guy.keys.map(k => {
                   const keyPaid = (k.completedOrders > 0) && ((Number(k.paidAmount) || 0) >= (Number(k.completedOrders) || 0) * (Number(k.rate) || 15));
                   return `
-                    <div class="inline-flex items-center gap-1 px-2 py-1 rounded ${keyPaid ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-300'} border text-[11px] font-mono shadow-2xs hover:border-indigo-400 transition">
+                    <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" title="Drag to move to another worker card" class="inline-flex items-center gap-1 px-2 py-1 rounded ${keyPaid ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-300'} border text-[11px] font-mono shadow-2xs hover:border-indigo-500 hover:shadow-xs cursor-grab active:cursor-grabbing transition">
+                      <span class="text-slate-300 select-none text-[9px]">⋮⋮</span>
                       <span class="text-slate-800 font-semibold ${keyPaid ? 'line-through text-slate-400' : ''}">${escapeHtml(k.key)}</span>
                       <button onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -585,9 +627,8 @@
 
           <!-- Card Actions Footer -->
           <div class="p-3 ${isSettled ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50 border-slate-200'} border-t flex items-center justify-between gap-2 flex-wrap">
-            <div class="text-xs text-slate-500">
-              <span>Rate:</span>
-              <strong class="text-slate-800">₹${guy.rate.toFixed(2)}/order</strong>
+            <div class="text-xs text-slate-500 font-medium">
+              Total: <strong class="text-slate-800 font-bold">₹${guy.totalEarned.toFixed(2)}</strong>
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap">
@@ -611,12 +652,12 @@
                 <span>💬</span> Msg
               </button>
 
-              <button onclick="openQuickTgModal('${escapeHtml(guy.keys[0]?.key || '')}', '${escapeHtml(guy.displayName || '')}')" title="Quick Connect to Telegram" class="px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition">
-                ✈️ TG
+              <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" title="View and manage keys under this worker" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition flex items-center gap-1">
+                <span>🔑</span> Keys
               </button>
 
-              <button onclick="openTeamAssignModal()" title="Assign / Edit Keys" class="p-1.5 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-200 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+              <button onclick="openSetTgModal('${escapeHtml(guy.id)}', '${escapeHtml(guy.displayName)}')" title="Set / Edit Telegram Username" class="px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition">
+                ✈️ TG
               </button>
             </div>
           </div>
@@ -716,9 +757,10 @@
             ` : ''}
           </td>
 
-          <!-- Worker Key with Copy -->
+          <!-- Worker Key with Copy & Drag -->
           <td class="py-3 px-4 font-mono text-xs">
-            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded ${isPaidKey ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'} border">
+            <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(w.key)}')" title="Drag to move to another worker" class="inline-flex items-center gap-1.5 px-2 py-1 rounded ${isPaidKey ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'} border cursor-grab active:cursor-grabbing hover:border-indigo-400 transition">
+              <span class="text-slate-300 select-none text-[9px]">⋮⋮</span>
               <span class="font-semibold ${isPaidKey ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHtml(w.key)}</span>
               <button onclick="copyToClipboard('${escapeHtml(w.key)}', 'Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -733,7 +775,9 @@
                 <span>💬</span> ${escapeHtml(w.telegramUsername)}
               </a>
             ` : `
-              <span class="text-slate-400 font-sans text-[11px]">Not assigned</span>
+              <button onclick="openSetTgModal('worker:' + '${escapeHtml(w.key.toLowerCase())}', '${escapeHtml(w.name || w.key)}')" class="text-slate-400 hover:text-sky-600 text-[11px]">
+                + Add @tg
+              </button>
             `}
           </td>
 
@@ -753,11 +797,10 @@
           <!-- Calculated Pay -->
           <td class="py-3 px-4 font-bold text-slate-800">
             ${isPaidKey ? `
-              <div class="paid-crossed-text text-emerald-700">$${totalEarned.toFixed(2)}</div>
+              <div class="paid-crossed-text text-emerald-700">₹${totalEarned.toFixed(2)}</div>
               <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded inline-block mt-0.5">✓ PAID</span>
             ` : `
-              <div>$${totalEarned.toFixed(2)}</div>
-              <span class="text-[11px] font-normal text-slate-400 block">@ $${baseRate}/order</span>
+              <div>₹${totalEarned.toFixed(2)}</div>
             `}
           </td>
 
@@ -765,14 +808,22 @@
           <td class="py-3 px-4 text-right whitespace-nowrap">
             <div class="flex items-center justify-end gap-1.5">
               ${(!isPaidKey && completed > 0) ? `
-                <button onclick="markWorkerPaid('${w.id}')" title="Mark this key as paid" class="px-2 py-1 text-xs font-bold rounded bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
-                  Pay
+                <button onclick="markWorkerPaid('${w.id}')" title="Mark this key as paid" class="px-2.5 py-1 text-xs font-bold rounded bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                  Pay ₹${totalEarned.toFixed(2)}
                 </button>
               ` : ''}
-              <button onclick="openQuickTgModal('${escapeHtml(w.key)}', '${escapeHtml(w.personName || w.name || '')}')" title="Quick Connect to Telegram" class="px-2 py-1 text-xs font-semibold rounded bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition flex items-center gap-1">
+              ${(isPaidKey && completed > 0) ? `
+                <button onclick="unmarkWorkerPaid('${w.id}')" title="Reset payment to unpaid" class="px-2 py-1 text-xs font-semibold rounded bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition">
+                  ↩ Unpay
+                </button>
+              ` : ''}
+              <button onclick="openSendMsgModal('${w.id}', '${escapeHtml(w.name || '')}', '${escapeHtml(w.telegramUsername || '')}')" title="Send direct Telegram message" class="px-2 py-1 text-xs font-bold rounded bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition flex items-center gap-1">
+                <span>💬</span> Msg
+              </button>
+              <button onclick="openQuickTgModal('${escapeHtml(w.key)}', '${escapeHtml(w.personName || w.name || '')}')" title="Quick Connect to Telegram" class="px-2 py-1 text-xs font-semibold rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition flex items-center gap-1">
                 <span>✈️</span> TG
               </button>
-              <button onclick="openDecideRateModal('${w.id}')" title="Set Success Rate" class="px-2.5 py-1 text-xs font-semibold rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
+              <button onclick="openDecideRateModal('${w.id}')" title="Set Success Rate" class="px-2 py-1 text-xs font-semibold rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
                 🎯 Rate
               </button>
               <button onclick="editWorkerKey('${w.id}')" title="Edit Worker Key" class="p-1 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-100 transition">
@@ -832,17 +883,17 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Team Earnings</div>
-            <div class="text-2xl font-black text-slate-900 mt-1">$${totalEarnedTeam.toFixed(2)}</div>
+            <div class="text-2xl font-black text-slate-900 mt-1">₹${totalEarnedTeam.toFixed(2)}</div>
             <div class="text-[11px] text-slate-500 mt-0.5">Completed orders across all keys</div>
           </div>
           <div class="bg-white p-5 rounded-xl border border-emerald-200 bg-emerald-50/20 shadow-2xs">
             <div class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Total Settled / Paid</div>
-            <div class="text-2xl font-black text-emerald-800 mt-1">$${totalPaidTeam.toFixed(2)}</div>
+            <div class="text-2xl font-black text-emerald-800 mt-1">₹${totalPaidTeam.toFixed(2)}</div>
             <div class="text-[11px] text-emerald-600 mt-0.5">Recorded historical payments</div>
           </div>
           <div class="bg-white p-5 rounded-xl border border-rose-200 bg-rose-50/20 shadow-2xs">
             <div class="text-xs font-bold text-rose-700 uppercase tracking-wider">Pending Balance Due</div>
-            <div class="text-2xl font-black text-rose-800 mt-1">$${totalDueTeam.toFixed(2)}</div>
+            <div class="text-2xl font-black text-rose-800 mt-1">₹${totalDueTeam.toFixed(2)}</div>
             <div class="text-[11px] text-rose-600 mt-0.5">Currently owed to workers</div>
           </div>
         </div>
@@ -1996,10 +2047,10 @@
         g.keys.map(k => k.key).join('; '),
         g.completedOrders,
         g.successRate + '%',
-        `$${g.rate.toFixed(2)}`,
-        `$${g.totalEarned.toFixed(2)}`,
-        `$${g.paidAmount.toFixed(2)}`,
-        `$${g.unpaidAmount.toFixed(2)}`
+        `₹${g.rate.toFixed(2)}`,
+        `₹${g.totalEarned.toFixed(2)}`,
+        `₹${g.paidAmount.toFixed(2)}`,
+        `₹${g.unpaidAmount.toFixed(2)}`
       ]);
     });
 
@@ -2028,6 +2079,606 @@
     a.click();
     URL.revokeObjectURL(a);
     showToast('Database backup downloaded as JSON', 'success');
+  };
+
+  // ==========================================
+  // DIRECT LIVE SYNC FROM MASI.CC.CD
+  // ==========================================
+  window.syncMasiLiveDirect = async function() {
+    const btn = document.getElementById('btn-sync-masi-direct');
+    const originalHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span style="display:inline-block;animation:spin 1s linear infinite">↻</span> <span>Syncing...</span>`;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/masi/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bossKey: 'WORKER-B030-0827-9A88-4A04' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchServerState();
+        showToast(`⚡ Live sync complete! Updated ${data.updatedWorkers || 0} workers from masi.cc.cd`, 'success');
+      } else {
+        showToast(data.error || 'Live sync failed', 'danger');
+      }
+    } catch (e) {
+      showToast('Error connecting to live sync server', 'danger');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+  };
+
+  // ==========================================
+  // DRAG AND DROP KEY REASSIGNMENT
+  // ==========================================
+  window.handleKeyDragStart = function(event, key) {
+    window.__draggedKey = key;
+    if (event.dataTransfer) {
+      event.dataTransfer.setData('text/plain', key);
+      event.dataTransfer.effectAllowed = 'move';
+    }
+  };
+
+  window.handleKeyDragOver = function(event) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    const card = event.currentTarget;
+    if (card && !card.classList.contains('drag-hover-active')) {
+      card.classList.add('drag-hover-active', 'ring-2', 'ring-indigo-500', 'bg-indigo-50/20');
+    }
+  };
+
+  window.handleKeyDragLeave = function(event) {
+    const card = event.currentTarget;
+    if (card) {
+      card.classList.remove('drag-hover-active', 'ring-2', 'ring-indigo-500', 'bg-indigo-50/20');
+    }
+  };
+
+  window.handleKeyDrop = async function(event, targetGuyId) {
+    event.preventDefault();
+    const card = event.currentTarget;
+    if (card) {
+      card.classList.remove('drag-hover-active', 'ring-2', 'ring-indigo-500', 'bg-indigo-50/20');
+    }
+
+    const key = (event.dataTransfer ? event.dataTransfer.getData('text/plain') : '') || window.__draggedKey;
+    if (!key) return;
+
+    const guys = getGroupedGuys();
+    const targetGuy = guys.find(g => g.id === targetGuyId);
+    if (!targetGuy) {
+      showToast('Target worker not found', 'warning');
+      return;
+    }
+
+    // Check if key is already under this guy
+    if (targetGuy.keys.some(k => k.key.toUpperCase() === key.toUpperCase())) {
+      showToast(`Key ${key} is already assigned to ${targetGuy.displayName}`, 'info');
+      return;
+    }
+
+    const mapping = {
+      key: key,
+      personName: targetGuy.personName || targetGuy.displayName,
+      telegramUsername: targetGuy.telegramUsername || undefined
+    };
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/batch-assign-telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mappings: [mapping] })
+        });
+        const result = await res.json();
+        if (result.success) {
+          await fetchServerState();
+          showToast(`✓ Assigned key ${key} to ${targetGuy.displayName}!`, 'success');
+          return;
+        }
+      } catch (err) {
+        console.error('API assign failed:', err);
+      }
+    }
+
+    // Local fallback
+    const targetWorker = state.workers.find(w => w.key.toUpperCase() === key.toUpperCase());
+    if (targetWorker) {
+      targetWorker.personName = targetGuy.personName || targetGuy.displayName;
+      if (targetGuy.telegramUsername) targetWorker.telegramUsername = targetGuy.telegramUsername;
+    }
+    saveToLocalStorage();
+    render();
+    showToast(`✓ Assigned key ${key} to ${targetGuy.displayName}!`, 'success');
+  };
+
+  // ==========================================
+  // GUY KEYS LIST & INSPECTION MODAL
+  // ==========================================
+  window.openGuyKeysModal = function(guyId) {
+    const modal = document.getElementById('guy-keys-modal');
+    if (!modal) return;
+
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    window.__currentGuyId = guyId;
+
+    const title = document.getElementById('guy-keys-modal-title');
+    const subtitle = document.getElementById('guy-keys-modal-subtitle');
+    const countEl = document.getElementById('guy-keys-count');
+    const container = document.getElementById('guy-keys-list-container');
+    const addInput = document.getElementById('add-key-to-guy-input');
+
+    if (title) title.textContent = `Keys for ${guy.displayName}`;
+    if (subtitle) {
+      subtitle.textContent = `${guy.telegramUsername || 'No @telegram handle'} • Total Done: ${guy.completedOrders} orders • Total: ₹${guy.totalEarned.toFixed(2)}`;
+    }
+    if (countEl) countEl.textContent = guy.keys.length;
+    if (addInput) addInput.value = '';
+
+    if (container) {
+      if (guy.keys.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-400 p-3 bg-slate-50 rounded-lg text-center">No keys assigned to this guy yet.</div>`;
+      } else {
+        container.innerHTML = guy.keys.map(k => {
+          const rate = Number(k.rate) || 15.00;
+          const completed = Number(k.completedOrders) || 0;
+          const earned = completed * rate;
+          const paid = (completed > 0) && ((Number(k.paidAmount) || 0) >= earned);
+
+          return `
+            <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" class="flex items-center justify-between gap-2 p-2.5 rounded-lg border ${paid ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200'} shadow-2xs cursor-grab active:cursor-grabbing hover:border-indigo-400 transition">
+              <div class="flex items-center gap-2 font-mono text-xs">
+                <span class="text-slate-300 select-none text-[10px]">⋮⋮</span>
+                <span class="font-bold ${paid ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHtml(k.key)}</span>
+                <button onclick="copyToClipboard('${escapeHtml(k.key)}', 'Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-3 text-xs">
+                <span class="font-bold ${paid ? 'text-emerald-700' : 'text-slate-700'}">${completed} ✓</span>
+                <span class="font-semibold text-slate-900">₹${earned.toFixed(2)}</span>
+                ${paid ? '<span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">PAID</span>' : ''}
+                <button onclick="removeKeyFromGuy('${escapeHtml(k.key)}')" title="Detach key from this guy" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition text-xs font-bold">
+                  ✕ Detach
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    modal.classList.remove('hidden');
+  };
+
+  window.closeGuyKeysModal = function() {
+    const modal = document.getElementById('guy-keys-modal');
+    if (modal) modal.classList.add('hidden');
+    window.__currentGuyId = null;
+  };
+
+  window.submitAddKeyToGuy = async function() {
+    const guyId = window.__currentGuyId;
+    if (!guyId) return;
+
+    const input = document.getElementById('add-key-to-guy-input');
+    const key = (input ? input.value : '').trim().toUpperCase();
+    if (!key) {
+      showToast('Please type or paste a worker key', 'warning');
+      return;
+    }
+
+    const guys = getGroupedGuys();
+    const targetGuy = guys.find(g => g.id === guyId);
+    if (!targetGuy) return;
+
+    const mapping = {
+      key: key,
+      personName: targetGuy.personName || targetGuy.displayName,
+      telegramUsername: targetGuy.telegramUsername || undefined
+    };
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/batch-assign-telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mappings: [mapping] })
+        });
+        const result = await res.json();
+        if (result.success) {
+          await fetchServerState();
+          openGuyKeysModal(guyId);
+          showToast(`Added key ${key} to ${targetGuy.displayName}!`, 'success');
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Local fallback
+    const targetWorker = state.workers.find(w => w.key.toUpperCase() === key.toUpperCase());
+    if (targetWorker) {
+      targetWorker.personName = targetGuy.personName || targetGuy.displayName;
+      if (targetGuy.telegramUsername) targetWorker.telegramUsername = targetGuy.telegramUsername;
+    } else {
+      state.workers.push({
+        id: 'w-' + Date.now(),
+        name: key,
+        key: key,
+        personName: targetGuy.personName || targetGuy.displayName,
+        telegramUsername: targetGuy.telegramUsername || undefined,
+        completedOrders: 0,
+        rate: 15.00
+      });
+    }
+    saveToLocalStorage();
+    render();
+    openGuyKeysModal(guyId);
+    showToast(`Added key ${key} to ${targetGuy.displayName}!`, 'success');
+  };
+
+  window.removeKeyFromGuy = async function(key) {
+    if (!key) return;
+    const worker = state.workers.find(w => w.key.toUpperCase() === key.toUpperCase());
+    if (!worker) return;
+
+    worker.personName = worker.name || worker.key;
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/workers/assign-telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            key: worker.key,
+            personName: worker.name || worker.key,
+            telegramUsername: ''
+          })
+        });
+        await fetchServerState();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    saveToLocalStorage();
+    render();
+    if (window.__currentGuyId) {
+      openGuyKeysModal(window.__currentGuyId);
+    }
+    showToast(`Detached key ${key}`, 'info');
+  };
+
+  // ==========================================
+  // WEB-TO-BOT DIRECT MESSAGING
+  // ==========================================
+  window.openSendMsgModal = function(workerIdOrKey, name, tgUsername) {
+    const modal = document.getElementById('send-msg-modal');
+    if (!modal) return;
+
+    window.__sendMsgTargetId = workerIdOrKey;
+    const desc = document.getElementById('send-msg-target-desc');
+    const warning = document.getElementById('send-msg-warning');
+    const input = document.getElementById('send-msg-input');
+
+    if (desc) desc.textContent = `To: ${name || 'Worker'} (${tgUsername || 'Worker'})`;
+    if (input) input.value = '';
+
+    // Check if worker is linked
+    const worker = state.workers.find(w => w.id === workerIdOrKey || w.key === workerIdOrKey);
+    let isLinked = Boolean(worker && worker.telegramId);
+    if (!isLinked && tgUsername) {
+      isLinked = state.workers.some(w => w.telegramUsername && w.telegramUsername.toLowerCase() === tgUsername.toLowerCase() && w.telegramId);
+    }
+
+    if (warning) {
+      if (!isLinked) {
+        warning.classList.remove('hidden');
+        warning.textContent = `⚠️ ${name || 'This worker'} has not messaged the bot yet. They must start @${state.settings.botUsername || 'scantask_bot'} on Telegram to receive messages.`;
+      } else {
+        warning.classList.add('hidden');
+      }
+    }
+
+    modal.classList.remove('hidden');
+  };
+
+  window.closeSendMsgModal = function() {
+    const modal = document.getElementById('send-msg-modal');
+    if (modal) modal.classList.add('hidden');
+    window.__sendMsgTargetId = null;
+  };
+
+  window.submitSendMsg = async function() {
+    const targetId = window.__sendMsgTargetId;
+    const input = document.getElementById('send-msg-input');
+    const text = (input ? input.value : '').trim();
+
+    if (!text) {
+      showToast('Please type a message to send', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('btn-do-send-msg');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/workers/${targetId}/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, text: text })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        closeSendMsgModal();
+        showToast('🚀 Message delivered directly to worker in Telegram!', 'success');
+      } else {
+        showToast(data.error || 'Failed to deliver message via Telegram', 'danger');
+      }
+    } catch (err) {
+      showToast('Error connecting to message server', 'danger');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🚀</span> Send to Telegram`;
+      }
+    }
+  };
+
+  // ==========================================
+  // PAYMENT STATUS ACTIONS (PAY, UNMARK, APPROVE)
+  // ==========================================
+  window.markGuyPaid = async function(guyId) {
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    if (guy.unpaidAmount <= 0) {
+      showToast(`${guy.displayName} is already paid!`, 'info');
+      return;
+    }
+
+    for (const k of guy.keys) {
+      const rate = Number(k.rate) || 15.00;
+      const completed = Number(k.completedOrders) || 0;
+      const totalEarned = completed * rate;
+      const keyUnpaid = Math.max(0, totalEarned - (Number(k.paidAmount) || 0));
+
+      if (keyUnpaid > 0) {
+        if (state.isApiOnline) {
+          try {
+            await fetch(`${API_BASE}/workers/${k.id}/mark-paid`, { method: 'POST' });
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        k.paidAmount = totalEarned;
+        k.paidCount = completed;
+        k.payoutRequestStatus = 'cleared';
+        k.payoutRequestedAmount = 0;
+      }
+    }
+
+    if (state.isApiOnline) {
+      await fetchServerState();
+    } else {
+      saveToLocalStorage();
+      render();
+    }
+
+    showToast(`✓ Marked ₹${guy.unpaidAmount.toFixed(2)} as PAID for ${guy.displayName}! Alert sent via Telegram.`, 'success');
+  };
+
+  window.unmarkGuyPaid = async function(guyId) {
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    if (!confirm(`Reset payment for ${guy.displayName}? This will mark all their completed tasks as UNPAID.`)) return;
+
+    for (const k of guy.keys) {
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/workers/${k.id}/mark-unpaid`, { method: 'POST' });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      k.paidAmount = 0;
+      k.paidCount = 0;
+    }
+
+    if (state.isApiOnline) {
+      await fetchServerState();
+    } else {
+      saveToLocalStorage();
+      render();
+    }
+
+    showToast(`↩ Payment status reset to UNPAID for ${guy.displayName}`, 'info');
+  };
+
+  window.approveGuyPayout = async function(guyId, amount) {
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    let clearedAmount = 0;
+    for (const k of guy.keys) {
+      if (k.payoutRequestStatus === 'pending' || (Number(k.payoutRequestedAmount) || 0) > 0) {
+        const reqAmt = Number(k.payoutRequestedAmount) || amount;
+        if (state.isApiOnline) {
+          try {
+            const res = await fetch(`${API_BASE}/workers/${k.id}/approve-payout`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ amount: reqAmt })
+            });
+            const data = await res.json();
+            if (data.success) clearedAmount += reqAmt;
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        k.paidAmount = (Number(k.paidAmount) || 0) + reqAmt;
+        k.payoutRequestStatus = 'approved';
+        k.payoutRequestedAmount = 0;
+      }
+    }
+
+    if (state.isApiOnline) {
+      await fetchServerState();
+    } else {
+      saveToLocalStorage();
+      render();
+    }
+
+    showToast(`🎉 Approved & cleared payout of ₹${(clearedAmount || amount).toFixed(2)} for ${guy.displayName}! Alert sent to Telegram.`, 'success');
+  };
+
+  window.markWorkerPaid = async function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId || w.key === workerId);
+    if (!worker) return;
+
+    const rate = Number(worker.rate) || 15.00;
+    const completed = Number(worker.completedOrders) || 0;
+    const totalEarned = completed * rate;
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/${worker.id}/mark-paid`, { method: 'POST' });
+        const data = await res.json();
+        await fetchServerState();
+        if (data.telegramSent) {
+          showToast(`✓ Marked ₹${totalEarned.toFixed(2)} as PAID! Telegram notification delivered.`, 'success');
+        } else {
+          showToast(`✓ Marked ₹${totalEarned.toFixed(2)} as PAID for ${worker.name}`, 'success');
+        }
+        return;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    worker.paidAmount = totalEarned;
+    worker.paidCount = completed;
+    saveToLocalStorage();
+    render();
+    showToast(`✓ Marked ₹${totalEarned.toFixed(2)} as PAID for ${worker.name}`, 'success');
+  };
+
+  window.unmarkWorkerPaid = async function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId || w.key === workerId);
+    if (!worker) return;
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/workers/${worker.id}/mark-unpaid`, { method: 'POST' });
+        await fetchServerState();
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      worker.paidAmount = 0;
+      worker.paidCount = 0;
+      saveToLocalStorage();
+      render();
+    }
+    showToast(`↩ Payment status reset to UNPAID for ${worker.name}`, 'info');
+  };
+
+  // ==========================================
+  // QUICK SET TELEGRAM USERNAME MODAL
+  // ==========================================
+  window.openSetTgModal = function(guyId, guyName) {
+    const modal = document.getElementById('set-tg-modal');
+    if (!modal) return;
+
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+
+    document.getElementById('set-tg-guy-id').value = guyId;
+    const desc = document.getElementById('set-tg-modal-desc');
+    if (desc) desc.textContent = `Attach Telegram username to "${guyName || guy?.displayName || 'Worker'}":`;
+
+    const input = document.getElementById('set-tg-username-input');
+    if (input) input.value = guy?.telegramUsername || '';
+
+    modal.classList.remove('hidden');
+  };
+
+  window.closeSetTgModal = function() {
+    const modal = document.getElementById('set-tg-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.saveSetTgUsername = async function() {
+    const guyId = document.getElementById('set-tg-guy-id').value;
+    const input = document.getElementById('set-tg-username-input');
+    let tg = (input ? input.value : '').trim();
+    if (!tg) {
+      showToast('Please enter a Telegram username', 'warning');
+      return;
+    }
+    if (!tg.startsWith('@')) tg = '@' + tg;
+
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    const mappings = guy.keys.map(k => ({
+      key: k.key,
+      telegramUsername: tg,
+      personName: guy.personName || guy.displayName
+    }));
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/batch-assign-telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mappings })
+        });
+        const result = await res.json();
+        if (result.success) {
+          await fetchServerState();
+          closeSetTgModal();
+          showToast(`Attached ${tg} to ${guy.displayName}!`, 'success');
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    guy.keys.forEach(k => {
+      const wk = state.workers.find(w => w.key === k.key);
+      if (wk) wk.telegramUsername = tg;
+    });
+    saveToLocalStorage();
+    render();
+    closeSetTgModal();
+    showToast(`Attached ${tg} to ${guy.displayName}!`, 'success');
   };
 
   // Search input event listeners
