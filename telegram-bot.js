@@ -178,11 +178,8 @@ class TelegramBotEngine {
     } else if (command === '/help') {
       await this.handleHelp(chatId);
     } else if (!text.startsWith('/')) {
-      // Worker just types their key directly (no command needed)
-      const possibleKey = text.trim().toUpperCase();
-      if (possibleKey.startsWith('WORKER-') || possibleKey.startsWith('KEY-')) {
-        await this.handleBill(chatId, from, text.trim());
-      }
+      // Worker just types their key or name directly (no command needed)
+      await this.handleBill(chatId, from, text.trim());
     } else {
       if (text.startsWith('/')) {
         await this.sendMessage(chatId, `❓ Unknown command: \`${command}\`\nSend /help to see all available commands.`);
@@ -269,12 +266,14 @@ _Worker stats are pulled live from masi.cc.cd_ 🔄
 
 👤 *Guy / Worker:* ${worker.personName || worker.name} (${username})
 ${keysListText}
-💵 *Pay Rate:* $${Number(worker.rate || 15).toFixed(2)} per order
+⚡ *Status:* Active Worker Account
 
 📌 *What you can do now:*
-• \`/submit <order_id> <order_number> <unique_id> [notes]\` — Submit new order
-• \`/stats\` — View your completed orders, success rate & earnings across all your keys
-• \`/balance\` — Check your unpaid balance
+• Send your key anytime to get your latest live bill
+• \`/bill\` — View your performance summary & recent completed orders
+• \`/refresh\` — Refresh live data & update bill
+• \`/stats\` — View full performance breakdown
+• \`/balance\` — Check unpaid balance
 • \`/help\` — See command details
 `;
     await this.sendMessage(chatId, successMsg);
@@ -375,129 +374,45 @@ Your order is now live on the dashboard and waiting to be sold!
     await this.sendMessage(chatId, confirmationMsg);
   }
 
-  // Command: /stats
+  // Command: /stats — shows live bill & recent completed orders with NO rates
   async handleStats(chatId, from) {
     const workers = this.findWorkersForUser(chatId, from);
     if (!workers || workers.length === 0) {
-      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\``);
+      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\`\nOr simply send your worker key directly.`);
       return;
     }
-
-    const db = this.dbManager.getDb();
-    const primaryWorker = workers[0];
-    const workerKeys = workers.map(w => w.key.toUpperCase());
-    const workerNames = workers.map(w => w.name.toLowerCase());
-
-    const orders = db.orders.filter(o => 
-      (o.workerKey && workerKeys.includes(o.workerKey.toUpperCase())) ||
-      (o.workerName && workerNames.includes(o.workerName.toLowerCase()))
-    );
-
-    const localTotal = orders.length;
-    const localCompleted = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'fulfilled').length;
-    
-    // Sum extracted completed orders across all their keys
-    const extractedCompleted = workers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
-    const extractedFail = workers.reduce((sum, w) => sum + (Number(w.failCount) || 0), 0);
-
-    const completedOrders = Math.max(localCompleted, extractedCompleted);
-    const totalOrders = Math.max(localTotal, extractedCompleted + extractedFail);
-    const soldOrders = orders.filter(o => o.inventoryStatus === 'sold').length;
-    const unsoldCount = orders.filter(o => o.inventoryStatus === 'unsold').length;
-    const unfulfilledSold = orders.filter(o => o.inventoryStatus === 'sold' && o.fulfillmentStatus === 'unfulfilled').length;
-
-    // Success Rate calculation: Admin decided rate takes priority if set, else combined
-    let successRate = '0.0';
-    const isCustomRate = primaryWorker.customSuccessRate !== null && primaryWorker.customSuccessRate !== undefined && primaryWorker.customSuccessRate !== '';
-    if (isCustomRate) {
-      successRate = Number(primaryWorker.customSuccessRate).toFixed(1);
-    } else {
-      successRate = totalOrders > 0 
-        ? ((completedOrders / totalOrders) * 100).toFixed(1) 
-        : (workers.length === 1 && primaryWorker.successRate !== undefined ? Number(primaryWorker.successRate).toFixed(1) : '0.0');
-    }
-
-    // Payout calculations
-    const defaultRate = Number(primaryWorker.rate) || 15.00;
-    const totalEarned = completedOrders * defaultRate;
-
-    const paidTotal = orders
-      .filter(o => o.workerPaymentStatus === 'paid')
-      .reduce((sum, o) => sum + (Number(o.payoutAmount) || defaultRate), 0);
-
-    const unpaidTotal = orders
-      .filter(o => o.workerPaymentStatus === 'unpaid')
-      .reduce((sum, o) => sum + (Number(o.payoutAmount) || defaultRate), 0);
-
-    const paidCount = orders.filter(o => o.workerPaymentStatus === 'paid').length;
-    const unpaidCount = orders.filter(o => o.workerPaymentStatus === 'unpaid').length;
-
-    let keysBlock = '';
-    if (workers.length > 1) {
-      keysBlock = `👥 *Assigned Keys (${workers.length}):*\n` + workers.map(w =>
-        `• \`${w.key}\` (${w.name}): *${w.completedOrders || 0}* done | *${w.customSuccessRate || w.successRate || 0}%* rate`
-      ).join('\n') + '\n';
-    } else {
-      keysBlock = `🔑 *Key:* \`${primaryWorker.key}\`\n`;
-    }
-
-    const statsMsg = `
-📊 *Performance & Payout Statistics*
-
-👤 *Guy / Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
-${keysBlock}💵 *Base Rate:* $${defaultRate.toFixed(2)} / order
-
-━━━━━━━━━━━━━━━━━━━━
-📦 *Combined Order Metrics:*
-• *Total Completed:* ${completedOrders} orders
-• ⚠️ *Sold (Awaiting Delivery):* ${unfulfilledSold}
-• 🟡 *Unsold in Stock:* ${unsoldCount}
-
-🎯 *Success Rate:* *${successRate}%*${isCustomRate ? ' _(Admin Decided)_' : ''}
-━━━━━━━━━━━━━━━━━━━━
-💰 *Payout Summary:*
-• *Total Earned:* $${totalEarned.toFixed(2)}
-• *Settled / Paid:* $${paidTotal.toFixed(2)} (${paidCount} orders)
-• 🔴 *Pending Owed:* *$${unpaidTotal.toFixed(2)}* (${unpaidCount} orders)
-━━━━━━━━━━━━━━━━━━━━
-`;
-    await this.sendMessage(chatId, statsMsg);
+    await this.handleBill(chatId, from, workers[0].key);
   }
 
   // Command: /pay or /balance
   async handleBalance(chatId, from) {
     const workers = this.findWorkersForUser(chatId, from);
     if (!workers || workers.length === 0) {
-      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\``);
+      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\`\nOr simply send your worker key directly.`);
       return;
     }
 
     const primaryWorker = workers[0];
-    const workerKeys = workers.map(w => w.key.toUpperCase());
-    const workerNames = workers.map(w => w.name.toLowerCase());
-
     const db = this.dbManager.getDb();
-    const orders = db.orders.filter(o => 
-      (o.workerKey && workerKeys.includes(o.workerKey.toUpperCase())) ||
-      (o.workerName && workerNames.includes(o.workerName.toLowerCase()))
-    );
-
-    const defaultRate = Number(primaryWorker.rate) || 15.00;
-    const unpaidOrders = orders.filter(o => o.workerPaymentStatus === 'unpaid');
-    const unpaidTotal = unpaidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || defaultRate), 0);
-    const paidOrders = orders.filter(o => o.workerPaymentStatus === 'paid');
-    const paidTotal = paidOrders.reduce((sum, o) => sum + (Number(o.payoutAmount) || defaultRate), 0);
+    const payPerOrder = Number(primaryWorker.rate) || Number(db.settings && db.settings.defaultRate) || 15.00;
+    const completed = Number(primaryWorker.completedOrders) || 0;
+    const totalEarned = completed * payPerOrder;
+    const paidAmount = Number(primaryWorker.paidAmount) || 0;
+    const unpaid = Math.max(0, totalEarned - paidAmount);
 
     let keysList = workers.map(w => `\`${w.key}\``).join(', ');
 
     const balanceMsg = `
 💳 *Your Payout Balance*
-
-👤 *Guy / Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
 🔑 *Keys:* ${keysList}
+📦 *Completed Orders:* ${completed}
 
-🔴 *Current Pending Balance:* *$${unpaidTotal.toFixed(2)}* (${unpaidOrders.length} unpaid orders)
-🟢 *Total Cleared to Date:* $${paidTotal.toFixed(2)} (${paidOrders.length} paid orders)
+💰 *Earnings Status:*
+• 💴 *Total Earned:* $${totalEarned.toFixed(2)}
+• 🟢 *Already Cleared:* $${paidAmount.toFixed(2)}
+• 🔴 *Current Pending Balance:* *$${unpaid.toFixed(2)}*
 
 _Payments are recorded and verified by your administrator._
 `;
@@ -509,15 +424,15 @@ _Payments are recorded and verified by your administrator._
     const helpMsg = `
 🤖 *Worker Bill Bot — Commands:*
 
-🧾 *Billing:*
-• Just paste your key → instant bill
-• \`/bill YOUR_KEY\` — Generate bill for any key
-• \`/refresh\` — Pull latest live stats & regenerate bill
+🧾 *Billing & Live Sync:*
+• Send your key directly → instant live bill with recent orders
+• \`/bill [YOUR_KEY]\` — Generate live bill with recent completed orders
+• \`/refresh\` — Re-fetch live stats from masi.cc.cd & update bill
+• \`/stats\` — View latest performance overview
 
 🔗 *Account:*
-• \`/link YOUR_KEY\` — Save your key to this account
-• \`/stats\` — Full performance breakdown
-• \`/balance\` — Unpaid earnings balance
+• \`/link YOUR_KEY\` — Save your key to this Telegram account
+• \`/balance\` — Check unpaid earnings balance
 
 📦 *Orders:*
 • \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit order
@@ -527,37 +442,135 @@ _Payments are recorded and verified by your administrator._
     await this.sendMessage(chatId, helpMsg);
   }
 
+  // ── LIVE MASI DATA & RECENT ORDERS SYNC ───────────────────────────────────
+
+  // Fetch live worker stats and recent completed orders from masi.cc.cd
+  async fetchLiveWorkerDataAndOrders(workerKeyOrName) {
+    const db = this.dbManager.getDb();
+    const bossKey = (db.settings && db.settings.bossKey) || 'WORKER-B030-0827-9A88-4A04';
+    if (!bossKey) {
+      return { liveWorker: null, completedOrders: [] };
+    }
+
+    const { callMasiApi } = require('./sync-masi');
+    try {
+      const searchKey = (workerKeyOrName || '').trim();
+      const [teamData, ordersData] = await Promise.all([
+        callMasiApi('api/worker/team', bossKey, {}).catch(e => {
+          console.warn('[Bot Sync] Team API error:', e.message);
+          return { team: [] };
+        }),
+        callMasiApi('api/worker/team', bossKey, { action: 'orders', range: 'all', limit: 1000 }).catch(e => {
+          console.warn('[Bot Sync] Orders API error:', e.message);
+          return { orders: [] };
+        })
+      ]);
+
+      const teamList = teamData.team || [];
+      const allOrders = ordersData.orders || [];
+
+      // Find worker by access_key or name
+      const liveWorker = teamList.find(w =>
+        (w.access_key && w.access_key.toUpperCase() === searchKey.toUpperCase()) ||
+        (w.name && w.name.toLowerCase() === searchKey.toLowerCase())
+      );
+
+      // Find completed orders for this worker
+      let completedOrders = [];
+      if (liveWorker) {
+        completedOrders = allOrders.filter(o =>
+          (o.worker_id && o.worker_id === liveWorker.worker_id) ||
+          (o.worker_name && o.worker_name.toLowerCase() === liveWorker.name.toLowerCase())
+        ).filter(o => o.status === 'completed' || (Number(o.completed_at) || 0) > 0);
+      } else {
+        completedOrders = allOrders.filter(o =>
+          o.worker_name && o.worker_name.toLowerCase() === searchKey.toLowerCase()
+        ).filter(o => o.status === 'completed' || (Number(o.completed_at) || 0) > 0);
+      }
+
+      // Also merge any completed orders from local db
+      const localOrders = (db.orders || []).filter(o =>
+        (o.workerKey && o.workerKey.toUpperCase() === searchKey.toUpperCase()) ||
+        (liveWorker && o.workerKey && o.workerKey.toUpperCase() === (liveWorker.access_key || '').toUpperCase()) ||
+        (liveWorker && o.workerName && o.workerName.toLowerCase() === liveWorker.name.toLowerCase())
+      ).filter(o => o.fulfillmentStatus === 'fulfilled' || o.inventoryStatus === 'sold');
+
+      localOrders.forEach(lo => {
+        const already = completedOrders.some(co => co.order_id === lo.orderId || co.order_id === lo.id);
+        if (!already) {
+          completedOrders.push({
+            order_id: lo.orderId || lo.id,
+            completed_at: lo.fulfilledAt ? Math.floor(new Date(lo.fulfilledAt).getTime() / 1000) : (lo.createdAt ? Math.floor(new Date(lo.createdAt).getTime() / 1000) : 0),
+            ticket: lo.uniqueId || lo.orderNumber || '',
+            email: lo.telegramUsername || '',
+            reward_cents: (Number(lo.payoutAmount) || 15) * 100,
+            status: 'completed'
+          });
+        }
+      });
+
+      // Sort newest completed first
+      completedOrders.sort((a, b) => (Number(b.completed_at) || 0) - (Number(a.completed_at) || 0));
+
+      return {
+        liveWorker,
+        completedOrders
+      };
+    } catch (err) {
+      console.error('[Bot Sync Error]:', err.message);
+      return { liveWorker: null, completedOrders: [] };
+    }
+  }
+
   // ── BILL GENERATION ──────────────────────────────────────────────────────
 
-  // Build the bill text from a worker record (uses masi live data if present)
-  buildBillText(worker, db) {
+  // Build the bill text from a worker record (strictly NO rate, with recent completed orders)
+  buildBillText(worker, db, completedOrders = []) {
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-    const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-    const rate = Number(worker.rate) || Number(db.settings && db.settings.defaultRate) || 15;
-    const completed = Number(worker.completedOrders) || 0;
-    const failed = Number(worker.failCount) || 0;
-    const total = completed + failed;
-    const successRate = total > 0 ? ((completed / total) * 100).toFixed(1) : (Number(worker.successRate) || 0).toFixed(1);
+    const payPerOrder = Number(worker.rate) || Number(db.settings && db.settings.defaultRate) || 15;
+    const completed = Number(worker.completedOrders) || (completedOrders ? completedOrders.length : 0);
     const d7Done = Number(worker.d7Done) || 0;
-    const d7Fail = Number(worker.d7Fail) || 0;
-    const d7Rate = Number(worker.d7Rate) || (d7Done + d7Fail > 0 ? ((d7Done / (d7Done + d7Fail)) * 100).toFixed(1) : 0);
     const todayDone = Number(worker.todayDone) || 0;
 
-    const totalEarned = completed * rate;
+    const totalEarned = completed * payPerOrder;
     const paidAmount = Number(worker.paidAmount) || 0;
     const unpaid = Math.max(0, totalEarned - paidAmount);
 
-    // Performance badge
-    const rateNum = parseFloat(successRate);
-    let badge = '⚪ New';
-    if (rateNum >= 80) badge = '🏆 Top Performer';
-    else if (rateNum >= 60) badge = '🟢 Good';
-    else if (rateNum >= 40) badge = '🟡 Average';
-    else if (total > 0) badge = '🔴 Needs Improvement';
+    const paidStatus = unpaid <= 0 && totalEarned > 0
+      ? '✅ ALL CLEARED / FULLY PAID'
+      : (unpaid > 0 ? `🔴 $${unpaid.toFixed(2)} PENDING` : '—');
 
-    const paidStatus = unpaid <= 0 && totalEarned > 0 ? '✅ FULLY PAID' : (unpaid > 0 ? `🔴 ₹${unpaid.toFixed(2)} PENDING` : '—');
+    // Format recent completed orders
+    let recentOrdersSection = '';
+    if (completedOrders && completedOrders.length > 0) {
+      const topOrders = completedOrders.slice(0, 10);
+      const ordersLines = topOrders.map((o, idx) => {
+        let time = 'Recent';
+        if (o.completed_at) {
+          try {
+            const d = new Date(Number(o.completed_at) * 1000);
+            time = d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true });
+          } catch (e) {}
+        }
+        const ticketPart = o.ticket ? ` | 🎟️ \`${o.ticket}\`` : '';
+        const emailPart = o.email ? ` (${o.email})` : '';
+        return `• \`${o.order_id}\` — ${time}${ticketPart}${emailPart}`;
+      }).join('\n');
+
+      recentOrdersSection = `
+📋 *MOST RECENT COMPLETED ORDERS (${topOrders.length}):*
+${ordersLines}
+${completedOrders.length > 10 ? `_...and ${completedOrders.length - 10} more completed orders recorded_` : ''}
+`;
+    } else {
+      recentOrdersSection = `
+📋 *MOST RECENT COMPLETED ORDERS:*
+• _No recent completed orders found in current batch._
+`;
+    }
 
     return `
 🧾 *WORKER PERFORMANCE BILL*
@@ -565,150 +578,104 @@ _Payments are recorded and verified by your administrator._
 📅 *Date:* ${dateStr} ${timeStr}
 ━━━━━━━━━━━━━━━━━━━━━━━━
 
-👤 *Name:* ${worker.personName || worker.name}
+👤 *Worker:* ${worker.personName || worker.name}
 🔑 *Key:* \`${worker.key}\`
-⭐ *Status:* ${badge}
-📍 *Online:* ${worker.online ? '🟢 Yes' : '⚪ No'}
+📍 *Online Status:* ${worker.online ? '🟢 Online' : '⚪ Offline'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
-📦 *ALL-TIME PERFORMANCE:*
-• ✅ Completed: *${completed}*
-• ❌ Failed/Released: *${failed}*
-• 📊 Total Attempted: *${total}*
-• 🎯 Success Rate: *${successRate}%*
-
-📅 *LAST 7 DAYS:*
-• ✅ Done: *${d7Done}*
-• ❌ Fail: *${d7Fail}*
-• 🎯 Rate: *${typeof d7Rate === 'number' ? d7Rate.toFixed(1) : d7Rate}%*
-
-🌅 *TODAY:*
-• ✅ Completed: *${todayDone}*
+📦 *COMPLETED ORDERS OVERVIEW:*
+• ✅ *Total Completed:* ${completed} orders
+• 📅 *Last 7 Days:* ${d7Done} orders
+• 🌅 *Today:* ${todayDone} orders
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
-💰 *EARNINGS BILL:*
-• 💵 Rate per Order: *$${rate.toFixed(2)}*
-• 📦 Orders Completed: *${completed}*
-• 💴 Total Earned: *$${totalEarned.toFixed(2)}*
-• 🟢 Already Paid: *$${paidAmount.toFixed(2)}*
+💰 *PAYOUT SUMMARY:*
+• 📦 *Completed Count:* ${completed}
+• 💴 *Total Earned:* $${totalEarned.toFixed(2)}
+• 🟢 *Already Paid:* $${paidAmount.toFixed(2)}
 • ${paidStatus}
-━━━━━━━━━━━━━━━━━━━━━━━━
-_Live data from masi.cc.cd_ 🔄
+━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
+_🔄 Synced live with masi.cc.cd_
 `;
   }
 
-  // Command: /bill [KEY] — generate bill for a key (or linked account)
+  // Command: /bill [KEY] — generate bill for a key (or linked account) synced with live data
   async handleBill(chatId, from, rawKey) {
     const db = this.dbManager.getDb();
-    let worker = null;
+    let searchKey = '';
 
-    if (rawKey) {
-      // Look up by provided key
-      const key = rawKey.trim();
-      worker = db.workers.find(w => w.key && w.key.toUpperCase() === key.toUpperCase());
-      if (!worker) {
-        await this.sendMessage(chatId, `❌ *Key not found:* \`${key}\`\n\nMake sure you paste the full key exactly.\n_Example: \`WORKER-XXXX-XXXX-XXXX-XXXX\`_`);
-        return;
-      }
+    if (rawKey && rawKey.trim()) {
+      searchKey = rawKey.trim();
     } else {
-      // Use linked account
       const workers = this.findWorkersForUser(chatId, from);
       if (!workers || workers.length === 0) {
         await this.sendMessage(chatId, `⚠️ *No key linked!*\n\nSend your key directly:\n\`WORKER-XXXX-XXXX-XXXX-XXXX\`\n\nOr link it: \`/link YOUR_KEY\``);
         return;
       }
-      worker = workers[0];
+      searchKey = workers[0].key;
     }
 
-    // Send "fetching" notification
-    await this.sendMessage(chatId, `⏳ Fetching live data for *${worker.name}*...`);
+    await this.sendMessage(chatId, `⏳ *Syncing live data from masi.cc.cd...*`);
 
-    // Try to refresh from masi live
-    try {
-      const { callMasiApi } = require('./sync-masi');
-      const bossKey = db.settings && db.settings.bossKey;
-      if (bossKey) {
-        // Find this specific worker from masi team
-        const teamData = await callMasiApi('api/worker/team', bossKey, {});
-        const teamList = teamData.team || [];
-        const liveWorker = teamList.find(w =>
-          (w.access_key && w.access_key.toUpperCase() === worker.key.toUpperCase()) ||
-          (w.name && w.name.toLowerCase() === worker.name.toLowerCase())
-        );
-        if (liveWorker) {
-          const d7 = (liveWorker.recent && liveWorker.recent.d7) || {};
-          worker.completedOrders = Number(liveWorker.completed_count || 0);
-          worker.failCount = Number(liveWorker.release_count || 0) + Number(liveWorker.expired_count || 0) + Number(liveWorker.not_landed_count || 0);
-          worker.successRate = liveWorker.success_rate !== undefined ? Number(liveWorker.success_rate) : (d7.rate !== undefined ? Number(d7.rate) : 0);
-          worker.d7Done = Number(d7.ok || 0);
-          worker.d7Fail = Number(d7.fail || 0);
-          worker.d7Rate = Number(d7.rate || 0);
-          worker.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
-          worker.online = Boolean(liveWorker.online);
-          worker.lastSyncedAt = new Date().toISOString();
-          this.dbManager.saveDb();
-        }
+    // Fetch live data & live completed orders
+    const { liveWorker, completedOrders } = await this.fetchLiveWorkerDataAndOrders(searchKey);
+
+    let worker = db.workers.find(w =>
+      (w.key && w.key.toUpperCase() === searchKey.toUpperCase()) ||
+      (w.name && w.name.toLowerCase() === searchKey.toLowerCase())
+    );
+
+    if (liveWorker) {
+      if (!worker) {
+        worker = {
+          id: `w-masi-${Date.now()}`,
+          name: liveWorker.name,
+          key: liveWorker.access_key || searchKey,
+          worker_id: liveWorker.worker_id,
+          telegramId: chatId ? chatId.toString() : null,
+          telegramUsername: from && from.username ? `@${from.username}` : null,
+          rate: Number(db.settings && db.settings.defaultRate) || 15.00,
+          paidAmount: 0,
+          paidCount: 0,
+          status: liveWorker.active !== false ? 'active' : 'paused',
+          source: 'masi'
+        };
+        db.workers.push(worker);
       }
-    } catch (e) {
-      // Non-fatal — use cached data
-      console.warn('[Bill] Could not fetch live masi data:', e.message);
+
+      // Update worker with live masi stats
+      worker.name = liveWorker.name;
+      worker.key = liveWorker.access_key || worker.key;
+      worker.worker_id = liveWorker.worker_id;
+      worker.completedOrders = Number(liveWorker.completed_count || 0);
+      worker.failCount = Number(liveWorker.release_count || 0) + Number(liveWorker.expired_count || 0) + Number(liveWorker.not_landed_count || 0);
+      const d7 = (liveWorker.recent && liveWorker.recent.d7) || {};
+      worker.d7Done = Number(d7.ok || 0);
+      worker.d7Fail = Number(d7.fail || 0);
+      worker.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
+      worker.online = Boolean(liveWorker.online);
+      worker.lastSyncedAt = new Date().toISOString();
+
+      this.dbManager.saveDb();
     }
 
-    const billText = this.buildBillText(worker, db);
+    if (!worker) {
+      await this.sendMessage(chatId, `❌ *Worker Key Not Found:* \`${searchKey}\`\nPlease check your key and send it again.`);
+      return;
+    }
+
+    const billText = this.buildBillText(worker, db, completedOrders);
     await this.sendMessage(chatId, billText);
   }
 
   // Command: /refresh — refresh live stats for linked account then show bill
   async handleRefreshAndBill(chatId, from) {
-    const db = this.dbManager.getDb();
     const workers = this.findWorkersForUser(chatId, from);
-
     if (!workers || workers.length === 0) {
       await this.sendMessage(chatId, `⚠️ *No key linked!*\n\nSend your key: \`WORKER-XXXX-XXXX-XXXX-XXXX\`\nOr: \`/link YOUR_KEY\``);
       return;
     }
-
-    await this.sendMessage(chatId, `🔄 *Refreshing live data from masi.cc.cd...*`);
-
-    const bossKey = db.settings && db.settings.bossKey;
-    let refreshed = 0;
-
-    if (bossKey) {
-      try {
-        const { callMasiApi } = require('./sync-masi');
-        const teamData = await callMasiApi('api/worker/team', bossKey, {});
-        const teamList = teamData.team || [];
-
-        for (const w of workers) {
-          const liveWorker = teamList.find(lw =>
-            (lw.access_key && lw.access_key.toUpperCase() === w.key.toUpperCase()) ||
-            (lw.name && lw.name.toLowerCase() === w.name.toLowerCase())
-          );
-          if (liveWorker) {
-            const d7 = (liveWorker.recent && liveWorker.recent.d7) || {};
-            w.completedOrders = Number(liveWorker.completed_count || 0);
-            w.failCount = Number(liveWorker.release_count || 0) + Number(liveWorker.expired_count || 0) + Number(liveWorker.not_landed_count || 0);
-            w.successRate = liveWorker.success_rate !== undefined ? Number(liveWorker.success_rate) : 0;
-            w.d7Done = Number(d7.ok || 0);
-            w.d7Fail = Number(d7.fail || 0);
-            w.d7Rate = Number(d7.rate || 0);
-            w.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
-            w.online = Boolean(liveWorker.online);
-            w.lastSyncedAt = new Date().toISOString();
-            refreshed++;
-          }
-        }
-        this.dbManager.saveDb();
-      } catch (e) {
-        await this.sendMessage(chatId, `⚠️ Could not reach masi.cc.cd — showing cached data.`);
-      }
-    } else {
-      await this.sendMessage(chatId, `⚠️ No Boss Key set on server. Showing cached data.`);
-    }
-
-    // Show bill for primary worker
-    const billText = this.buildBillText(workers[0], db);
-    await this.sendMessage(chatId, billText);
+    await this.handleBill(chatId, from, workers[0].key);
   }
 
   // ── END BILL SECTION ────────────────────────────────────────────────────
