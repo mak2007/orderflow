@@ -365,7 +365,7 @@ ${keysListText}
 • *Order ID:* \`${orderId}\`
 • *Order Number:* \`${orderNumber}\`
 • *Unique ID:* \`${uniqueId}\`
-• *Payout Value:* $${rate.toFixed(2)}
+• *Value:* ₹${rate.toFixed(2)}
 • *Status:* 🟡 *Unsold Inventory*
 • *Notes:* ${notes}
 
@@ -409,10 +409,10 @@ Your order is now live on the dashboard and waiting to be sold!
 🔑 *Keys:* ${keysList}
 📦 *Completed Orders:* ${completed}
 
-💰 *Earnings Status:*
-• 💴 *Total Earned:* $${totalEarned.toFixed(2)}
-• 🟢 *Already Cleared:* $${paidAmount.toFixed(2)}
-• 🔴 *Current Pending Balance:* *$${unpaid.toFixed(2)}*
+💰 *Payment Status:*
+• 🟢 *Total Amount in Rs Paid:* ₹${paidAmount.toFixed(2)}
+• 💵 *Total Amount in Rs:* ₹${totalEarned.toFixed(2)}
+${unpaid > 0 ? `• 🔴 *Pending Amount in Rs:* ₹${unpaid.toFixed(2)}` : '• ✅ *Status:* Fully Paid'}
 
 _Payments are recorded and verified by your administrator._
 `;
@@ -539,9 +539,21 @@ _Payments are recorded and verified by your administrator._
     const paidAmount = Number(worker.paidAmount) || 0;
     const unpaid = Math.max(0, totalEarned - paidAmount);
 
-    const paidStatus = unpaid <= 0 && totalEarned > 0
-      ? '✅ ALL CLEARED / FULLY PAID'
-      : (unpaid > 0 ? `🔴 $${unpaid.toFixed(2)} PENDING` : '—');
+    let paymentBlock = '';
+    if (paidAmount > 0) {
+      paymentBlock = `• 🟢 *Total Amount in Rs Paid:* ₹${paidAmount.toFixed(2)}`;
+      if (unpaid > 0) {
+        paymentBlock += `\n• 💵 *Total Amount in Rs:* ₹${totalEarned.toFixed(2)}`;
+        paymentBlock += `\n• 🔴 *Pending in Rs:* ₹${unpaid.toFixed(2)}`;
+      } else {
+        paymentBlock += `\n• ✅ *Status:* Fully Paid`;
+      }
+    } else {
+      paymentBlock = `• 🟢 *Total Amount in Rs Paid:* ₹0.00\n• 💵 *Total Amount in Rs:* ₹${totalEarned.toFixed(2)}`;
+      if (unpaid > 0) {
+        paymentBlock += `\n• 🔴 *Pending in Rs:* ₹${unpaid.toFixed(2)}`;
+      }
+    }
 
     // Format recent completed orders
     let recentOrdersSection = '';
@@ -589,11 +601,8 @@ ${completedOrders.length > 10 ? `_...and ${completedOrders.length - 10} more com
 • 🌅 *Today:* ${todayDone} orders
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
-💰 *PAYOUT SUMMARY:*
-• 📦 *Completed Count:* ${completed}
-• 💴 *Total Earned:* $${totalEarned.toFixed(2)}
-• 🟢 *Already Paid:* $${paidAmount.toFixed(2)}
-• ${paidStatus}
+💰 *PAYMENT:*
+${paymentBlock}
 ━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
 _🔄 Synced live with masi.cc.cd_
 `;
@@ -694,7 +703,7 @@ _🔄 Synced live with masi.cc.cd_
 
 Hi ${worker.name}! Your administrator has just processed and cleared your payout:
 
-💵 *Amount Cleared:* *$${Number(amount).toFixed(2)}*
+💵 *Total Amount in Rs Paid:* *₹${Number(amount).toFixed(2)}*
 📦 *Orders Settled:* ${ordersCount} order(s)
 📅 *Date:* ${new Date().toLocaleDateString()}
 
