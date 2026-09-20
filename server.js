@@ -7,7 +7,24 @@ const { extractMasiData } = require('./sync-masi');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
-const DB_PATH = path.join(__dirname, 'data', 'database.json');
+
+// On Vercel: use /tmp (the only writable dir in serverless). Seed from bundled database.json on cold start.
+const SEED_DB_PATH = path.join(__dirname, 'data', 'database.json');
+const DB_PATH = process.env.VERCEL
+  ? '/tmp/database.json'
+  : SEED_DB_PATH;
+
+// Seed /tmp/database.json from bundled data if not yet present (Vercel cold start)
+if (process.env.VERCEL && !fs.existsSync(DB_PATH)) {
+  try {
+    if (fs.existsSync(SEED_DB_PATH)) {
+      fs.copyFileSync(SEED_DB_PATH, DB_PATH);
+      console.log('[Vercel] Seeded /tmp/database.json from bundled data');
+    }
+  } catch (e) {
+    console.warn('[Vercel] Could not seed database to /tmp:', e.message);
+  }
+}
 
 // MIME types
 const MIME_TYPES = {
