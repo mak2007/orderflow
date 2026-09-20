@@ -9,7 +9,9 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
 
 // On Vercel: use /tmp (the only writable dir in serverless). Seed from bundled database.json on cold start.
-const SEED_DB_PATH = path.join(__dirname, 'data', 'database.json');
+const _publicSeed = path.join(__dirname, 'public', 'data', 'database.json');
+const _dataSeed = path.join(__dirname, 'data', 'database.json');
+const SEED_DB_PATH = fs.existsSync(_publicSeed) ? _publicSeed : _dataSeed;
 const DB_PATH = process.env.VERCEL
   ? '/tmp/database.json'
   : SEED_DB_PATH;

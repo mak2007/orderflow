@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "outputDirectory": "public",
   "rewrites": [
     { "source": "/api/state", "destination": "/api/state.js" },
     { "source": "/api/(.*)", "destination": "/api/index.js" }

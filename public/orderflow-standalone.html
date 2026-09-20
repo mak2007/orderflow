@@ -1,0 +1,2681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masi Team Hub & Worker Pay Tracker | masi.cc.cd Keys & Orders</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+/* Custom styles for Order & Inventory Management Dashboard */
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Tab buttons styling */
+.tab-btn {
+  transition: all 0.2s ease-in-out;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+  color: #4f46e5;
+  border-bottom-color: #4f46e5;
+  font-weight: 600;
+  background-color: #eef2ff;
+}
+
+/* Toast styling */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  min-width: 280px;
+  max-width: 420px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: slide-in 0.3s ease forwards;
+  transition: all 0.3s ease;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast.toast-success {
+  background-color: #065f46;
+  color: #ecfdf5;
+  border-left: 5px solid #10b981;
+}
+
+.toast.toast-info {
+  background-color: #1e3a8a;
+  color: #eff6ff;
+  border-left: 5px solid #3b82f6;
+}
+
+.toast.toast-warning {
+  background-color: #92400e;
+  color: #fffbeb;
+  border-left: 5px solid #f59e0b;
+}
+
+.toast.toast-danger {
+  background-color: #991b1b;
+  color: #fef2f2;
+  border-left: 5px solid #ef4444;
+}
+
+/* Interactive copy button effect */
+.copy-btn {
+  transition: all 0.15s ease;
+}
+.copy-btn:hover {
+  transform: scale(1.05);
+}
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+/* Table row highlight */
+.row-highlight {
+  animation: highlight-pulse 1.2s ease;
+}
+
+@keyframes highlight-pulse {
+  0% { background-color: #fef3c7; }
+  100% { background-color: transparent; }
+}
+
+/* Paid & Settled Crossed Out Styles */
+.paid-crossed-text {
+  text-decoration: line-through;
+  text-decoration-thickness: 2.5px;
+  text-decoration-color: #10b981;
+  opacity: 0.75;
+}
+
+.paid-strike-bar {
+  position: relative;
+  display: inline-block;
+}
+.paid-strike-bar::after {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  width: calc(100% + 8px);
+  height: 2.5px;
+  background: #10b981;
+  transform: translateY(-50%);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.paid-card-settled {
+  background: linear-gradient(135deg, #fafffc 0%, #f0fdf4 100%) !important;
+  border-color: #86efac !important;
+  box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.15) !important;
+}
+
+.paid-row-settled {
+  background-color: #f0fdf4 !important;
+}
+
+.paid-row-settled:hover {
+  background-color: #dcfce7 !important;
+}
+
+
+</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Top Header Navigation -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-4">
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+            <span class="text-xl">⚡</span>
+          </div>
+          <div>
+            <h1 class="text-lg font-extrabold text-slate-900 tracking-tight leading-none">Masi Team Hub & Worker Pay Tracker</h1>
+            <p class="text-xs text-indigo-600 font-medium mt-1 flex items-center gap-1.5">
+              <span>masi.cc.cd/boss</span>
+              <span>•</span>
+              <span>Keys, Completed Orders & Success Rates</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Bot Status & Top Action Buttons -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Quick TG Connect Button -->
+          <button onclick="openQuickTgModal()" title="Quick Connect to Telegram" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 rounded-lg shadow-sm transition transform active:scale-95">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-2.02 1.28-5.7 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.89.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.21-.04.38z"/></svg>
+            <span>Quick TG Connect</span>
+          </button>
+
+          <!-- Live Telegram Bot Status Pill -->
+          <button onclick="openBotConfigModal()" id="bot-status-pill" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
+            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+            <span id="bot-status-text">Bot Offline</span>
+          </button>
+
+          <button onclick="openMasiModal()" title="Extract & Sync from masi.cc.cd/boss" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-lg shadow-sm transition">
+            <span>⚡</span> Sync Masi Boss
+          </button>
+
+          <button onclick="openTeamAssignModal()" title="Assign keys to guys" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition border border-indigo-200">
+            <span>👥</span> Group by Guy
+          </button>
+
+          <!-- More Options Dropdown button -->
+          <div class="relative group">
+            <button class="px-2.5 py-2 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+            </button>
+            <div class="absolute right-0 mt-1 w-52 bg-white border border-slate-200 rounded-lg shadow-lg py-1.5 hidden group-hover:block z-40">
+              <button onclick="openBotConfigModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>🤖 Telegram Bot Settings</span>
+              </button>
+              <button onclick="openAddWorkerModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>🔑 Generate New Worker Key</span>
+              </button>
+              <button onclick="openTeamAssignModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>👥 Assign Keys to Guys</span>
+              </button>
+              <hr class="my-1 border-slate-100">
+              <button onclick="exportCSV()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>Export CSV</span>
+              </button>
+              <button onclick="exportJSON()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <span>Backup Database (JSON)</span>
+              </button>
+            </div>
+          </div>
+
+          <button onclick="openAddWorkerModal()" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition">
+            <span>+</span> New Worker Key
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- KPI Metric Cards Bar (Masi Team & Completed Orders Focus) -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <!-- Total Masi Workers / Keys -->
+      <div class="bg-white p-4 rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50/40 to-white shadow-2xs">
+        <div class="text-xs font-semibold text-indigo-700 uppercase tracking-wider flex items-center justify-between">
+          <span>Worker Keys</span>
+          <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+        </div>
+        <div id="kpi-total-keys" class="text-2xl font-black text-indigo-900 mt-1">128</div>
+        <div class="text-[11px] text-indigo-600 font-medium mt-0.5">Extracted from Masi</div>
+      </div>
+
+      <!-- Total Completed Orders -->
+      <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/40 to-white shadow-2xs">
+        <div class="text-xs font-semibold text-emerald-700 uppercase tracking-wider flex items-center justify-between">
+          <span>Completed Orders</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </div>
+        <div id="kpi-completed-orders" class="text-2xl font-black text-emerald-800 mt-1">0</div>
+        <div class="text-[11px] text-emerald-600 font-medium mt-0.5">Read from masi.cc.cd</div>
+      </div>
+
+      <!-- Team Success Rate % -->
+      <div class="bg-white p-4 rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50/40 to-white shadow-2xs">
+        <div class="text-xs font-semibold text-purple-700 uppercase tracking-wider flex items-center justify-between">
+          <span>Team Success Rate</span>
+          <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+        </div>
+        <div id="kpi-team-success" class="text-2xl font-black text-purple-800 mt-1">0%</div>
+        <div class="text-[11px] text-purple-600 font-medium mt-0.5">Official & Admin Set</div>
+      </div>
+
+      <!-- Total Calculated Pay -->
+      <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/30 to-white shadow-2xs">
+        <div class="text-xs font-semibold text-emerald-800 uppercase tracking-wider flex items-center justify-between">
+          <span>Calculated Pay</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        </div>
+        <div id="kpi-total-pay" class="text-2xl font-black text-emerald-900 mt-1">$0.00</div>
+        <div class="text-[11px] text-emerald-700 font-medium mt-0.5">Earned by workers</div>
+      </div>
+
+      <!-- Team Guys (Unique Members) -->
+      <div class="bg-white p-4 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50/40 to-white shadow-2xs col-span-2 sm:col-span-1">
+        <div class="text-xs font-semibold text-sky-700 uppercase tracking-wider flex items-center justify-between">
+          <span>Team Guys</span>
+          <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+        </div>
+        <div id="kpi-team-guys" class="text-2xl font-black text-sky-900 mt-1">0</div>
+        <div class="text-[11px] text-sky-600 font-medium mt-0.5">Grouped profiles</div>
+      </div>
+    </section>
+
+    <!-- Search & Navigation Tab Bar -->
+    <section class="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+      <div class="p-3 sm:p-4 border-b border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
+        <!-- Tab Navigation Buttons (Dedicated Task 2 Tabs) -->
+        <nav class="flex items-center gap-1 sm:gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0" aria-label="Tabs">
+          <!-- 1. Team & Guys Grouped Tab (DEFAULT) -->
+          <button onclick="switchTab('guys')" data-tab="guys" class="tab-btn active px-3.5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <span>👥 Team & Guys</span>
+            <span id="tab-badge-guys" class="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-200 text-indigo-900">0</span>
+          </button>
+
+          <!-- 2. All Worker Keys Tab -->
+          <button onclick="switchTab('keys')" data-tab="keys" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+            <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+            <span>🔑 All Worker Keys</span>
+            <span id="tab-badge-keys" class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700">128</span>
+          </button>
+
+          <!-- 3. Worker Payouts & Balances Tab -->
+          <button onclick="switchTab('workers')" data-tab="workers" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>💰 Payouts & Calculator</span>
+            <span id="tab-badge-workers" class="px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800">$0</span>
+          </button>
+
+          <!-- 4. Telegram Bot & Linker Tab -->
+          <button onclick="switchTab('bot')" data-tab="bot" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+            <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            <span>🤖 Telegram Bot</span>
+          </button>
+        </nav>
+
+        <!-- Search input box -->
+        <div class="relative w-full md:w-80">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </div>
+          <input type="text" id="global-search" placeholder="Search worker, key, @username, order ID..." class="w-full pl-9 pr-8 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+          <button onclick="clearSearch()" title="Clear search" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600">
+            &times;
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Panel Content Container -->
+    <section id="panel-content" class="space-y-6">
+      <!-- Injected by app.js -->
+    </section>
+
+  </main>
+
+
+
+  <!-- Quick Telegram Connect Modal -->
+  <div id="quick-tg-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-in">
+      <div class="p-5 bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-extrabold flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-2.02 1.28-5.7 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.89.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.21-.04.38z"/></svg>
+            Quick Telegram Connect
+          </h3>
+          <p class="text-xs text-sky-100 mt-0.5">Link worker keys, assign @usernames & connect the Telegram bot</p>
+        </div>
+        <button onclick="closeQuickTgModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <!-- Quick TG Tabs -->
+      <div class="px-6 pt-3 flex items-center gap-4 border-b border-slate-200 bg-slate-50 text-xs font-bold">
+        <button onclick="switchQuickTgTab('worker')" id="btn-quick-tg-worker" class="pb-2.5 border-b-2 border-sky-600 text-sky-700 transition">
+          🔗 Link Worker / Key
+        </button>
+        <button onclick="switchQuickTgTab('bot')" id="btn-quick-tg-bot" class="pb-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition">
+          🤖 Connect Bot Token
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <!-- TAB 1: Link Worker -->
+        <div id="quick-tg-panel-worker" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Select Worker / Key *</label>
+            <input type="text" id="quick-tg-key-input" list="quickTgWorkerList" placeholder="Type worker name or paste KEY..." oninput="onQuickTgKeySelected(this.value)" class="w-full text-xs font-mono px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <datalist id="quickTgWorkerList"></datalist>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Telegram Username *</label>
+              <input type="text" id="quick-tg-username" placeholder="@username" oninput="updateQuickTgInvitePreview()" class="w-full text-xs font-mono px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Guy / Team Name</label>
+              <input type="text" id="quick-tg-guy-name" placeholder="e.g. Alam" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Shareable 1-Click Link Preview -->
+          <div id="quick-tg-invite-card" class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-xs space-y-2">
+            <div class="font-bold text-sky-900 flex items-center justify-between">
+              <span>📲 1-Click Worker Invite Link:</span>
+              <button type="button" onclick="copyQuickTgInviteLink()" class="text-sky-600 hover:text-sky-800 font-bold underline">Copy Link</button>
+            </div>
+            <div id="quick-tg-invite-text" class="font-mono text-[11px] bg-white p-2 rounded border border-sky-200 text-slate-700 break-all select-all">
+              https://t.me/share/url?text=/link%20KEY
+            </div>
+            <p class="text-[11px] text-sky-700">Send this link to your worker on Telegram. When they click it, Telegram opens and connects their key instantly!</p>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between border-t border-slate-200">
+            <button type="button" onclick="closeQuickTgModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
+            <button type="button" onclick="saveQuickTgWorkerLink()" class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
+              <span>✓</span> Connect & Save Key
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 2: Connect Bot Token -->
+        <div id="quick-tg-panel-bot" class="space-y-4 hidden">
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+            <div class="font-bold text-slate-800">Quick Bot Setup (30 Seconds):</div>
+            <p class="text-slate-600 text-[11px]">1. Open Telegram, search <b>@BotFather</b> and type <code>/newbot</code>.<br>2. Copy the token you receive and paste it below:</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Bot HTTP API Token</label>
+            <input type="password" id="quick-tg-bot-token" placeholder="123456789:ABCdefGhIJKlmNoPQRstuv..." class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+
+          <div class="pt-2 flex items-center justify-between border-t border-slate-200">
+            <button type="button" onclick="closeQuickTgModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
+            <button type="button" onclick="saveQuickTgBotToken()" class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
+              <span>⚡</span> Connect Bot Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telegram Bot Configuration Modal -->
+  <div id="bot-config-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
+      <div class="p-5 bg-gradient-to-r from-sky-600 to-sky-700 text-white flex items-center justify-between">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+          Telegram Bot Configuration
+        </h3>
+        <button onclick="closeBotConfigModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div class="p-3 bg-sky-50 border border-sky-100 rounded-lg text-xs text-sky-900 space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span>ℹ️ How to get your Bot Token:</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1 text-[11px] text-sky-800">
+            <li>Open Telegram and message <strong>@BotFather</strong>.</li>
+            <li>Send <code>/newbot</code> and follow prompts to name your bot.</li>
+            <li>Copy the API Token given (e.g. <code>123456789:ABCdefGh...</code>) and paste it below.</li>
+          </ol>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Telegram Bot Token</label>
+          <input type="password" id="input-bot-token" placeholder="Paste HTTP API token from @BotFather" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          <p id="bot-config-feedback" class="text-xs text-slate-500 mt-1"></p>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <button type="button" onclick="closeBotConfigModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+            Close
+          </button>
+          <button type="button" onclick="saveBotToken()" class="px-4 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition">
+            Save & Connect Bot
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generate / Add Worker Key Modal -->
+  <div id="worker-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
+      <div class="p-5 bg-gradient-to-r from-indigo-700 to-purple-700 text-white flex items-center justify-between">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+          Create / Edit Worker Key
+        </h3>
+        <button onclick="closeWorkerModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="edit-worker-id">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Name *</label>
+          <input type="text" id="input-new-worker-name" placeholder="e.g. Liam Patel" oninput="autoGenerateKey(this.value)" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Key *</label>
+          <div class="flex items-center gap-2">
+            <input type="text" id="input-new-worker-key" placeholder="KEY-LIAM-4921" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="button" onclick="regenerateRandomKey()" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700">New</button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Give this key to the worker. They send <code>/link KEY</code> in Telegram to connect.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Default Pay Rate ($ / order)</label>
+          <input type="number" step="0.5" id="input-new-worker-rate" value="15.00" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Admin Decided Success Rate (%)</label>
+            <span class="text-[11px] text-indigo-600 font-medium">Leave empty for auto</span>
+          </div>
+          <input type="number" step="0.5" min="0" max="100" id="input-new-worker-success-rate" placeholder="e.g. 95 (Blank = Auto calculated)" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <button type="button" onclick="closeWorkerModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
+            Cancel
+          </button>
+          <button type="button" onclick="saveWorkerKey()" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition">
+            Save Worker Key
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Decide Success Rate Modal -->
+  <div id="decide-rate-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-100">
+      <div class="p-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center justify-between">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <span>🎯</span> Set Worker Success Rate
+        </h3>
+        <button onclick="closeDecideRateModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="decide-rate-worker-id">
+        <div>
+          <div class="text-xs text-slate-500 mb-1">Worker: <strong id="decide-rate-worker-name" class="text-slate-800"></strong></div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Assign Success Rate (%)</label>
+          <div class="relative">
+            <input type="number" step="0.5" min="0" max="100" id="decide-rate-input" placeholder="e.g. 92" class="w-full px-3 py-2 text-xl font-bold text-slate-800 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            <span class="absolute right-3 top-2.5 text-slate-400 font-bold">%</span>
+          </div>
+
+          <!-- Quick Preset Buttons -->
+          <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+            <button type="button" onclick="setQuickRate(100)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">100%</button>
+            <button type="button" onclick="setQuickRate(95)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">95%</button>
+            <button type="button" onclick="setQuickRate(90)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">90%</button>
+            <button type="button" onclick="setQuickRate(80)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-amber-100 text-amber-800 hover:bg-amber-200 transition">80%</button>
+            <button type="button" onclick="setQuickRate('')" class="px-2.5 py-1 text-xs font-medium rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Reset to Auto</button>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500">
+          This exact success rate will be shown in the dashboard and reported to the worker when they type <code>/stats</code> in Telegram!
+        </p>
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <button type="button" onclick="closeDecideRateModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
+          <button type="button" onclick="saveDecidedRate()" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition">Apply Rate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Masi Boss Portal Extractor Modal -->
+  <div id="masi-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
+      <div class="p-5 bg-gradient-to-r from-violet-700 via-indigo-700 to-purple-800 text-white flex items-center justify-between flex-shrink-0">
+        <div>
+          <h3 class="text-base font-bold flex items-center gap-2">
+            <span>⚡</span> Masi Boss Extractor & Sync
+          </h3>
+          <p class="text-[11px] text-violet-200 mt-0.5">Extract worker keys, completed orders & success rates from masi.cc.cd/boss</p>
+        </div>
+        <button onclick="closeMasiModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4 overflow-y-auto flex-1">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Masi Boss Key (WORKER-XXXX-XXXX-...)</label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="masi-boss-key" placeholder="Paste your Boss Key from masi.cc.cd/boss" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <button type="button" onclick="extractFromMasi()" id="btn-masi-fetch" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow-sm whitespace-nowrap transition">
+              Extract Data
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">This connects securely to <code>https://masi.cc.cd/api/worker/team</code> with your boss key.</p>
+        </div>
+
+        <div id="masi-extract-preview" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs min-h-[120px]">
+          <span class="text-slate-400">Enter your Boss Key above and click "Extract Data" to preview workers, keys, and success rates.</span>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+        <button type="button" onclick="closeMasiModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancel</button>
+        <button type="button" onclick="syncMasiToDashboard()" id="btn-masi-sync" disabled class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed rounded-lg shadow-sm transition">
+          Sync & Import to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team / Assign Keys to Guys Modal -->
+  <div id="team-assign-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-100 animate-in">
+      <div class="p-5 bg-gradient-to-r from-sky-600 via-indigo-600 to-indigo-700 text-white flex items-center justify-between flex-shrink-0">
+        <div>
+          <h3 class="text-base font-bold flex items-center gap-2">
+            <span>👥</span> Group Keys Under 1 Guy / Telegram
+          </h3>
+          <p class="text-[11px] text-sky-100 mt-0.5">Assign multiple keys to the same worker and sort their stats under 1 person</p>
+        </div>
+        <button onclick="closeTeamAssignModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <!-- Mode Tabs: Bulk Paste vs Search & Pick -->
+      <div class="px-6 pt-3 pb-0 flex items-center gap-2 border-b border-slate-200 bg-slate-50">
+        <button type="button" onclick="switchTeamAssignTab('paste')" id="btn-tab-assign-paste" class="px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 transition">
+          📋 Bulk Paste (Key & Telegram)
+        </button>
+        <button type="button" onclick="switchTeamAssignTab('search')" id="btn-tab-assign-search" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
+          🔍 Quick Search & Assign Table
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 overflow-y-auto flex-1">
+        <!-- Tab 1: Paste Lines -->
+        <div id="panel-assign-paste" class="space-y-3">
+          <p class="text-xs text-slate-600">
+            Paste copied keys from the website followed by their <b>Telegram username</b> (and optional Guy name). Multiple keys with the same username will be automatically grouped into <b>1 Guy Profile</b>:
+          </p>
+          <div class="bg-indigo-50/70 p-3 rounded-lg border border-indigo-100 text-[11px] text-indigo-900">
+            <span class="font-bold">Format:</span> <code class="font-mono bg-white px-1 py-0.5 rounded border border-indigo-200">KEY @telegram [Guy Name]</code>
+            <div class="mt-1 font-mono text-[10px] text-indigo-700">
+              WORKER-0BE2-72E7-D72A-E15F @alam_tg Alam<br>
+              WORKER-EEA7-F4C4-1EF8-7BBC @alam_tg Alam<br>
+              WORKER-BC2F-E0A0-6295-651D @majid Majid
+            </div>
+          </div>
+          <textarea id="team-assign-textarea" oninput="parseTeamAssignText()" rows="6" placeholder="Paste keys with telegram usernames here...&#10;WORKER-0BE2-72E7-D72A-E15F @alam_tg Alam&#10;WORKER-EEA7-F4C4-1EF8-7BBC @alam_tg Alam" class="font-mono text-xs w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          
+          <div id="team-assign-preview" class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs max-h-48 overflow-y-auto">
+            <span class="text-slate-400">Preview will appear here as you type or paste...</span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Search Table -->
+        <div id="panel-assign-search" class="space-y-3 hidden">
+          <input type="text" id="team-assign-filter" oninput="renderTeamAssignTable()" placeholder="🔍 Search key or worker name to assign..." class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-lg">
+            <table class="w-full text-xs text-left divide-y divide-slate-200">
+              <thead class="bg-slate-50 text-slate-600 font-semibold sticky top-0">
+                <tr>
+                  <th class="p-2.5">Key / Worker</th>
+                  <th class="p-2.5">Telegram (@...)</th>
+                  <th class="p-2.5">Guy / Team Name</th>
+                </tr>
+              </thead>
+              <tbody id="team-assign-table-body" class="divide-y divide-slate-100">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+        <button type="button" onclick="closeTeamAssignModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancel</button>
+        <button type="button" onclick="saveTeamAssignments()" id="btn-save-team-assign" class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
+          <span>✓</span> Save & Group Keys
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- App Script -->
+  <script>
+// Masi Team & Worker Performance Hub Logic
+// Multi-Key Grouping, Telegram Bot Integration & Masi Boss Sync
+(function() {
+  'use strict';
+
+  const STORAGE_KEY = 'masi_team_hub_v2';
+  const API_BASE = '/api';
+
+  // Default pre-seeded workers from database.json for static / cold-start visits
+  const DEFAULT_WORKERS = [{"id":"w-1","name":"Alex Carter","key":"KEY-ALEX-9921","telegramId":"981245601","telegramUsername":"@alex_carter_ops","rate":15,"linkedAt":"2026-09-18T10:30:00.000Z","status":"active"},{"id":"w-2","name":"Maria Santos","key":"KEY-MARIA-8812","telegramId":"771239012","telegramUsername":"@maria_santos_track","rate":18,"linkedAt":"2026-09-18T11:45:00.000Z","status":"active"},{"id":"w-3","name":"David Kim","key":"KEY-DAVID-4409","telegramId":"651928304","telegramUsername":"@david_kim99","rate":15,"linkedAt":"2026-09-19T08:15:00.000Z","status":"active"},{"id":"w-4","name":"Samira Khan","key":"KEY-SAMIRA-7320","telegramId":null,"telegramUsername":null,"rate":20,"linkedAt":null,"status":"active"},{"id":"w-masi-1","name":"123","key":"WORKER-68ED-D46A-CDA5-13BF","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.952Z"},{"id":"w-masi-2","name":"Abhay","key":"WORKER-B658-8C55-77BB-6D13","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":1,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-3","name":"Aditya01","key":"WORKER-018C-7DE1-F02E-0DCA","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":1,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-4","name":"Adityasingh","key":"WORKER-A49B-FD25-122A-244D","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":1,"successRate":50,"customSuccessRate":50,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-5","name":"Admirme","key":"WORKER-E7B4-B8F1-3690-E0FA","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":10,"failCount":15,"successRate":40,"customSuccessRate":40,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-6","name":"Advik","key":"WORKER-CC75-C8CC-75B4-A6C1","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-7","name":"Ak","key":"WORKER-C92F-3FD9-6111-FC81","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":2,"failCount":4,"successRate":33.3,"customSuccessRate":33.3,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-8","name":"Alam00","key":"WORKER-0BE2-72E7-D72A-E15F","telegramId":null,"telegramUsername":"@alam_tg","rate":15,"completedOrders":26,"failCount":29,"successRate":47.3,"customSuccessRate":47.3,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z","personName":"Alam","updatedAt":"2026-09-19T22:01:54.911Z"},{"id":"w-masi-9","name":"Alam0000","key":"WORKER-EEA7-F4C4-1EF8-7BBC","telegramId":null,"telegramUsername":"@alam_tg","rate":15,"completedOrders":15,"failCount":17,"successRate":46.9,"customSuccessRate":46.9,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z","personName":"Alam","updatedAt":"2026-09-19T22:01:54.912Z"},{"id":"w-masi-10","name":"Aurkumar","key":"WORKER-6068-6ACF-3014-9778","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-11","name":"Ayyywho","key":"WORKER-FBFC-15EB-BDC4-2F0C","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-12","name":"Blaster","key":"WORKER-33D3-D5B1-2681-E1AA","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":3,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-13","name":"Bybjt02","key":"WORKER-1C01-2A56-61F9-DEB8","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-14","name":"Challenger","key":"WORKER-0E16-0968-196F-7A25","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":5,"failCount":8,"successRate":38.5,"customSuccessRate":38.5,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-15","name":"Chikudon","key":"WORKER-C32E-DB2B-9226-4B04","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-16","name":"Cixiid","key":"WORKER-CCB2-8079-028A-FC37","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-17","name":"Cloudwork","key":"WORKER-3BB0-C071-2ED9-7F1A","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":5,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-18","name":"Cr7","key":"WORKER-CR7","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":4,"failCount":7,"successRate":36.4,"customSuccessRate":36.4,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-19","name":"Cr70","key":"WORKER-C9AF-C036-4D0E-03DE","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":2,"failCount":6,"successRate":25,"customSuccessRate":25,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-20","name":"D10","key":"WORKER-EB89-186B-D312-4CB7","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":3,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-21","name":"Deepu","key":"WORKER-B96B-1CAA-0E18-3401","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":3,"failCount":1,"successRate":75,"customSuccessRate":75,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-22","name":"Dididi","key":"WORKER-118D-8094-DCC7-26D1","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":4,"successRate":20,"customSuccessRate":20,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-23","name":"Didisi","key":"WORKER-4707-1239-E315-45EC","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-24","name":"Disisisi","key":"WORKER-D713-6BEC-56C8-4C85","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":2,"failCount":0,"successRate":100,"customSuccessRate":100,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-25","name":"Dj02","key":"WORKER-F6D6-FB9D-221C-0EF9","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-26","name":"Dj03","key":"WORKER-878A-C6EB-0BD9-08C1","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-27","name":"Dj04","key":"WORKER-3FAE-1D26-F94D-F775","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":3,"failCount":10,"successRate":23.1,"customSuccessRate":23.1,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"paused","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-28","name":"Djalok","key":"WORKER-6366-4DB5-BF4A-AB8A","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-29","name":"Djdjdjd","key":"WORKER-EF4D-642C-387E-D727","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-30","name":"Dns","key":"WORKER-E7F5-94AB-4FC4-A2E2","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-31","name":"Dot¥","key":"WORKER-5307-1906-F177-ABFD","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":9,"failCount":7,"successRate":56.2,"customSuccessRate":56.2,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-32","name":"Dudeinsane02","key":"WORKER-59C1-8C19-1F3E-B6F1","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":7,"failCount":3,"successRate":70,"customSuccessRate":70,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-33","name":"Dududu","key":"WORKER-3747-6321-8CE8-C541","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-34","name":"Earner01","key":"WORKER-4A32-67A8-60EC-91DA","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":3,"successRate":25,"customSuccessRate":25,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-35","name":"Earner02","key":"WORKER-402C-7287-99F9-9B03","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":3,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-36","name":"Earner03","key":"WORKER-56E9-7CB1-60C2-7D23","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":4,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-37","name":"Euuxuc","key":"WORKER-B4EE-C6F7-95D1-87A6","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":2,"failCount":8,"successRate":20,"customSuccessRate":20,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-38","name":"Feeroz","key":"WORKER-7134-44D4-B1CA-9737","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":3,"successRate":25,"customSuccessRate":25,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-39","name":"Gapplayz","key":"WORKER-4543-C819-5692-1BB1","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-40","name":"Gfff","key":"WORKER-E1B6-0B2A-6D2A-7533","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":5,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-41","name":"Gmailworker","key":"WORKER-B0B4-D1C3-12CA-9A38","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-42","name":"Godmode","key":"WORKER-8739-EBA5-8249-E4E6","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":6,"failCount":3,"successRate":66.7,"customSuccessRate":66.7,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-43","name":"Gudu","key":"WORKER-C7FC-4778-5612-D883","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-44","name":"Gulam","key":"WORKER-557F-401D-E2F1-D890","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-45","name":"Harshsharma","key":"WORKER-HARSHSHARMA","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-46","name":"Hashir","key":"WORKER-A67D-1498-7200-CC8C","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":15,"failCount":3,"successRate":83.3,"customSuccessRate":83.3,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-47","name":"Hello","key":"WORKER-8DCB-B8EE-4467-79DA","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":6,"failCount":4,"successRate":60,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-49","name":"Helloji","key":"WORKER-8544-5326-335F-F3B9","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":1,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-50","name":"Heyiuu","key":"WORKER-B942-D8C6-4F64-0F31","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":6,"failCount":2,"successRate":75,"customSuccessRate":75,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-51","name":"Heysirjienglish","key":"WORKER-977C-5BBE-D7E2-A855","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":13,"failCount":1,"successRate":92.9,"customSuccessRate":92.9,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-52","name":"Heyy","key":"WORKER-B34D-1928-4194-B342","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-53","name":"Hyper","key":"WORKER-90F3-BECB-0B7D-9D81","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":8,"failCount":3,"successRate":72.7,"customSuccessRate":72.7,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-54","name":"HyperX","key":"WORKER-F4CC-5C42-85A9-617F","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":1,"successRate":50,"customSuccessRate":50,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-55","name":"Iminsane01","key":"WORKER-747C-1233-B308-9CDE","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":5,"successRate":16.7,"customSuccessRate":16.7,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-56","name":"Ishan","key":"WORKER-DF15-B033-78B0-95CE","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":1,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-57","name":"Jaat","key":"WORKER-79CC-8050-218F-0467","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":3,"successRate":25,"customSuccessRate":25,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-58","name":"Jaatuuu","key":"WORKER-B5BE-4F06-074D-7BC0","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":1,"successRate":50,"customSuccessRate":50,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.954Z"},{"id":"w-masi-59","name":"Jaganji","key":"WORKER-B259-F48A-EA7D-0B41","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-60","name":"Jeeban","key":"WORKER-1C88-3F98-FFC2-23DD","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":7,"failCount":11,"successRate":38.9,"customSuccessRate":38.9,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-61","name":"Kanha","key":"WORKER-93EA-EDA3-402A-7BB8","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":4,"failCount":2,"successRate":66.7,"customSuccessRate":66.7,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-62","name":"Lejand","key":"WORKER-2112-FE95-3A67-4FC2","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-63","name":"Loajcjc","key":"WORKER-1056-C400-A79B-F7B6","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-64","name":"Lobb","key":"WORKER-9695-2019-70EB-F4A2","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-65","name":"Lodi","key":"WORKER-EB2E-DF5D-1674-6B52","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":0,"successRate":100,"customSuccessRate":100,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-66","name":"Lodka","key":"WORKER-B6BA-FD40-2DD5-889C","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":1,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-67","name":"Lokda","key":"WORKER-EFA5-4BDF-123F-05C1","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-68","name":"Lokesh","key":"WORKER-ABC7-A12B-7A80-E0C4","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-69","name":"Lokesh01","key":"WORKER-3E41-5164-B37D-3F3B","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"paused","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-70","name":"Lokesh02","key":"WORKER-17D4-5EE3-8AB7-443F","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":4,"successRate":20,"customSuccessRate":20,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-71","name":"Lokesh04","key":"WORKER-63A5-6858-743E-0EA3","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-72","name":"Loki","key":"WORKER-1956-E7B7-7220-B03F","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":4,"successRate":20,"customSuccessRate":20,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-73","name":"Loksjx","key":"WORKER-339D-6A6C-BA52-CC3A","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-74","name":"Lowkey","key":"WORKER-79CB-C0AF-22A2-2BBD","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":4,"failCount":4,"successRate":50,"customSuccessRate":50,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-75","name":"Mahakal","key":"WORKER-4162-445F-29A4-5059","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":5,"failCount":12,"successRate":29.4,"customSuccessRate":29.4,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-76","name":"Mahakal02","key":"WORKER-56A9-D784-C065-A300","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":4,"successRate":20,"customSuccessRate":20,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-77","name":"Majid","key":"WORKER-BC2F-E0A0-6295-651D","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":18,"failCount":14,"successRate":56.2,"customSuccessRate":56.2,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-78","name":"Mayank","key":"WORKER-7D72-484C-D0D4-3A24","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":3,"failCount":3,"successRate":50,"customSuccessRate":50,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-79","name":"Messi","key":"WORKER-32E9-EB8B-84A9-FEB8","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":4,"failCount":6,"successRate":40,"customSuccessRate":40,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-80","name":"Mohit000","key":"WORKER-EEE7-2516-87CF-F8CD","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-81","name":"Mohit01","key":"WORKER-MOHIT01","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":10,"failCount":13,"successRate":43.5,"customSuccessRate":43.5,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-82","name":"Namiluffy","key":"WORKER-NAMILUFFY","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":3,"successRate":25,"customSuccessRate":25,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-83","name":"Namizoro","key":"WORKER-E311-0D37-0047-3F77","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":25,"failCount":11,"successRate":69.4,"customSuccessRate":69.4,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.955Z"},{"id":"w-masi-84","name":"Nitin","key":"WORKER-2D3D-E8D5-B6A1-5CD1","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":6,"failCount":10,"successRate":37.5,"customSuccessRate":37.5,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.956Z"},{"id":"w-masi-85","name":"Nitin01","key":"WORKER-B1CC-5EEB-E61C-EE44","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":2,"failCount":4,"successRate":33.3,"customSuccessRate":33.3,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.956Z"},{"id":"w-masi-86","name":"Nitin02","key":"WORKER-09A5-B7B8-5F62-4B64","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":1,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.956Z"},{"id":"w-masi-87","name":"Okay01","key":"WORKER-04EC-C599-904B-1851","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":3,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-88","name":"Ordinary","key":"WORKER-E543-3978-C68F-C64B","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-89","name":"Paras","key":"WORKER-BDF1-12D2-2F99-1ED8","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":5,"failCount":5,"successRate":50,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-91","name":"Paras01","key":"WORKER-FDB1-5ADE-7980-260F","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-92","name":"Paras90","key":"WORKER-61C5-7B83-C6AE-C1C5","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-93","name":"Rahul","key":"WORKER-0F69-C078-3090-47DD","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":4,"failCount":3,"successRate":57.1,"customSuccessRate":57.1,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-94","name":"Rajxk","key":"WORKER-4E6A-803A-7C90-443F","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-95","name":"Rijukhan","key":"WORKER-3386-E865-8BBD-19FB","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-96","name":"Rizo","key":"WORKER-8CEB-0D2D-F05E-3EF8","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-97","name":"Rohitshrma","key":"WORKER-E93D-1B0D-B982-1F58","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-98","name":"Ruinsane","key":"WORKER-6978-8488-CEA2-5797","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":14,"failCount":9,"successRate":60.9,"customSuccessRate":60.9,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.957Z"},{"id":"w-masi-99","name":"Rxnhood","key":"WORKER-0A9B-FDDC-5FE5-7076","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":13,"failCount":23,"successRate":36.1,"customSuccessRate":36.1,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-100","name":"Rxxnhood","key":"WORKER-RXXNHOOD","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":3,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-101","name":"Sandy01","key":"WORKER-FCF0-0948-A9C9-DE43","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":13,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"paused","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-102","name":"Scem","key":"WORKER-1DF3-63BE-3F95-436B","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":8,"failCount":10,"successRate":44.4,"customSuccessRate":44.4,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-103","name":"Shaurya","key":"WORKER-98D0-D03A-8138-F09A","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-104","name":"Shubhi","key":"WORKER-D81D-CFD7-2A1A-F15C","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":14,"failCount":14,"successRate":50,"customSuccessRate":50,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-105","name":"Shubka","key":"WORKER-EC22-186C-0AF4-31F3","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":5,"failCount":4,"successRate":55.6,"customSuccessRate":55.6,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-106","name":"Shubraj","key":"WORKER-E0C0-014A-1AE0-08C0","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":11,"failCount":5,"successRate":68.8,"customSuccessRate":68.8,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-107","name":"Shubrajos","key":"WORKER-D4CC-0C9F-5984-F1F9","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":4,"successRate":20,"customSuccessRate":20,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-108","name":"Sjsjkkske","key":"WORKER-D40F-62DE-2B70-3786","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-109","name":"Sonusingh","key":"WORKER-79E7-D83D-0D37-C64B","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-110","name":"Suraj","key":"WORKER-D238-2A56-029E-AA90","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-111","name":"Tgbhai","key":"WORKER-6C7C-04F2-6FF3-94D0","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-112","name":"Uxusuwi","key":"WORKER-0294-80C8-2460-75BA","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-113","name":"Vansh","key":"WORKER-260A-007A-0A59-BD6D","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-114","name":"W99w8","key":"WORKER-E0F5-49CA-9564-7425","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":6,"failCount":0,"successRate":100,"customSuccessRate":100,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-115","name":"WORKER-481E-838B-AE10-8B1C","key":"WORKER-3618-F159-C19B-3AA2","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-116","name":"WORKER-977C-5BBE-D7E2-A855","key":"WORKER-68BD-58ED-A01A-6AD9","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-117","name":"WORKER-B030-0827-9A88-4A04","key":"WORKER-267F-227F-81D9-6F2F","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-118","name":"WORKER-B96B-1CAA-0E18-3401","key":"WORKER-1EF9-E286-D052-464F","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-119","name":"Wewon","key":"WORKER-429F-51AE-6DA2-192C","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-120","name":"Woosidk","key":"WORKER-0872-8B7E-1BD4-17CC","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":0,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-121","name":"Woralam","key":"WORKER-8109-C7C6-FB50-BC5A","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":2,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-122","name":"Worker03","key":"WORKER-09CC-6F82-3224-BF0C","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":2,"failCount":5,"successRate":28.6,"customSuccessRate":28.6,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-123","name":"Worker09","key":"WORKER-17BA-337C-6CAA-2ADC","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":7,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-124","name":"Workerchutiya","key":"WORKER-D94A-DB75-F832-B377","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":0,"failCount":1,"successRate":0,"customSuccessRate":0,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"paused","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-125","name":"Workerz","key":"WORKER-5F65-BAA4-78BC-45C6","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":1,"failCount":3,"successRate":25,"customSuccessRate":25,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"},{"id":"w-masi-126","name":"Yashu","key":"WORKER-A957-B0C7-7AC8-B1C2","telegramId":null,"telegramUsername":null,"rate":15,"completedOrders":4,"failCount":6,"successRate":40,"customSuccessRate":40,"d7Done":0,"d7Fail":0,"d7Rate":0,"todayDone":0,"online":false,"status":"active","source":"masi","linkedAt":null,"lastSyncedAt":"2026-09-19T21:53:52.958Z"}];
+
+
+
+  // Application State (Task 2 Focused)
+  let state = {
+    workers: [],
+    settings: {
+      botToken: '',
+      botUsername: '',
+      defaultRate: 15.00
+    },
+    botStatus: {
+      isConfigured: false,
+      isPolling: false,
+      botUsername: '',
+      lastError: null
+    },
+    currentTab: 'guys', // 'guys', 'keys', 'workers', 'bot'
+    searchQuery: '',
+    teamAssignTab: 'paste',
+    isApiOnline: true,
+    pollTimer: null
+  };
+
+  // Initialize
+  async function init() {
+    setupEventListeners();
+    await fetchServerState();
+    render();
+
+    // Auto-poll state every 4 seconds to sync Telegram links and worker status
+    state.pollTimer = setInterval(async () => {
+      await fetchServerState(true);
+    }, 4000);
+  }
+
+  // Fetch state from server with multi-tier fallback
+  async function fetchServerState(isBackground = false) {
+    try {
+      const res = await fetch(`${API_BASE}/state`);
+      if (res.ok) {
+        const data = await res.json();
+        state.isApiOnline = true;
+        if (data.workers && data.workers.length > 0) {
+          // Merge incoming workers while preserving local paid status if higher
+          const currentMap = new Map((state.workers || []).map(w => [w.id, w]));
+          state.workers = data.workers.map(nw => {
+            const cur = currentMap.get(nw.id);
+            if (cur) {
+              const curPaid = Number(cur.paidAmount) || 0;
+              const newPaid = Number(nw.paidAmount) || 0;
+              if (curPaid > newPaid) {
+                return {
+                  ...nw,
+                  paidAmount: curPaid,
+                  paidCount: Math.max(Number(nw.paidCount) || 0, Number(cur.paidCount) || 0),
+                  lastPaidAt: cur.lastPaidAt || nw.lastPaidAt
+                };
+              }
+            }
+            return nw;
+          });
+        }
+        if (data.settings) state.settings = { ...state.settings, ...data.settings };
+        if (data.botStatus) state.botStatus = data.botStatus;
+
+        saveToLocalStorage();
+        updateBotStatusPill();
+        if (isBackground) {
+          renderKPIs();
+          renderCurrentPanelQuietly();
+        } else {
+          render();
+        }
+        return;
+      }
+    } catch (err) {
+      state.isApiOnline = false;
+    }
+
+    // Tier 2: Static database.json fallback (available on Vercel CDN)
+    if (!state.workers || state.workers.length === 0) {
+      try {
+        const staticRes = await fetch('./data/database.json');
+        if (staticRes.ok) {
+          const staticData = await staticRes.json();
+          if (staticData.workers && staticData.workers.length > 0) {
+            state.workers = staticData.workers;
+            if (staticData.settings) state.settings = { ...state.settings, ...staticData.settings };
+            saveToLocalStorage();
+            if (!isBackground) render();
+            return;
+          }
+        }
+      } catch (staticErr) {
+        // Continue to local storage
+      }
+    }
+
+    if (!isBackground) {
+      loadFromLocalStorage();
+      // Tier 4: DEFAULT_WORKERS fallback
+      if (!state.workers || state.workers.length === 0) {
+        state.workers = JSON.parse(JSON.stringify(DEFAULT_WORKERS));
+        saveToLocalStorage();
+      }
+      render();
+    }
+  }
+
+  function loadFromLocalStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        state.workers = data.workers || [];
+        state.settings = data.settings || {};
+      }
+    } catch (e) {
+      console.error('LocalStorage load failed', e);
+    }
+  }
+
+  function saveToLocalStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        workers: state.workers,
+        settings: state.settings
+      }));
+    } catch (e) {
+      console.error('LocalStorage save failed', e);
+    }
+  }
+
+  // Toast Notification
+  window.showToast = function(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    let icon = 'ℹ️';
+    if (type === 'success') icon = '✓';
+    else if (type === 'danger') icon = '✕';
+    else if (type === 'warning') icon = '⚠️';
+
+    toast.innerHTML = `
+      <span class="font-bold text-sm mr-2">${icon}</span>
+      <span class="flex-1 text-xs font-medium">${escapeHtml(message)}</span>
+      <button class="text-white/70 hover:text-white ml-2 text-lg leading-none" onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(10px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
+  };
+
+  // Clipboard copy helper
+  window.copyToClipboard = function(text, label = 'Value') {
+    if (!navigator.clipboard) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast(`Copied ${label}: ${text}`, 'success');
+      return;
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(`Copied ${label}: ${text}`, 'success');
+    }).catch(() => {
+      showToast(`Could not copy ${label}`, 'danger');
+    });
+  };
+
+  function updateBotStatusPill() {
+    const pill = document.getElementById('bot-status-pill');
+    const text = document.getElementById('bot-status-text');
+    if (!pill || !text) return;
+
+    if (state.botStatus && state.botStatus.isPolling) {
+      pill.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 transition';
+      pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>@${state.botStatus.botUsername || 'Bot Connected'}</span>`;
+    } else if (state.settings && state.settings.botToken) {
+      pill.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition';
+      pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Connecting Bot...</span>`;
+    } else {
+      pill.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition';
+      pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span><span>Connect Telegram Bot</span>`;
+    }
+  }
+
+  // Switch Active Tab
+  window.switchTab = function(tabName) {
+    state.currentTab = tabName;
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      if (btn.dataset.tab === tabName) {
+        btn.classList.add('active', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+        btn.classList.remove('text-slate-600');
+      } else {
+        btn.classList.remove('active', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+        btn.classList.add('text-slate-600');
+      }
+    });
+    render();
+  };
+
+  // Helper: Group workers by Telegram Handle or Guy Name
+  function getGroupedGuys() {
+    const groups = new Map();
+
+    state.workers.forEach(worker => {
+      let groupKey = '';
+      let displayName = '';
+      let tgHandle = (worker.telegramUsername || '').trim();
+      if (tgHandle && !tgHandle.startsWith('@')) tgHandle = '@' + tgHandle;
+
+      if (tgHandle) {
+        groupKey = 'tg:' + tgHandle.toLowerCase();
+        displayName = worker.personName || worker.name || tgHandle;
+      } else if (worker.personName && worker.personName.trim()) {
+        groupKey = 'person:' + worker.personName.trim().toLowerCase();
+        displayName = worker.personName.trim();
+      } else {
+        groupKey = 'worker:' + (worker.key || worker.name).toLowerCase();
+        displayName = worker.name || worker.key;
+      }
+
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, {
+          id: groupKey,
+          displayName: displayName,
+          personName: worker.personName || displayName,
+          telegramUsername: tgHandle,
+          telegramId: worker.telegramId,
+          keys: [],
+          rate: Number(worker.rate) || 15.00,
+          customSuccessRate: worker.customSuccessRate
+        });
+      }
+
+      const guy = groups.get(groupKey);
+      if (!guy.telegramUsername && tgHandle) guy.telegramUsername = tgHandle;
+      if (!guy.telegramId && worker.telegramId) guy.telegramId = worker.telegramId;
+      if (worker.personName && (!guy.personName || guy.personName === guy.displayName)) {
+        guy.personName = worker.personName;
+      }
+      guy.keys.push(worker);
+    });
+
+    // Compute metrics for each guy
+    return Array.from(groups.values()).map(guy => {
+      const completedOrders = guy.keys.reduce((sum, k) => sum + (Number(k.completedOrders) || 0), 0);
+      const failCount = guy.keys.reduce((sum, k) => sum + (Number(k.failCount) || 0), 0);
+      const totalOrders = completedOrders + failCount;
+
+      const isCustomRate = guy.customSuccessRate !== null && guy.customSuccessRate !== undefined && guy.customSuccessRate !== '';
+      let rateNum = 0;
+      if (isCustomRate) {
+        rateNum = Math.min(100, Math.max(0, Number(guy.customSuccessRate)));
+      } else if (totalOrders > 0) {
+        rateNum = (completedOrders / totalOrders) * 100;
+      } else if (guy.keys.length > 0 && guy.keys[0].successRate) {
+        rateNum = Number(guy.keys[0].successRate);
+      }
+      const successRate = rateNum.toFixed(1);
+
+      const baseRate = guy.rate || 15.00;
+      const totalEarned = completedOrders * baseRate;
+
+      // Calculate paid and unpaid
+      const paidAmount = guy.keys.reduce((sum, k) => sum + (Number(k.paidAmount) || 0), 0);
+      const unpaidAmount = Math.max(0, totalEarned - paidAmount);
+
+      let rateColor = 'text-slate-600 bg-slate-100';
+      let progressColor = 'bg-slate-400';
+      if (rateNum >= 80) {
+        rateColor = 'text-emerald-700 bg-emerald-100';
+        progressColor = 'bg-emerald-500';
+      } else if (rateNum >= 50) {
+        rateColor = 'text-amber-700 bg-amber-100';
+        progressColor = 'bg-amber-500';
+      } else if (totalOrders > 0 || isCustomRate) {
+        rateColor = 'text-rose-700 bg-rose-100';
+        progressColor = 'bg-rose-500';
+      }
+
+      return {
+        ...guy,
+        completedOrders,
+        totalOrders,
+        isCustomRate,
+        rateNum,
+        successRate,
+        rateColor,
+        progressColor,
+        totalEarned,
+        paidAmount,
+        unpaidAmount
+      };
+    });
+  }
+
+  // Render application
+  function render() {
+    renderKPIs();
+
+    const container = document.getElementById('panel-content');
+    if (!container) return;
+
+    if (state.currentTab === 'guys') {
+      renderGuysPanel(container);
+    } else if (state.currentTab === 'keys') {
+      renderKeysPanel(container);
+    } else if (state.currentTab === 'workers') {
+      renderWorkersPanel(container);
+    } else if (state.currentTab === 'bot') {
+      renderBotPanel(container);
+    }
+  }
+
+  function renderCurrentPanelQuietly() {
+    const container = document.getElementById('panel-content');
+    if (!container) return;
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+      return;
+    }
+    render();
+  }
+
+  // Update top KPI cards
+  function renderKPIs() {
+    const guys = getGroupedGuys();
+    const totalKeys = state.workers.length;
+    
+    const totalCompletedOrders = guys.reduce((sum, g) => sum + (Number(g.completedOrders) || 0), 0);
+    const totalAllOrders = guys.reduce((sum, g) => sum + (Number(g.totalOrders) || 0), 0);
+    
+    let teamSuccessRate = '0%';
+    if (totalAllOrders > 0) {
+      teamSuccessRate = `${((totalCompletedOrders / totalAllOrders) * 100).toFixed(1)}%`;
+    } else {
+      const workersWithRate = state.workers.filter(w => Number(w.successRate) > 0 || Number(w.customSuccessRate) > 0);
+      if (workersWithRate.length > 0) {
+        const avg = workersWithRate.reduce((acc, w) => acc + (Number(w.customSuccessRate || w.successRate) || 0), 0) / workersWithRate.length;
+        teamSuccessRate = `${avg.toFixed(1)}%`;
+      }
+    }
+    
+    const totalPay = guys.reduce((sum, g) => sum + (Number(g.totalEarned) || 0), 0);
+    const totalGuys = guys.length;
+
+    const elKeys = document.getElementById('kpi-total-keys');
+    const elCompleted = document.getElementById('kpi-completed-orders');
+    const elSuccess = document.getElementById('kpi-team-success');
+    const elPay = document.getElementById('kpi-total-pay');
+    const elGuys = document.getElementById('kpi-team-guys');
+
+    if (elKeys) elKeys.textContent = totalKeys;
+    if (elCompleted) elCompleted.textContent = totalCompletedOrders.toLocaleString();
+    if (elSuccess) elSuccess.textContent = teamSuccessRate;
+    if (elPay) elPay.textContent = `${totalPay.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (elGuys) elGuys.textContent = totalGuys;
+
+    // Badges
+    const badgeGuys = document.getElementById('tab-badge-guys');
+    const badgeKeys = document.getElementById('tab-badge-keys');
+    const badgeWorkers = document.getElementById('tab-badge-workers');
+
+    if (badgeGuys) badgeGuys.textContent = totalGuys;
+    if (badgeKeys) badgeKeys.textContent = totalKeys;
+    if (badgeWorkers) badgeWorkers.textContent = `${totalPay.toFixed(0)}`;
+  }
+
+  // Filter guys or workers by global search
+  function filterGuys(guys) {
+    if (!state.searchQuery.trim()) return guys;
+    const q = state.searchQuery.trim().toLowerCase();
+    return guys.filter(g => 
+      (g.displayName && g.displayName.toLowerCase().includes(q)) ||
+      (g.personName && g.personName.toLowerCase().includes(q)) ||
+      (g.telegramUsername && g.telegramUsername.toLowerCase().includes(q)) ||
+      g.keys.some(k => (k.key && k.key.toLowerCase().includes(q)) || (k.name && k.name.toLowerCase().includes(q)))
+    );
+  }
+
+  function filterWorkers(workers) {
+    if (!state.searchQuery.trim()) return workers;
+    const q = state.searchQuery.trim().toLowerCase();
+    return workers.filter(w =>
+      (w.name && w.name.toLowerCase().includes(q)) ||
+      (w.key && w.key.toLowerCase().includes(q)) ||
+      (w.personName && w.personName.toLowerCase().includes(q)) ||
+      (w.telegramUsername && w.telegramUsername.toLowerCase().includes(q))
+    );
+  }
+
+  // ==========================================
+  // PANEL 1: TEAM & GUYS (GROUPED VIEW)
+  // ==========================================
+  function renderGuysPanel(container) {
+    const allGuys = getGroupedGuys();
+    const guys = filterGuys(allGuys);
+
+    let html = `
+      <div class="space-y-6">
+        <!-- Banner & Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-indigo-50/50 via-sky-50/30 to-white flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+              Team Profiles (Multi-Key Grouping)
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Multiple keys assigned to the same worker are unified into <b>1 Guy Profile</b> with combined completed orders and pay.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openTeamAssignModal()" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>👥</span> Assign Keys to Guys
+            </button>
+            <button onclick="openMasiModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>⚡</span> Sync Masi Boss
+            </button>
+            <button onclick="openAddWorkerModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-sm transition flex items-center gap-1">
+              <span>+</span> New Key
+            </button>
+          </div>
+        </div>
+
+        <!-- Instructions Bar -->
+        <div class="bg-indigo-50/70 border border-indigo-200 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-indigo-900">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-indigo-200 text-indigo-800 flex items-center justify-center font-bold text-sm">💡</div>
+            <div>
+              <span class="font-bold">Team Tip:</span>
+              <span class="text-indigo-800"> If you copy keys from <code>masi.cc.cd/boss</code> that belong to the same guy, click <b>"Assign Keys to Guys"</b> and put their Telegram handle on each key. They will combine into 1 guy profile automatically!</span>
+            </div>
+          </div>
+          <div class="font-mono text-[11px] bg-white px-2.5 py-1 rounded border border-indigo-200 text-indigo-700 font-semibold whitespace-nowrap">
+            ${guys.length} Guys | ${state.workers.length} Keys Total
+          </div>
+        </div>
+    `;
+
+    if (guys.length === 0) {
+      html += `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <p class="text-slate-500 mb-4">No team profiles found matching your search.</p>
+          <button onclick="openTeamAssignModal()" class="px-4 py-2 bg-indigo-600 text-white font-medium text-xs rounded-lg shadow-sm">
+            👥 Assign Keys to Guys
+          </button>
+        </div>
+      </div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">`;
+
+    guys.forEach(guy => {
+      const isLinked = Boolean(guy.telegramId);
+      const isSettled = guy.completedOrders > 0 ? guy.unpaidAmount === 0 : false;
+
+      html += `
+        <div class="bg-white rounded-xl shadow-sm border ${isSettled ? 'paid-card-settled' : 'border-slate-200'} hover:border-indigo-300 transition-all overflow-hidden flex flex-col justify-between relative">
+          ${isSettled ? `
+            <div class="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest py-0.5 px-3 text-center flex items-center justify-center gap-1">
+              <span>✓</span> PAYMENT COMPLETED & SETTLED
+            </div>
+          ` : ''}
+          <div class="p-5">
+            <!-- Header: Guy Name & Telegram -->
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
+                  ${escapeHtml((guy.displayName || 'G').charAt(0).toUpperCase())}
+                </div>
+                <div>
+                  <h3 class="font-extrabold text-slate-900 text-base leading-tight flex items-center gap-2">
+                    <span class="${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(guy.displayName)}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${isSettled ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">
+                      ${guy.keys.length} ${guy.keys.length === 1 ? 'Key' : 'Keys'}
+                    </span>
+                  </h3>
+                  <div class="flex items-center gap-2 text-xs mt-1">
+                    ${guy.telegramUsername ? `
+                      <a href="https://t.me/${guy.telegramUsername.replace('@', '')}" target="_blank" class="text-sky-600 hover:underline font-mono font-semibold flex items-center gap-1">
+                        <span>💬</span> ${escapeHtml(guy.telegramUsername)}
+                      </a>
+                    ` : `
+                      <span class="text-slate-400 font-mono">No @telegram handle</span>
+                    `}
+                    <span>•</span>
+                    <span class="${isLinked ? 'text-emerald-600 font-semibold' : 'text-slate-400'}">
+                      ${isLinked ? '🟢 Linked in Bot' : '⚪ Not Linked'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Success Rate Badge -->
+              <div class="text-right">
+                <span class="px-2.5 py-1 rounded-full text-xs font-black ${guy.rateColor} border border-current/20">
+                  ${guy.successRate}% Success
+                </span>
+                ${guy.isCustomRate ? `
+                  <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">Admin Decided</div>
+                ` : `
+                  <div class="text-[10px] text-slate-400 mt-0.5">Masi Official</div>
+                `}
+              </div>
+            </div>
+
+            <!-- Assigned Keys Chips List -->
+            <div class="mb-4">
+              <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <span>Assigned Keys (${guy.keys.length})</span>
+                <span class="text-slate-400 font-normal">Click key to copy</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 bg-slate-50 rounded-lg border border-slate-200">
+                ${guy.keys.map(k => {
+                  const keyPaid = (k.completedOrders > 0) && ((Number(k.paidAmount) || 0) >= (Number(k.completedOrders) || 0) * (Number(k.rate) || 15));
+                  return `
+                    <div class="inline-flex items-center gap-1 px-2 py-1 rounded ${keyPaid ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-300'} border text-[11px] font-mono shadow-2xs hover:border-indigo-400 transition">
+                      <span class="text-slate-800 font-semibold ${keyPaid ? 'line-through text-slate-400' : ''}">${escapeHtml(k.key)}</span>
+                      <button onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                      </button>
+                      <span class="text-[10px] ${keyPaid ? 'text-emerald-700 font-black' : 'text-emerald-600 font-bold'} ml-1">${k.completedOrders || 0}✓ ${keyPaid ? '(PAID)' : ''}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Aggregated Metrics Grid -->
+            <div class="grid grid-cols-3 gap-2 ${isSettled ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-100'} p-3 rounded-lg border text-center mb-3">
+              <div>
+                <div class="text-xs text-slate-400 font-medium">Completed Orders</div>
+                <div class="text-base font-black text-emerald-700 ${isSettled ? 'line-through' : ''}">${guy.completedOrders}</div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 font-medium">Total Calculated Pay</div>
+                <div class="text-base font-black text-slate-800 ${isSettled ? 'line-through opacity-60' : ''}">${guy.totalEarned.toFixed(2)}</div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 font-medium">Balance Due</div>
+                <div class="text-base font-black ${isSettled ? 'paid-crossed-text text-emerald-700' : (guy.unpaidAmount > 0 ? 'text-rose-600' : 'text-slate-400')}">
+                  ${isSettled ? `<span class="paid-strike-bar">${guy.totalEarned.toFixed(2)}</span>` : `${guy.unpaidAmount.toFixed(2)}`}
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div>
+              <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span>Success Rate Progression</span>
+                <span class="font-bold text-slate-800">${guy.successRate}%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                <div class="${guy.progressColor} h-2 rounded-full transition-all duration-500" style="width: ${Math.min(100, Math.max(0, guy.rateNum))}%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="p-3 ${isSettled ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50 border-slate-200'} border-t flex items-center justify-between gap-2">
+            <div class="text-xs text-slate-500">
+              <span>Rate:</span>
+              <strong class="text-slate-800">${guy.rate.toFixed(2)}/order</strong>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              ${guy.unpaidAmount > 0 ? `
+                <button onclick="markGuyPaid('${escapeHtml(guy.id)}')" title="Mark paid and notify via Telegram" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                  Pay ${guy.unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
+                </button>
+              ` : `
+                <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 rounded-md flex items-center gap-1">
+                  <span class="line-through opacity-75">${guy.totalEarned.toFixed(2)}</span>
+                  <span>✓ PAID</span>
+                </span>
+                ${guy.completedOrders > 0 ? `
+                  <button onclick="unmarkGuyPaid('${escapeHtml(guy.id)}')" title="Reset / Unmark Paid" class="p-1 text-slate-400 hover:text-slate-600 rounded text-[11px]" title="Reset to unpaid">
+                    ↺
+                  </button>
+                ` : ''}
+              `}
+
+              <button onclick="openQuickTgModal('${escapeHtml(guy.keys[0]?.key || '')}', '${escapeHtml(guy.displayName || '')}')" title="Quick Connect to Telegram" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition flex items-center gap-1">
+                <span>✈️</span> Connect TG
+              </button>
+              <button onclick="openDecideRateModal('${guy.keys[0].id}')" title="Set Success Rate" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition">
+                🎯 Set Rate
+              </button>
+
+              <button onclick="openTeamAssignModal()" title="Assign / Edit Keys" class="p-1.5 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-200 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+    container.innerHTML = html;
+  }
+
+  // ==========================================
+  // PANEL 2: ALL WORKER KEYS (MASI TABLE)
+  // ==========================================
+  function renderKeysPanel(container) {
+    const allWorkers = state.workers;
+    const workers = filterWorkers(allWorkers);
+
+    let html = `
+      <div class="space-y-6">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-sky-50/50 via-indigo-50/30 to-white flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <svg class="w-6 h-6 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+              All Worker Keys (${workers.length} of ${allWorkers.length})
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Extracted from <code>masi.cc.cd/boss</code>. Copy keys, customize success rates, or assign keys to guy profiles.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openTeamAssignModal()" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>👥</span> Group by Guy
+            </button>
+            <button onclick="openMasiModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-sm transition flex items-center gap-1.5">
+              <span>⚡</span> Sync Masi Boss
+            </button>
+            <button onclick="openAddWorkerModal()" class="px-3 py-2 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-sm transition flex items-center gap-1">
+              <span>+</span> New Key
+            </button>
+          </div>
+        </div>
+
+        <!-- Keys Table Container -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
+                <tr>
+                  <th class="py-3.5 px-4 font-bold">Worker & Guy Name</th>
+                  <th class="py-3.5 px-4 font-bold">Worker Key</th>
+                  <th class="py-3.5 px-4 font-bold">Telegram (@...)</th>
+                  <th class="py-3.5 px-4 font-bold text-center">Completed Orders</th>
+                  <th class="py-3.5 px-4 font-bold text-center">Success Rate %</th>
+                  <th class="py-3.5 px-4 font-bold">Calculated Pay</th>
+                  <th class="py-3.5 px-4 font-bold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+    `;
+
+    if (workers.length === 0) {
+      html += `
+        <tr>
+          <td colspan="7" class="py-8 text-center text-slate-500 text-xs">
+            No worker keys match your search query.
+          </td>
+        </tr>
+      `;
+    }
+
+    workers.forEach(w => {
+      const isCustomRate = w.customSuccessRate !== null && w.customSuccessRate !== undefined && w.customSuccessRate !== '';
+      const displayRate = isCustomRate ? Number(w.customSuccessRate).toFixed(1) : (w.successRate !== undefined ? Number(w.successRate).toFixed(1) : '0.0');
+      const rateNum = Number(displayRate) || 0;
+
+      let badgeClass = 'text-slate-700 bg-slate-100';
+      if (rateNum >= 80) badgeClass = 'text-emerald-800 bg-emerald-100';
+      else if (rateNum >= 50) badgeClass = 'text-amber-800 bg-amber-100';
+      else if (rateNum > 0) badgeClass = 'text-rose-800 bg-rose-100';
+
+      const baseRate = Number(w.rate) || 15.00;
+      const completed = Number(w.completedOrders) || 0;
+      const totalEarned = completed * baseRate;
+
+      const isPaidKey = completed > 0 && ((Number(w.paidAmount) || 0) >= totalEarned);
+
+      html += `
+        <tr class="hover:bg-slate-50/80 transition group ${isPaidKey ? 'paid-row-settled' : ''}">
+          <!-- Worker / Guy -->
+          <td class="py-3 px-4">
+            <div class="font-bold text-slate-900 ${isPaidKey ? 'paid-strike-bar' : ''}">${escapeHtml(w.name || 'Worker')}</div>
+            ${w.personName && w.personName !== w.name ? `
+              <div class="text-[11px] text-indigo-600 font-medium">👤 ${escapeHtml(w.personName)}</div>
+            ` : ''}
+          </td>
+
+          <!-- Worker Key with Copy -->
+          <td class="py-3 px-4 font-mono text-xs">
+            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded ${isPaidKey ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'} border">
+              <span class="font-semibold ${isPaidKey ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHtml(w.key)}</span>
+              <button onclick="copyToClipboard('${escapeHtml(w.key)}', 'Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+              </button>
+            </div>
+          </td>
+
+          <!-- Telegram Username -->
+          <td class="py-3 px-4 text-xs font-mono">
+            ${w.telegramUsername ? `
+              <a href="https://t.me/${w.telegramUsername.replace('@', '')}" target="_blank" class="text-sky-600 hover:underline font-semibold flex items-center gap-1">
+                <span>💬</span> ${escapeHtml(w.telegramUsername)}
+              </a>
+            ` : `
+              <span class="text-slate-400 font-sans text-[11px]">Not assigned</span>
+            `}
+          </td>
+
+          <!-- Completed Orders -->
+          <td class="py-3 px-4 text-center font-bold text-emerald-700">
+            <span class="${isPaidKey ? 'line-through opacity-60' : ''}">${completed}</span>
+          </td>
+
+          <!-- Success Rate % -->
+          <td class="py-3 px-4 text-center">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeClass}">
+              ${displayRate}%
+            </span>
+            ${isCustomRate ? `<span class="block text-[10px] text-indigo-600 font-medium mt-0.5">Admin Decided</span>` : ''}
+          </td>
+
+          <!-- Calculated Pay -->
+          <td class="py-3 px-4 font-bold text-slate-800">
+            ${isPaidKey ? `
+              <div class="paid-crossed-text text-emerald-700">${totalEarned.toFixed(2)}</div>
+              <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded inline-block mt-0.5">✓ PAID</span>
+            ` : `
+              <div>${totalEarned.toFixed(2)}</div>
+              <span class="text-[11px] font-normal text-slate-400 block">@ ${baseRate}/order</span>
+            `}
+          </td>
+
+          <!-- Actions -->
+          <td class="py-3 px-4 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-1.5">
+              ${(!isPaidKey && completed > 0) ? `
+                <button onclick="markWorkerPaid('${w.id}')" title="Mark this key as paid" class="px-2 py-1 text-xs font-bold rounded bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                  Pay
+                </button>
+              ` : ''}
+              <button onclick="openQuickTgModal('${escapeHtml(w.key)}', '${escapeHtml(w.personName || w.name || '')}')" title="Quick Connect to Telegram" class="px-2 py-1 text-xs font-semibold rounded bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition flex items-center gap-1">
+                <span>✈️</span> TG
+              </button>
+              <button onclick="openDecideRateModal('${w.id}')" title="Set Success Rate" class="px-2.5 py-1 text-xs font-semibold rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
+                🎯 Rate
+              </button>
+              <button onclick="editWorkerKey('${w.id}')" title="Edit Worker Key" class="p-1 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-100 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              </button>
+              <button onclick="deleteWorkerKey('${w.id}')" title="Delete Key" class="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+  }
+
+  // ==========================================
+  // PANEL 3: WORKER PAYOUTS & BALANCES
+  // ==========================================
+  function renderWorkersPanel(container) {
+    const guys = getGroupedGuys();
+    const totalEarnedTeam = guys.reduce((sum, g) => sum + g.totalEarned, 0);
+    const totalPaidTeam = guys.reduce((sum, g) => sum + g.paidAmount, 0);
+    const totalDueTeam = Math.max(0, totalEarnedTeam - totalPaidTeam);
+
+    let html = `
+      <div class="space-y-6">
+        <!-- Banner -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-emerald-50/50 via-teal-50/30 to-white flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Payouts & Worker Pay Calculator
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Calculates earnings based on completed orders read from Masi. Mark payouts and send automatic Telegram receipts.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="exportCSV()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg shadow-sm transition">
+              📥 Export Payouts CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Payout Summary Metric Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs">
+            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Team Earnings</div>
+            <div class="text-2xl font-black text-slate-900 mt-1">${totalEarnedTeam.toFixed(2)}</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">Completed orders across all keys</div>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-emerald-200 bg-emerald-50/20 shadow-2xs">
+            <div class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Total Settled / Paid</div>
+            <div class="text-2xl font-black text-emerald-800 mt-1">${totalPaidTeam.toFixed(2)}</div>
+            <div class="text-[11px] text-emerald-600 mt-0.5">Recorded historical payments</div>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-rose-200 bg-rose-50/20 shadow-2xs">
+            <div class="text-xs font-bold text-rose-700 uppercase tracking-wider">Pending Balance Due</div>
+            <div class="text-2xl font-black text-rose-800 mt-1">${totalDueTeam.toFixed(2)}</div>
+            <div class="text-[11px] text-rose-600 mt-0.5">Currently owed to workers</div>
+          </div>
+        </div>
+
+        <!-- Payouts List Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="p-4 border-b border-slate-200 font-bold text-slate-800 text-sm flex items-center justify-between">
+            <span>Worker & Guy Balances</span>
+            <span class="text-xs font-normal text-slate-500">${guys.length} Accounts</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-4 font-bold">Guy / Worker</th>
+                  <th class="py-3 px-4 font-bold">Keys Assigned</th>
+                  <th class="py-3 px-4 font-bold text-center">Completed Orders</th>
+                  <th class="py-3 px-4 font-bold">Rate</th>
+                  <th class="py-3 px-4 font-bold">Total Earned</th>
+                  <th class="py-3 px-4 font-bold">Paid So Far</th>
+                  <th class="py-3 px-4 font-bold">Pending Due</th>
+                  <th class="py-3 px-4 font-bold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+      `;
+
+      guys.forEach(g => {
+        const hasDue = g.unpaidAmount > 0;
+        const isSettled = g.completedOrders > 0 && !hasDue;
+        const isLinked = Boolean(g.telegramId);
+
+        html += `
+          <tr class="hover:bg-slate-50/80 transition ${isSettled ? 'paid-row-settled' : ''}">
+            <td class="py-3 px-4">
+              <div class="font-bold text-slate-900 ${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(g.displayName)}</div>
+              ${g.telegramUsername ? `<div class="text-xs text-sky-600 font-mono">${escapeHtml(g.telegramUsername)}</div>` : ''}
+            </td>
+            <td class="py-3 px-4 text-xs font-mono text-slate-600">
+              ${g.keys.length} ${g.keys.length === 1 ? 'key' : 'keys'}
+            </td>
+            <td class="py-3 px-4 text-center font-bold text-emerald-700">
+              <span class="${isSettled ? 'line-through opacity-60' : ''}">${g.completedOrders}</span>
+            </td>
+            <td class="py-3 px-4 text-xs text-slate-600 font-medium">
+              ${g.rate.toFixed(2)}/order
+            </td>
+            <td class="py-3 px-4 font-bold text-slate-800">
+              <span class="${isSettled ? 'line-through opacity-60' : ''}">${g.totalEarned.toFixed(2)}</span>
+            </td>
+            <td class="py-3 px-4 text-xs font-semibold text-emerald-700">
+              ${g.paidAmount.toFixed(2)}
+            </td>
+            <td class="py-3 px-4 font-black ${hasDue ? 'text-rose-600' : 'text-slate-400'}">
+              ${isSettled ? `
+                <span class="paid-strike-bar paid-crossed-text text-emerald-700 font-bold">${g.totalEarned.toFixed(2)}</span>
+              ` : `${g.unpaidAmount.toFixed(2)}`}
+            </td>
+            <td class="py-3 px-4 text-right">
+              ${hasDue ? `
+                <button onclick="markGuyPaid('${escapeHtml(g.id)}')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                  Pay ${g.unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
+                </button>
+              ` : `
+                <div class="inline-flex items-center gap-1">
+                  <span class="text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-md flex items-center gap-1">
+                    <span class="line-through opacity-75">${g.totalEarned.toFixed(2)}</span>
+                    <span>✓ PAID</span>
+                  </span>
+                  ${g.completedOrders > 0 ? `
+                    <button onclick="unmarkGuyPaid('${escapeHtml(g.id)}')" title="Reset / Unmark Paid" class="p-1 text-slate-400 hover:text-slate-600 rounded text-[11px]">
+                      ↺
+                    </button>
+                  ` : ''}
+                </div>
+              `}
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+  }
+
+  // ==========================================
+  // PANEL 4: TELEGRAM BOT & LINKER
+  // ==========================================
+  function renderBotPanel(container) {
+    const isOnline = state.botStatus && state.botStatus.isPolling;
+    const botUser = state.botStatus && state.botStatus.botUsername ? `@${state.botStatus.botUsername}` : 'Not Connected';
+
+    let html = `
+      <div class="space-y-6">
+        <!-- Banner -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-sky-50/50 via-indigo-50/30 to-white flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <svg class="w-6 h-6 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+              Telegram Bot Integration Hub
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+              Connects your workers directly to their Masi keys, completed order counts, and pay statistics on Telegram.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openBotConfigModal()" class="px-4 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition">
+              ⚙️ Bot Settings
+            </button>
+          </div>
+        </div>
+
+        <!-- Bot Status Card -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Bot Connection Status</h3>
+            <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-400'}"></span>
+              <div>
+                <div class="font-bold text-slate-900">${isOnline ? 'Active & Polling' : 'Offline / Needs Token'}</div>
+                <div class="text-xs text-slate-500 font-mono">${botUser}</div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Telegram Bot Token</label>
+              <div class="flex items-center gap-2">
+                <input type="password" id="tab-bot-token-input" value="${state.settings.botToken || ''}" placeholder="Paste token from @BotFather" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                <button onclick="saveBotTokenFromTab()" class="px-4 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm whitespace-nowrap">
+                  Save & Connect
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instructions Card for Workers -->
+          <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3 text-xs">
+            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">How Workers Use the Bot</h3>
+            <ol class="list-decimal list-inside space-y-2 text-slate-600">
+              <li>Open your bot in Telegram (search <b>${botUser}</b>).</li>
+              <li>Worker sends command to link their key:
+                <code class="block font-mono bg-slate-100 p-2 rounded text-indigo-700 mt-1">/link YOUR_WORKER_KEY</code>
+              </li>
+              <li>Worker can view their stats anytime:
+                <code class="block font-mono bg-slate-100 p-2 rounded text-indigo-700 mt-1">/stats</code>
+              </li>
+              <li>Worker checks unpaid balance:
+                <code class="block font-mono bg-slate-100 p-2 rounded text-indigo-700 mt-1">/balance</code>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+  }
+
+  // ==========================================
+  // PAYOUT ACTIONS (Mark Paid / Unmark Paid)
+  // ==========================================
+  window.markGuyPaid = async function(guyId) {
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    // Immediately mark all keys as fully paid in local state
+    const now = new Date().toISOString();
+    let totalPaidNow = 0;
+
+    guy.keys.forEach(k => {
+      const keyRate = Number(k.rate) || 15;
+      const completed = Number(k.completedOrders) || 0;
+      const fullEarned = completed * keyRate;
+      k.paidAmount = fullEarned;
+      k.paidCount = completed;
+      k.lastPaidAt = now;
+      totalPaidNow += fullEarned;
+    });
+
+    // Save immediately to local storage and re-render
+    saveToLocalStorage();
+    render();
+    showToast(`✓ Marked ${guy.displayName} as PAID (${guy.totalEarned.toFixed(2)})!`, 'success');
+
+    // Notify backend and Telegram in parallel
+    for (const key of guy.keys) {
+      if (state.isApiOnline) {
+        try {
+          fetch(`${API_BASE}/workers/${key.id}/mark-paid`, { method: 'POST' }).catch(() => {});
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  };
+
+  window.unmarkGuyPaid = async function(guyId) {
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    // Reset paid amount to 0 for this guy's keys
+    guy.keys.forEach(k => {
+      k.paidAmount = 0;
+      k.paidCount = 0;
+      k.lastPaidAt = null;
+      if (state.isApiOnline) {
+        fetch(`${API_BASE}/workers/${k.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paidAmount: 0, paidCount: 0, lastPaidAt: null })
+        }).catch(() => {});
+      }
+    });
+
+    saveToLocalStorage();
+    render();
+    showToast(`Reset payment status for ${guy.displayName}`, 'info');
+  };
+
+  window.markWorkerPaid = async function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId);
+    if (!worker) return;
+
+    const rate = Number(worker.rate) || 15;
+    const completed = Number(worker.completedOrders) || 0;
+    const fullEarned = completed * rate;
+    const now = new Date().toISOString();
+
+    worker.paidAmount = fullEarned;
+    worker.paidCount = completed;
+    worker.lastPaidAt = now;
+
+    saveToLocalStorage();
+    render();
+    showToast(`✓ Key ${worker.key} marked as PAID (${fullEarned.toFixed(2)})`, 'success');
+
+    if (state.isApiOnline) {
+      try {
+        fetch(`${API_BASE}/workers/${worker.id}/mark-paid`, { method: 'POST' }).catch(() => {});
+      } catch (e) {}
+    }
+  };
+
+  // ==========================================
+  // MULTI-KEY TEAM ASSIGNMENT MODAL
+  // ==========================================
+  window.openTeamAssignModal = function() {
+    const modal = document.getElementById('team-assign-modal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    switchTeamAssignTab('paste');
+  };
+
+  window.closeTeamAssignModal = function() {
+    const modal = document.getElementById('team-assign-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.switchTeamAssignTab = function(tab) {
+    state.teamAssignTab = tab;
+    const btnPaste = document.getElementById('btn-tab-assign-paste');
+    const btnSearch = document.getElementById('btn-tab-assign-search');
+    const panelPaste = document.getElementById('panel-assign-paste');
+    const panelSearch = document.getElementById('panel-assign-search');
+
+    if (tab === 'paste') {
+      if (btnPaste) btnPaste.className = 'px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 transition';
+      if (btnSearch) btnSearch.className = 'px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition';
+      if (panelPaste) panelPaste.classList.remove('hidden');
+      if (panelSearch) panelSearch.classList.add('hidden');
+    } else {
+      if (btnPaste) btnPaste.className = 'px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition';
+      if (btnSearch) btnSearch.className = 'px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 transition';
+      if (panelPaste) panelPaste.classList.add('hidden');
+      if (panelSearch) panelSearch.classList.remove('hidden');
+      renderTeamAssignTable();
+    }
+  };
+
+  window.parseTeamAssignText = function() {
+    const textarea = document.getElementById('team-assign-textarea');
+    const preview = document.getElementById('team-assign-preview');
+    if (!textarea || !preview) return;
+
+    const lines = textarea.value.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) {
+      preview.innerHTML = `<span class="text-slate-400">Preview will appear here as you type or paste...</span>`;
+      return;
+    }
+
+    const mappings = parseLinesToMappings(lines);
+    const guyGroups = new Map();
+    mappings.forEach(m => {
+      const gname = m.telegramUsername || m.personName || 'Unassigned';
+      if (!guyGroups.has(gname)) guyGroups.set(gname, []);
+      guyGroups.get(gname).push(m);
+    });
+
+    let html = `
+      <div class="space-y-2">
+        <div class="text-xs font-bold text-indigo-700 flex items-center justify-between">
+          <span>Found ${mappings.length} key assignments (${guyGroups.size} Guys)</span>
+          <span class="text-emerald-600 font-semibold">Ready to save</span>
+        </div>
+    `;
+
+    guyGroups.forEach((keys, guyName) => {
+      html += `
+        <div class="bg-white p-2.5 rounded border border-slate-200 text-[11px] space-y-1">
+          <div class="font-bold text-slate-800 flex items-center gap-1.5">
+            <span>👤 ${escapeHtml(guyName)}</span>
+            <span class="text-slate-400">(${keys.length} ${keys.length === 1 ? 'key' : 'keys'})</span>
+          </div>
+          <div class="font-mono text-slate-600 pl-4 space-y-0.5">
+            ${keys.map(k => `<div>• <span class="text-indigo-600 font-semibold">${escapeHtml(k.key)}</span> ${k.personName ? `(${escapeHtml(k.personName)})` : ''}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    preview.innerHTML = html;
+  };
+
+  function parseLinesToMappings(lines) {
+    const mappings = [];
+    lines.forEach(line => {
+      const tokens = line.split(/[\s,]+/).filter(Boolean);
+      if (tokens.length === 0) return;
+
+      let key = '';
+      let tg = '';
+      let personName = '';
+
+      tokens.forEach(tok => {
+        if (tok.toUpperCase().startsWith('WORKER-') || tok.toUpperCase().startsWith('KEY-') || tok.length >= 15) {
+          key = tok.toUpperCase();
+        } else if (tok.startsWith('@')) {
+          tg = tok;
+        } else if (!personName) {
+          personName = tok;
+        } else {
+          personName += ' ' + tok;
+        }
+      });
+
+      if (key) {
+        mappings.push({ key, telegramUsername: tg, personName });
+      }
+    });
+    return mappings;
+  }
+
+  window.saveTeamAssignments = async function() {
+    const textarea = document.getElementById('team-assign-textarea');
+    if (!textarea) return;
+
+    const lines = textarea.value.split('\n').map(l => l.trim()).filter(Boolean);
+    const mappings = parseLinesToMappings(lines);
+
+    if (mappings.length === 0) {
+      showToast('No valid keys found to assign', 'warning');
+      return;
+    }
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/batch-assign-telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mappings })
+        });
+        const result = await res.json();
+        if (result.success) {
+          await fetchServerState();
+          closeTeamAssignModal();
+          showToast(`Successfully grouped ${result.updated} keys under their guys!`, 'success');
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // LocalStorage fallback
+    let updated = 0;
+    mappings.forEach(m => {
+      const w = state.workers.find(wk => wk.key.toUpperCase() === m.key.toUpperCase());
+      if (w) {
+        if (m.telegramUsername) w.telegramUsername = m.telegramUsername;
+        if (m.personName) w.personName = m.personName;
+        updated++;
+      }
+    });
+
+    saveToLocalStorage();
+    render();
+    closeTeamAssignModal();
+    showToast(`Assigned ${updated} keys!`, 'success');
+  };
+
+  window.renderTeamAssignTable = function() {
+    const tbody = document.getElementById('team-assign-table-body');
+    const filterInput = document.getElementById('team-assign-filter');
+    if (!tbody) return;
+
+    const q = (filterInput ? filterInput.value : '').toLowerCase().trim();
+    const list = state.workers.filter(w =>
+      !q || (w.name && w.name.toLowerCase().includes(q)) ||
+      (w.key && w.key.toLowerCase().includes(q)) ||
+      (w.telegramUsername && w.telegramUsername.toLowerCase().includes(q)) ||
+      (w.personName && w.personName.toLowerCase().includes(q))
+    ).slice(0, 60);
+
+    tbody.innerHTML = list.map(w => `
+      <tr class="hover:bg-slate-50">
+        <td class="p-2.5">
+          <div class="font-bold text-slate-800">${escapeHtml(w.name)}</div>
+          <div class="font-mono text-[10px] text-slate-500">${escapeHtml(w.key)}</div>
+        </td>
+        <td class="p-2.5">
+          <input type="text" value="${escapeHtml(w.telegramUsername || '')}" placeholder="@telegram" onchange="quickAssignSingleKey('${w.key}', this.value, null)" class="px-2 py-1 text-xs border border-slate-300 rounded font-mono w-32 focus:ring-1 focus:ring-indigo-500">
+        </td>
+        <td class="p-2.5">
+          <input type="text" value="${escapeHtml(w.personName || w.name)}" placeholder="Guy Name" onchange="quickAssignSingleKey('${w.key}', null, this.value)" class="px-2 py-1 text-xs border border-slate-300 rounded w-28 focus:ring-1 focus:ring-indigo-500">
+        </td>
+      </tr>
+    `).join('');
+  };
+
+  window.quickAssignSingleKey = async function(key, tg, personName) {
+    const worker = state.workers.find(w => w.key.toUpperCase() === key.toUpperCase());
+    if (!worker) return;
+
+    if (tg !== null) worker.telegramUsername = tg ? (tg.startsWith('@') ? tg : '@' + tg) : null;
+    if (personName !== null) worker.personName = personName ? personName.trim() : worker.name;
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/workers/assign-telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            key: worker.key,
+            telegramUsername: worker.telegramUsername,
+            personName: worker.personName
+          })
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    saveToLocalStorage();
+    renderKPIs();
+    showToast(`Updated assignment for ${worker.key}`, 'success');
+  };
+
+  // ==========================================
+  // ADMIN DECIDES SUCCESS RATE MODAL
+  // ==========================================
+  window.openDecideRateModal = function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId);
+    if (!worker) return;
+
+    const modal = document.getElementById('decide-rate-modal');
+    const inputId = document.getElementById('decide-rate-worker-id');
+    const nameEl = document.getElementById('decide-rate-worker-name');
+    const inputRate = document.getElementById('decide-rate-input');
+
+    if (modal && inputId && nameEl && inputRate) {
+      inputId.value = worker.id;
+      nameEl.textContent = `${worker.personName || worker.name} (${worker.key})`;
+      inputRate.value = worker.customSuccessRate !== undefined && worker.customSuccessRate !== null ? worker.customSuccessRate : (worker.successRate || '');
+      modal.classList.remove('hidden');
+    }
+  };
+
+  window.closeDecideRateModal = function() {
+    const modal = document.getElementById('decide-rate-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.saveDecidedRate = async function() {
+    const id = document.getElementById('decide-rate-worker-id').value;
+    const rateVal = document.getElementById('decide-rate-input').value;
+    const worker = state.workers.find(w => w.id === id);
+    if (!worker) return;
+
+    const customRate = rateVal === '' ? null : Number(rateVal);
+    worker.customSuccessRate = customRate;
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/workers/${id}/set-rate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customSuccessRate: customRate })
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    saveToLocalStorage();
+    render();
+    closeDecideRateModal();
+    showToast(`Success rate for ${worker.name} set to ${customRate !== null ? customRate + '%' : 'Auto calculated'}!`, 'success');
+  };
+
+  window.resetToAutoRate = function() {
+    const inputRate = document.getElementById('decide-rate-input');
+    if (inputRate) {
+      inputRate.value = '';
+      saveDecidedRate();
+    }
+  };
+
+  // ==========================================
+  // MASI BOSS EXTRACTOR MODAL
+  // ==========================================
+  window.openMasiModal = function() {
+    const modal = document.getElementById('masi-modal');
+    if (modal) modal.classList.remove('hidden');
+  };
+
+  window.closeMasiModal = function() {
+    const modal = document.getElementById('masi-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.extractFromMasi = async function() {
+    const key = (document.getElementById('masi-boss-key').value || '').trim();
+    const btn = document.getElementById('btn-masi-fetch');
+    const syncBtn = document.getElementById('btn-masi-sync');
+    const previewDiv = document.getElementById('masi-extract-preview');
+    if (!key) {
+      showToast('Please enter a Boss Key', 'warning');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `<span style="display:inline-block;animation:spin 1s linear infinite">↻</span> Extracting...`;
+    if (previewDiv) previewDiv.innerHTML = `<span class="text-indigo-500 font-semibold">⏳ Connecting to masi.cc.cd...</span>`;
+
+    try {
+      const res = await fetch(`${API_BASE}/masi/extract`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bossKey: key })
+      });
+      const data = await res.json();
+      btn.disabled = false;
+      btn.innerHTML = 'Extract Data';
+
+      if (data.success && data.workers) {
+        window.__tempMasiWorkers = data.workers;
+        if (syncBtn) syncBtn.disabled = false;
+        const withOrders = data.workers.filter(w => (Number(w.completedOrders) || Number(w.completedCount) || 0) > 0);
+        const totalCompleted = data.workers.reduce((s, w) => s + (Number(w.completedOrders) || Number(w.completedCount) || 0), 0);
+        if (previewDiv) {
+          previewDiv.innerHTML = `
+            <div class="flex gap-4 flex-wrap mb-3">
+              <div class="bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2 text-center">
+                <div class="text-lg font-black text-indigo-700">${data.workers.length}</div>
+                <div class="text-[10px] text-indigo-500 uppercase font-bold">Total Workers</div>
+              </div>
+              <div class="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center">
+                <div class="text-lg font-black text-emerald-700">${withOrders.length}</div>
+                <div class="text-[10px] text-emerald-500 uppercase font-bold">With Orders</div>
+              </div>
+              <div class="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-center">
+                <div class="text-lg font-black text-amber-700">${totalCompleted}</div>
+                <div class="text-[10px] text-amber-500 uppercase font-bold">Total Completed</div>
+              </div>
+            </div>
+            <div class="text-emerald-600 font-bold mb-1">✓ Ready to sync ${data.workers.length} workers! Click "Sync & Import" below.</div>
+            <div class="max-h-32 overflow-y-auto text-[11px] text-slate-500">
+              ${withOrders.slice(0, 10).map(w => `<div>• <b>${w.name}</b> — ${w.completedOrders || w.completedCount || 0} done (${(w.successRate || 0).toFixed(1)}%)</div>`).join('')}
+              ${withOrders.length > 10 ? `<div class="text-slate-400">...and ${withOrders.length - 10} more</div>` : ''}
+            </div>`;
+        }
+        showToast(`Extracted ${data.workers.length} workers from masi.cc.cd!`, 'success');
+      } else {
+        if (previewDiv) previewDiv.innerHTML = `<span class="text-red-500 font-semibold">❌ ${data.error || 'Failed to extract from Masi'}</span>`;
+        showToast(data.error || 'Failed to extract from Masi', 'danger');
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.innerHTML = 'Extract Data';
+      if (previewDiv) previewDiv.innerHTML = `<span class="text-red-500 font-semibold">❌ Error connecting to server</span>`;
+      showToast('Error connecting to Masi endpoint', 'danger');
+    }
+  };
+
+  window.syncMasiToDashboard = async function() {
+    if (!window.__tempMasiWorkers || window.__tempMasiWorkers.length === 0) {
+      showToast('Extract workers first', 'warning');
+      return;
+    }
+
+    const syncBtn = document.getElementById('btn-masi-sync');
+    syncBtn.disabled = true;
+    syncBtn.textContent = 'Syncing...';
+
+    try {
+      const res = await fetch(`${API_BASE}/masi/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ masiWorkers: window.__tempMasiWorkers })
+      });
+      const result = await res.json();
+      syncBtn.disabled = false;
+      syncBtn.textContent = 'Sync & Import to Dashboard';
+
+      if (result.success) {
+        await fetchServerState();
+        closeMasiModal();
+        showToast(`Synced ${result.totalWorkers} workers from Masi to Dashboard!`, 'success');
+      }
+    } catch (e) {
+      syncBtn.disabled = false;
+      syncBtn.textContent = 'Sync & Import to Dashboard';
+      showToast('Error syncing Masi data', 'danger');
+    }
+  };
+
+  // ==========================================
+  // ADD / EDIT WORKER KEY MODAL
+  // ==========================================
+  window.openAddWorkerModal = function() {
+    const modal = document.getElementById('worker-modal');
+    if (!modal) return;
+    document.getElementById('edit-worker-id').value = '';
+    document.getElementById('input-new-worker-name').value = '';
+    regenerateRandomKey();
+    modal.classList.remove('hidden');
+  };
+
+  window.closeWorkerModal = function() {
+    const modal = document.getElementById('worker-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.autoGenerateKey = function(name) {
+    const keyInput = document.getElementById('input-new-worker-key');
+    if (!keyInput || keyInput.dataset.manual === 'true') return;
+    const clean = (name || 'WORKER').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6) || 'WORKER';
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    keyInput.value = `KEY-${clean}-${rand}`;
+  };
+
+  window.regenerateRandomKey = function() {
+    const keyInput = document.getElementById('input-new-worker-key');
+    const name = document.getElementById('input-new-worker-name').value || 'WORKER';
+    const clean = name.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6) || 'WORKER';
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    keyInput.value = `KEY-${clean}-${rand}`;
+    keyInput.dataset.manual = 'false';
+  };
+
+  window.saveWorkerKey = async function() {
+    const id = document.getElementById('edit-worker-id').value;
+    const name = (document.getElementById('input-new-worker-name').value || '').trim();
+    const key = (document.getElementById('input-new-worker-key').value || '').trim().toUpperCase();
+    const rate = Number(document.getElementById('input-new-worker-rate').value) || 15.00;
+    const customRateVal = document.getElementById('input-new-worker-success-rate').value;
+    const customSuccessRate = customRateVal === '' ? null : Number(customRateVal);
+
+    if (!name || !key) {
+      showToast('Worker Name and Key are required', 'warning');
+      return;
+    }
+
+    if (id) {
+      // Edit existing
+      const w = state.workers.find(wk => wk.id === id);
+      if (w) {
+        w.name = name;
+        w.key = key;
+        w.rate = rate;
+        w.customSuccessRate = customSuccessRate;
+      }
+    } else {
+      // Add new
+      state.workers.unshift({
+        id: `w-${Date.now()}`,
+        name,
+        key,
+        rate,
+        customSuccessRate,
+        completedOrders: 0,
+        failCount: 0,
+        successRate: 0,
+        telegramId: null,
+        telegramUsername: null,
+        status: 'active'
+      });
+    }
+
+    if (state.isApiOnline) {
+      try {
+        if (id) {
+          await fetch(`${API_BASE}/workers/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, key, rate, customSuccessRate })
+          });
+        } else {
+          await fetch(`${API_BASE}/workers`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, key, rate, customSuccessRate })
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    saveToLocalStorage();
+    render();
+    closeWorkerModal();
+    showToast(`Worker key ${key} saved successfully!`, 'success');
+  };
+
+  window.editWorkerKey = function(workerId) {
+    const w = state.workers.find(wk => wk.id === workerId);
+    if (!w) return;
+    openAddWorkerModal();
+    document.getElementById('edit-worker-id').value = w.id;
+    document.getElementById('input-new-worker-name').value = w.name;
+    document.getElementById('input-new-worker-key').value = w.key;
+    document.getElementById('input-new-worker-rate').value = w.rate || 15.00;
+    document.getElementById('input-new-worker-success-rate').value = w.customSuccessRate !== undefined && w.customSuccessRate !== null ? w.customSuccessRate : '';
+  };
+
+  window.deleteWorkerKey = async function(workerId) {
+    const w = state.workers.find(wk => wk.id === workerId);
+    if (!w) return;
+    if (!confirm(`Are you sure you want to delete worker key "${w.key}" (${w.name})?`)) return;
+
+    state.workers = state.workers.filter(wk => wk.id !== workerId);
+
+    if (state.isApiOnline) {
+      try {
+        await fetch(`${API_BASE}/workers/${workerId}`, { method: 'DELETE' });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    saveToLocalStorage();
+    render();
+    showToast(`Deleted key ${w.key}`, 'info');
+  };
+
+  // ==========================================
+  // BOT CONFIG MODAL
+  // ==========================================
+
+  // ==========================================
+  // QUICK TELEGRAM CONNECT MODAL
+  // ==========================================
+  window.openQuickTgModal = function(prefillKey = '', prefillGuy = '') {
+    const modal = document.getElementById('quick-tg-modal');
+    if (!modal) return;
+
+    // Populate Datalist with all workers for quick autocomplete
+    const datalist = document.getElementById('quickTgWorkerList');
+    if (datalist) {
+      datalist.innerHTML = state.workers.map(w => {
+        const guyLabel = w.personName && w.personName !== w.name ? ` (${w.personName})` : '';
+        const tgLabel = w.telegramUsername ? ` [${w.telegramUsername}]` : '';
+        return `<option value="${escapeHtml(w.key)}">${escapeHtml(w.name || 'Worker')}${guyLabel}${tgLabel}</option>`;
+      }).join('');
+    }
+
+    const keyInput = document.getElementById('quick-tg-key-input');
+    const guyInput = document.getElementById('quick-tg-guy-name');
+    const tgInput = document.getElementById('quick-tg-username');
+    const botTokenInput = document.getElementById('quick-tg-bot-token');
+
+    if (keyInput) keyInput.value = prefillKey || '';
+    if (guyInput) guyInput.value = prefillGuy || '';
+    if (botTokenInput) botTokenInput.value = state.settings.botToken || '';
+
+    // If prefillKey provided, look up existing worker data
+    if (prefillKey) {
+      const match = state.workers.find(w => w.key.toUpperCase() === prefillKey.toUpperCase());
+      if (match) {
+        if (tgInput && match.telegramUsername) tgInput.value = match.telegramUsername;
+        if (guyInput && !prefillGuy && (match.personName || match.name)) {
+          guyInput.value = match.personName || match.name;
+        }
+      }
+    } else if (tgInput) {
+      tgInput.value = '';
+    }
+
+    switchQuickTgTab('worker');
+    updateQuickTgInvitePreview();
+    modal.classList.remove('hidden');
+  };
+
+  window.closeQuickTgModal = function() {
+    const modal = document.getElementById('quick-tg-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.switchQuickTgTab = function(tab) {
+    const workerPanel = document.getElementById('quick-tg-panel-worker');
+    const botPanel = document.getElementById('quick-tg-panel-bot');
+    const workerBtn = document.getElementById('btn-quick-tg-worker');
+    const botBtn = document.getElementById('btn-quick-tg-bot');
+
+    if (tab === 'worker') {
+      if (workerPanel) workerPanel.classList.remove('hidden');
+      if (botPanel) botPanel.classList.add('hidden');
+      if (workerBtn) {
+        workerBtn.className = 'pb-2.5 border-b-2 border-sky-600 text-sky-700 transition font-bold';
+      }
+      if (botBtn) {
+        botBtn.className = 'pb-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition font-bold';
+      }
+    } else if (tab === 'bot') {
+      if (workerPanel) workerPanel.classList.add('hidden');
+      if (botPanel) botPanel.classList.remove('hidden');
+      if (workerBtn) {
+        workerBtn.className = 'pb-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition font-bold';
+      }
+      if (botBtn) {
+        botBtn.className = 'pb-2.5 border-b-2 border-sky-600 text-sky-700 transition font-bold';
+      }
+    }
+  };
+
+  window.onQuickTgKeySelected = function(val) {
+    val = (val || '').trim();
+    if (!val) {
+      updateQuickTgInvitePreview();
+      return;
+    }
+
+    const match = state.workers.find(w => 
+      w.key.toUpperCase() === val.toUpperCase() || 
+      (w.name && w.name.toLowerCase() === val.toLowerCase()) ||
+      (w.personName && w.personName.toLowerCase() === val.toLowerCase())
+    );
+
+    if (match) {
+      const keyInput = document.getElementById('quick-tg-key-input');
+      const guyInput = document.getElementById('quick-tg-guy-name');
+      const tgInput = document.getElementById('quick-tg-username');
+
+      if (keyInput && keyInput.value !== match.key) keyInput.value = match.key;
+      if (guyInput && !guyInput.value) guyInput.value = match.personName || match.name || '';
+      if (tgInput && match.telegramUsername) tgInput.value = match.telegramUsername;
+    }
+
+    updateQuickTgInvitePreview();
+  };
+
+  window.updateQuickTgInvitePreview = function() {
+    const keyInput = document.getElementById('quick-tg-key-input');
+    const inviteText = document.getElementById('quick-tg-invite-text');
+    if (!inviteText) return;
+
+    const rawKey = keyInput ? keyInput.value.trim() : '';
+    const key = rawKey || 'YOUR_KEY';
+    const botName = state.settings.botUsername || state.botStatus.botUsername || '';
+
+    if (botName) {
+      inviteText.textContent = `https://t.me/${botName.replace('@', '')}?start=link_${encodeURIComponent(key)}`;
+    } else {
+      inviteText.textContent = `https://t.me/share/url?text=/link%20${encodeURIComponent(key)}`;
+    }
+  };
+
+  window.copyQuickTgInviteLink = function() {
+    const inviteText = document.getElementById('quick-tg-invite-text');
+    if (!inviteText) return;
+    const url = inviteText.textContent.trim();
+    copyToClipboard(url, 'Telegram Worker Invite Link');
+  };
+
+  window.saveQuickTgWorkerLink = async function() {
+    const keyInput = document.getElementById('quick-tg-key-input');
+    const tgInput = document.getElementById('quick-tg-username');
+    const guyInput = document.getElementById('quick-tg-guy-name');
+
+    const key = (keyInput ? keyInput.value : '').trim();
+    let tg = (tgInput ? tgInput.value : '').trim();
+    const guy = (guyInput ? guyInput.value : '').trim();
+
+    if (!key) {
+      showToast('Please specify a worker key', 'warning');
+      return;
+    }
+
+    if (tg && !tg.startsWith('@')) {
+      tg = '@' + tg;
+    }
+
+    const mapping = {
+      key: key,
+      telegramUsername: tg,
+      personName: guy || undefined
+    };
+
+    // Save to API if online
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/batch-assign-telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mappings: [mapping] })
+        });
+        const result = await res.json();
+        if (result.success) {
+          await fetchServerState();
+          closeQuickTgModal();
+          showToast(`Linked key ${key} to ${tg || guy || 'profile'}!`, 'success');
+          return;
+        }
+      } catch (err) {
+        console.error('API batch-assign failed:', err);
+      }
+    }
+
+    // LocalStorage fallback
+    const target = state.workers.find(w => w.key.toUpperCase() === key.toUpperCase());
+    if (target) {
+      if (tg) target.telegramUsername = tg;
+      if (guy) target.personName = guy;
+    } else {
+      state.workers.push({
+        id: 'worker-' + Date.now(),
+        name: guy || `Worker ${key.slice(0, 8)}`,
+        key: key,
+        telegramUsername: tg,
+        personName: guy || 'Worker',
+        completedOrders: 0,
+        successRate: 0,
+        rate: 15.00,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    saveToLocalStorage();
+    render();
+    closeQuickTgModal();
+    showToast(`Linked key ${key} to ${tg || guy || 'profile'}!`, 'success');
+  };
+
+  window.saveQuickTgBotToken = async function() {
+    const input = document.getElementById('quick-tg-bot-token');
+    const token = (input ? input.value : '').trim();
+    if (!token) {
+      showToast('Please enter a Bot Token', 'warning');
+      return;
+    }
+
+    await applyBotToken(token);
+    closeQuickTgModal();
+  };
+
+  window.openBotConfigModal = function() {
+    const modal = document.getElementById('bot-config-modal');
+    if (modal) modal.classList.remove('hidden');
+    const input = document.getElementById('input-bot-token');
+    if (input) input.value = state.settings.botToken || '';
+  };
+
+  window.closeBotConfigModal = function() {
+    const modal = document.getElementById('bot-config-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.saveBotToken = async function() {
+    const input = document.getElementById('input-bot-token');
+    const token = (input ? input.value : '').trim();
+    await applyBotToken(token);
+    closeBotConfigModal();
+  };
+
+  window.saveBotTokenFromTab = async function() {
+    const input = document.getElementById('tab-bot-token-input');
+    const token = (input ? input.value : '').trim();
+    await applyBotToken(token);
+  };
+
+  async function applyBotToken(token) {
+    state.settings.botToken = token;
+    saveToLocalStorage();
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/bot/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ botToken: token })
+        });
+        const data = await res.json();
+        if (data.success) {
+          state.botStatus = data.botStatus || {};
+          showToast(`Telegram bot connected: @${data.botUsername}!`, 'success');
+        } else {
+          showToast(data.error || 'Failed to connect bot', 'danger');
+        }
+      } catch (e) {
+        showToast('Error configuring bot', 'danger');
+      }
+    } else {
+      showToast('Bot token saved locally', 'info');
+    }
+    updateBotStatusPill();
+    render();
+  }
+
+  // ==========================================
+  // EXPORTS (CSV / JSON)
+  // ==========================================
+  window.exportCSV = function() {
+    const guys = getGroupedGuys();
+    const rows = [
+      ['Guy / Person Name', 'Telegram Username', 'Keys Count', 'Keys List', 'Completed Orders', 'Success Rate %', 'Base Rate', 'Total Calculated Pay', 'Paid Amount', 'Pending Balance']
+    ];
+
+    guys.forEach(g => {
+      rows.push([
+        g.displayName,
+        g.telegramUsername || 'N/A',
+        g.keys.length,
+        g.keys.map(k => k.key).join('; '),
+        g.completedOrders,
+        g.successRate + '%',
+        `${g.rate.toFixed(2)}`,
+        `${g.totalEarned.toFixed(2)}`,
+        `${g.paidAmount.toFixed(2)}`,
+        `${g.unpaidAmount.toFixed(2)}`
+      ]);
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `masi-team-report-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Exported team performance report to CSV', 'success');
+  };
+
+  window.exportJSON = function() {
+    const data = {
+      workers: state.workers,
+      settings: state.settings,
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `masi-team-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a);
+    showToast('Database backup downloaded as JSON', 'success');
+  };
+
+  // Search input event listeners
+  function setupEventListeners() {
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        state.searchQuery = e.target.value;
+        render();
+      });
+    }
+  }
+
+  window.clearSearch = function() {
+    state.searchQuery = '';
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) searchInput.value = '';
+    render();
+  };
+
+  function escapeHtml(str) {
+    if (!str && str !== 0) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Start app on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+</script>
+</body>
+</html>

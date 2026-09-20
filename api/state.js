@@ -2,7 +2,10 @@ const fs = require('fs');
 const path = require('path');
 
 // On Vercel use /tmp (writable). Seed from bundled data on cold start.
-const SEED_PATH = path.join(__dirname, '..', 'data', 'database.json');
+// Try public/data first (new layout), fall back to data/
+const SEED_PATH = fs.existsSync(path.join(__dirname, '..', 'public', 'data', 'database.json'))
+  ? path.join(__dirname, '..', 'public', 'data', 'database.json')
+  : path.join(__dirname, '..', 'data', 'database.json');
 const DB_PATH = process.env.VERCEL ? '/tmp/database.json' : SEED_PATH;
 
 function getDb() {
