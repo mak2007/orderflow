@@ -52,7 +52,24 @@
         const data = await res.json();
         state.isApiOnline = true;
         if (data.workers && data.workers.length > 0) {
-          state.workers = data.workers;
+          // Merge incoming workers while preserving local paid status if higher
+          const currentMap = new Map((state.workers || []).map(w => [w.id, w]));
+          state.workers = data.workers.map(nw => {
+            const cur = currentMap.get(nw.id);
+            if (cur) {
+              const curPaid = Number(cur.paidAmount) || 0;
+              const newPaid = Number(nw.paidAmount) || 0;
+              if (curPaid > newPaid) {
+                return {
+                  ...nw,
+                  paidAmount: curPaid,
+                  paidCount: Math.max(Number(nw.paidCount) || 0, Number(cur.paidCount) || 0),
+                  lastPaidAt: cur.lastPaidAt || nw.lastPaidAt
+                };
+              }
+            }
+            return nw;
+          });
         }
         if (data.settings) state.settings = { ...state.settings, ...data.settings };
         if (data.botStatus) state.botStatus = data.botStatus;
@@ -462,20 +479,26 @@
 
     guys.forEach(guy => {
       const isLinked = Boolean(guy.telegramId);
+      const isSettled = guy.completedOrders > 0 ? guy.unpaidAmount === 0 : false;
 
       html += `
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-indigo-300 transition-all overflow-hidden flex flex-col justify-between">
+        <div class="bg-white rounded-xl shadow-sm border ${isSettled ? 'paid-card-settled' : 'border-slate-200'} hover:border-indigo-300 transition-all overflow-hidden flex flex-col justify-between relative">
+          ${isSettled ? `
+            <div class="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest py-0.5 px-3 text-center flex items-center justify-center gap-1">
+              <span>✓</span> PAYMENT COMPLETED & SETTLED
+            </div>
+          ` : ''}
           <div class="p-5">
             <!-- Header: Guy Name & Telegram -->
             <div class="flex items-start justify-between gap-3 mb-4">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-sky-600 text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
                   ${escapeHtml((guy.displayName || 'G').charAt(0).toUpperCase())}
                 </div>
                 <div>
                   <h3 class="font-extrabold text-slate-900 text-base leading-tight flex items-center gap-2">
-                    ${escapeHtml(guy.displayName)}
-                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-indigo-100 text-indigo-800">
+                    <span class="${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(guy.displayName)}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${isSettled ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">
                       ${guy.keys.length} ${guy.keys.length === 1 ? 'Key' : 'Keys'}
                     </span>
                   </h3>
@@ -515,31 +538,36 @@
                 <span class="text-slate-400 font-normal">Click key to copy</span>
               </div>
               <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 bg-slate-50 rounded-lg border border-slate-200">
-                ${guy.keys.map(k => `
-                  <div class="inline-flex items-center gap-1 px-2 py-1 rounded bg-white border border-slate-300 text-[11px] font-mono shadow-2xs hover:border-indigo-400 transition">
-                    <span class="text-slate-800 font-semibold">${escapeHtml(k.key)}</span>
-                    <button onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                    </button>
-                    <span class="text-[10px] text-emerald-600 font-bold ml-1">${k.completedOrders || 0}✓</span>
-                  </div>
-                `).join('')}
+                ${guy.keys.map(k => {
+                  const keyPaid = (k.completedOrders > 0) && ((Number(k.paidAmount) || 0) >= (Number(k.completedOrders) || 0) * (Number(k.rate) || 15));
+                  return `
+                    <div class="inline-flex items-center gap-1 px-2 py-1 rounded ${keyPaid ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-300'} border text-[11px] font-mono shadow-2xs hover:border-indigo-400 transition">
+                      <span class="text-slate-800 font-semibold ${keyPaid ? 'line-through text-slate-400' : ''}">${escapeHtml(k.key)}</span>
+                      <button onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                      </button>
+                      <span class="text-[10px] ${keyPaid ? 'text-emerald-700 font-black' : 'text-emerald-600 font-bold'} ml-1">${k.completedOrders || 0}✓ ${keyPaid ? '(PAID)' : ''}</span>
+                    </div>
+                  `;
+                }).join('')}
               </div>
             </div>
 
             <!-- Aggregated Metrics Grid -->
-            <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-lg border border-slate-100 text-center mb-3">
+            <div class="grid grid-cols-3 gap-2 ${isSettled ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-100'} p-3 rounded-lg border text-center mb-3">
               <div>
                 <div class="text-xs text-slate-400 font-medium">Completed Orders</div>
-                <div class="text-base font-black text-emerald-700">${guy.completedOrders}</div>
+                <div class="text-base font-black text-emerald-700 ${isSettled ? 'line-through' : ''}">${guy.completedOrders}</div>
               </div>
               <div>
                 <div class="text-xs text-slate-400 font-medium">Total Calculated Pay</div>
-                <div class="text-base font-black text-slate-800">$${guy.totalEarned.toFixed(2)}</div>
+                <div class="text-base font-black text-slate-800 ${isSettled ? 'line-through opacity-60' : ''}">$${guy.totalEarned.toFixed(2)}</div>
               </div>
               <div>
                 <div class="text-xs text-slate-400 font-medium">Balance Due</div>
-                <div class="text-base font-black ${guy.unpaidAmount > 0 ? 'text-rose-600' : 'text-emerald-600'}">$${guy.unpaidAmount.toFixed(2)}</div>
+                <div class="text-base font-black ${isSettled ? 'paid-crossed-text text-emerald-700' : (guy.unpaidAmount > 0 ? 'text-rose-600' : 'text-slate-400')}">
+                  ${isSettled ? `<span class="paid-strike-bar">$${guy.totalEarned.toFixed(2)}</span>` : `$${guy.unpaidAmount.toFixed(2)}`}
+                </div>
               </div>
             </div>
 
@@ -556,7 +584,7 @@
           </div>
 
           <!-- Card Actions Footer -->
-          <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+          <div class="p-3 ${isSettled ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50 border-slate-200'} border-t flex items-center justify-between gap-2">
             <div class="text-xs text-slate-500">
               <span>Rate:</span>
               <strong class="text-slate-800">$${guy.rate.toFixed(2)}/order</strong>
@@ -568,7 +596,15 @@
                   Pay $${guy.unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
                 </button>
               ` : `
-                <span class="px-2.5 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md">✓ Settled</span>
+                <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 rounded-md flex items-center gap-1">
+                  <span class="line-through opacity-75">$${guy.totalEarned.toFixed(2)}</span>
+                  <span>✓ PAID</span>
+                </span>
+                ${guy.completedOrders > 0 ? `
+                  <button onclick="unmarkGuyPaid('${escapeHtml(guy.id)}')" title="Reset / Unmark Paid" class="p-1 text-slate-400 hover:text-slate-600 rounded text-[11px]" title="Reset to unpaid">
+                    ↺
+                  </button>
+                ` : ''}
               `}
 
               <button onclick="openQuickTgModal('${escapeHtml(guy.keys[0]?.key || '')}', '${escapeHtml(guy.displayName || '')}')" title="Quick Connect to Telegram" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition flex items-center gap-1">
@@ -667,11 +703,13 @@
       const completed = Number(w.completedOrders) || 0;
       const totalEarned = completed * baseRate;
 
+      const isPaidKey = completed > 0 && ((Number(w.paidAmount) || 0) >= totalEarned);
+
       html += `
-        <tr class="hover:bg-slate-50/80 transition group">
+        <tr class="hover:bg-slate-50/80 transition group ${isPaidKey ? 'paid-row-settled' : ''}">
           <!-- Worker / Guy -->
           <td class="py-3 px-4">
-            <div class="font-bold text-slate-900">${escapeHtml(w.name || 'Worker')}</div>
+            <div class="font-bold text-slate-900 ${isPaidKey ? 'paid-strike-bar' : ''}">${escapeHtml(w.name || 'Worker')}</div>
             ${w.personName && w.personName !== w.name ? `
               <div class="text-[11px] text-indigo-600 font-medium">👤 ${escapeHtml(w.personName)}</div>
             ` : ''}
@@ -679,8 +717,8 @@
 
           <!-- Worker Key with Copy -->
           <td class="py-3 px-4 font-mono text-xs">
-            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-50 border border-slate-200">
-              <span class="font-semibold text-slate-800">${escapeHtml(w.key)}</span>
+            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded ${isPaidKey ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'} border">
+              <span class="font-semibold ${isPaidKey ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHtml(w.key)}</span>
               <button onclick="copyToClipboard('${escapeHtml(w.key)}', 'Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
               </button>
@@ -700,7 +738,7 @@
 
           <!-- Completed Orders -->
           <td class="py-3 px-4 text-center font-bold text-emerald-700">
-            ${completed}
+            <span class="${isPaidKey ? 'line-through opacity-60' : ''}">${completed}</span>
           </td>
 
           <!-- Success Rate % -->
@@ -713,13 +751,23 @@
 
           <!-- Calculated Pay -->
           <td class="py-3 px-4 font-bold text-slate-800">
-            $${totalEarned.toFixed(2)}
-            <span class="text-[11px] font-normal text-slate-400 block">@ $${baseRate}/order</span>
+            ${isPaidKey ? `
+              <div class="paid-crossed-text text-emerald-700">$${totalEarned.toFixed(2)}</div>
+              <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded inline-block mt-0.5">✓ PAID</span>
+            ` : `
+              <div>$${totalEarned.toFixed(2)}</div>
+              <span class="text-[11px] font-normal text-slate-400 block">@ $${baseRate}/order</span>
+            `}
           </td>
 
           <!-- Actions -->
           <td class="py-3 px-4 text-right whitespace-nowrap">
             <div class="flex items-center justify-end gap-1.5">
+              ${(!isPaidKey && completed > 0) ? `
+                <button onclick="markWorkerPaid('${w.id}')" title="Mark this key as paid" class="px-2 py-1 text-xs font-bold rounded bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+                  Pay
+                </button>
+              ` : ''}
               <button onclick="openQuickTgModal('${escapeHtml(w.key)}', '${escapeHtml(w.personName || w.name || '')}')" title="Quick Connect to Telegram" class="px-2 py-1 text-xs font-semibold rounded bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition flex items-center gap-1">
                 <span>✈️</span> TG
               </button>
@@ -823,31 +871,34 @@
 
       guys.forEach(g => {
         const hasDue = g.unpaidAmount > 0;
+        const isSettled = g.completedOrders > 0 && !hasDue;
         const isLinked = Boolean(g.telegramId);
 
         html += `
-          <tr class="hover:bg-slate-50/80 transition">
+          <tr class="hover:bg-slate-50/80 transition ${isSettled ? 'paid-row-settled' : ''}">
             <td class="py-3 px-4">
-              <div class="font-bold text-slate-900">${escapeHtml(g.displayName)}</div>
+              <div class="font-bold text-slate-900 ${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(g.displayName)}</div>
               ${g.telegramUsername ? `<div class="text-xs text-sky-600 font-mono">${escapeHtml(g.telegramUsername)}</div>` : ''}
             </td>
             <td class="py-3 px-4 text-xs font-mono text-slate-600">
               ${g.keys.length} ${g.keys.length === 1 ? 'key' : 'keys'}
             </td>
             <td class="py-3 px-4 text-center font-bold text-emerald-700">
-              ${g.completedOrders}
+              <span class="${isSettled ? 'line-through opacity-60' : ''}">${g.completedOrders}</span>
             </td>
             <td class="py-3 px-4 text-xs text-slate-600 font-medium">
               $${g.rate.toFixed(2)}/order
             </td>
             <td class="py-3 px-4 font-bold text-slate-800">
-              $${g.totalEarned.toFixed(2)}
+              <span class="${isSettled ? 'line-through opacity-60' : ''}">$${g.totalEarned.toFixed(2)}</span>
             </td>
             <td class="py-3 px-4 text-xs font-semibold text-emerald-700">
               $${g.paidAmount.toFixed(2)}
             </td>
             <td class="py-3 px-4 font-black ${hasDue ? 'text-rose-600' : 'text-slate-400'}">
-              $${g.unpaidAmount.toFixed(2)}
+              ${isSettled ? `
+                <span class="paid-strike-bar paid-crossed-text text-emerald-700 font-bold">$${g.totalEarned.toFixed(2)}</span>
+              ` : `$${g.unpaidAmount.toFixed(2)}`}
             </td>
             <td class="py-3 px-4 text-right">
               ${hasDue ? `
@@ -855,7 +906,17 @@
                   Pay $${g.unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
                 </button>
               ` : `
-                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded">✓ Paid</span>
+                <div class="inline-flex items-center gap-1">
+                  <span class="text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-md flex items-center gap-1">
+                    <span class="line-through opacity-75">$${g.totalEarned.toFixed(2)}</span>
+                    <span>✓ PAID</span>
+                  </span>
+                  ${g.completedOrders > 0 ? `
+                    <button onclick="unmarkGuyPaid('${escapeHtml(g.id)}')" title="Reset / Unmark Paid" class="p-1 text-slate-400 hover:text-slate-600 rounded text-[11px]">
+                      ↺
+                    </button>
+                  ` : ''}
+                </div>
               `}
             </td>
           </tr>
@@ -948,46 +1009,90 @@
   }
 
   // ==========================================
-  // PAYOUT ACTIONS (Mark Paid)
+  // PAYOUT ACTIONS (Mark Paid / Unmark Paid)
   // ==========================================
   window.markGuyPaid = async function(guyId) {
     const guys = getGroupedGuys();
     const guy = guys.find(g => g.id === guyId);
     if (!guy) return;
 
-    if (!confirm(`Mark all completed orders as PAID ($${guy.unpaidAmount.toFixed(2)}) for ${guy.displayName}?`)) {
-      return;
-    }
+    // Immediately mark all keys as fully paid in local state
+    const now = new Date().toISOString();
+    let totalPaidNow = 0;
 
-    let successCount = 0;
-    let totalPaid = 0;
+    guy.keys.forEach(k => {
+      const keyRate = Number(k.rate) || 15;
+      const completed = Number(k.completedOrders) || 0;
+      const fullEarned = completed * keyRate;
+      k.paidAmount = fullEarned;
+      k.paidCount = completed;
+      k.lastPaidAt = now;
+      totalPaidNow += fullEarned;
+    });
 
+    // Save immediately to local storage and re-render
+    saveToLocalStorage();
+    render();
+    showToast(`✓ Marked ${guy.displayName} as PAID ($${guy.totalEarned.toFixed(2)})!`, 'success');
+
+    // Notify backend and Telegram in parallel
     for (const key of guy.keys) {
       if (state.isApiOnline) {
         try {
-          const res = await fetch(`${API_BASE}/workers/${key.id}/mark-paid`, { method: 'POST' });
-          if (res.ok) {
-            const data = await res.json();
-            successCount++;
-            totalPaid += Number(data.totalPaidAmount) || 0;
-          }
+          fetch(`${API_BASE}/workers/${key.id}/mark-paid`, { method: 'POST' }).catch(() => {});
         } catch (e) {
           console.error(e);
         }
-      } else {
-        key.paidAmount = (key.completedOrders || 0) * (Number(key.rate) || 15);
-        key.lastPaidAt = new Date().toISOString();
       }
     }
+  };
+
+  window.unmarkGuyPaid = async function(guyId) {
+    const guys = getGroupedGuys();
+    const guy = guys.find(g => g.id === guyId);
+    if (!guy) return;
+
+    // Reset paid amount to 0 for this guy's keys
+    guy.keys.forEach(k => {
+      k.paidAmount = 0;
+      k.paidCount = 0;
+      k.lastPaidAt = null;
+      if (state.isApiOnline) {
+        fetch(`${API_BASE}/workers/${k.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paidAmount: 0, paidCount: 0, lastPaidAt: null })
+        }).catch(() => {});
+      }
+    });
+
+    saveToLocalStorage();
+    render();
+    showToast(`Reset payment status for ${guy.displayName}`, 'info');
+  };
+
+  window.markWorkerPaid = async function(workerId) {
+    const worker = state.workers.find(w => w.id === workerId);
+    if (!worker) return;
+
+    const rate = Number(worker.rate) || 15;
+    const completed = Number(worker.completedOrders) || 0;
+    const fullEarned = completed * rate;
+    const now = new Date().toISOString();
+
+    worker.paidAmount = fullEarned;
+    worker.paidCount = completed;
+    worker.lastPaidAt = now;
+
+    saveToLocalStorage();
+    render();
+    showToast(`✓ Key ${worker.key} marked as PAID ($${fullEarned.toFixed(2)})`, 'success');
 
     if (state.isApiOnline) {
-      await fetchServerState();
-    } else {
-      saveToLocalStorage();
-      render();
+      try {
+        fetch(`${API_BASE}/workers/${worker.id}/mark-paid`, { method: 'POST' }).catch(() => {});
+      } catch (e) {}
     }
-
-    showToast(`Marked ${guy.displayName} as PAID!`, 'success');
   };
 
   // ==========================================

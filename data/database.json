@@ -14,7 +14,10 @@
       "telegramUsername": "@alex_carter_ops",
       "rate": 15,
       "linkedAt": "2026-09-18T10:30:00.000Z",
-      "status": "active"
+      "status": "active",
+      "paidAmount": 0,
+      "paidCount": 0,
+      "lastPaidAt": "2026-09-20T00:36:06.294Z"
     },
     {
       "id": "w-2",
@@ -214,7 +217,9 @@
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "personName": "Alam",
-      "updatedAt": "2026-09-19T22:01:54.911Z"
+      "updatedAt": "2026-09-19T22:01:54.911Z",
+      "paidAmount": 0,
+      "paidCount": 0
     },
     {
       "id": "w-masi-9",
@@ -2667,12 +2672,12 @@
       "payoutAmount": 15,
       "inventoryStatus": "unsold",
       "fulfillmentStatus": "unfulfilled",
-      "workerPaymentStatus": "unpaid",
+      "workerPaymentStatus": "paid",
       "notes": "Standard package intake",
       "createdAt": "2026-09-19T22:14:00.000Z",
       "soldAt": null,
       "fulfilledAt": null,
-      "paidAt": null
+      "paidAt": "2026-09-20T00:36:06.294Z"
     },
     {
       "id": "ord-102",
@@ -2708,7 +2713,7 @@
       "createdAt": "2026-09-19T14:00:00.000Z",
       "soldAt": "2026-09-19T18:00:00.000Z",
       "fulfilledAt": "2026-09-19T18:30:00.000Z",
-      "paidAt": "2026-09-19T19:00:00.000Z"
+      "paidAt": "2026-09-20T00:36:06.294Z"
     },
     {
       "id": "ord-104",
@@ -2757,12 +2762,12 @@
       "payoutAmount": 15,
       "inventoryStatus": "sold",
       "fulfillmentStatus": "fulfilled",
-      "workerPaymentStatus": "unpaid",
+      "workerPaymentStatus": "paid",
       "notes": "Fulfilled, waiting for weekly batch payout",
       "createdAt": "2026-09-17T08:00:00.000Z",
       "soldAt": "2026-09-17T15:00:00.000Z",
       "fulfilledAt": "2026-09-17T16:00:00.000Z",
-      "paidAt": null
+      "paidAt": "2026-09-20T00:36:06.294Z"
     }
   ]
 }

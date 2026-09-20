@@ -121,3 +121,43 @@ body {
   0% { background-color: #fef3c7; }
   100% { background-color: transparent; }
 }
+
+/* Paid & Settled Crossed Out Styles */
+.paid-crossed-text {
+  text-decoration: line-through;
+  text-decoration-thickness: 2.5px;
+  text-decoration-color: #10b981;
+  opacity: 0.75;
+}
+
+.paid-strike-bar {
+  position: relative;
+  display: inline-block;
+}
+.paid-strike-bar::after {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  width: calc(100% + 8px);
+  height: 2.5px;
+  background: #10b981;
+  transform: translateY(-50%);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.paid-card-settled {
+  background: linear-gradient(135deg, #fafffc 0%, #f0fdf4 100%) !important;
+  border-color: #86efac !important;
+  box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.15) !important;
+}
+
+.paid-row-settled {
+  background-color: #f0fdf4 !important;
+}
+
+.paid-row-settled:hover {
+  background-color: #dcfce7 !important;
+}
+
