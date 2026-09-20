@@ -469,7 +469,7 @@
             <div class="w-8 h-8 rounded-full bg-indigo-200 text-indigo-800 flex items-center justify-center font-bold text-sm">💡</div>
             <div>
               <span class="font-bold">Team Tip:</span>
-              <span class="text-indigo-800"> If you copy keys from <code>masi.cc.cd/boss</code> that belong to the same guy, click <b>"Assign Keys to Guys"</b> and put their Telegram handle on each key. They will combine into 1 guy profile automatically!</span>
+              <span class="text-indigo-800"> Drag any key chip onto another worker's card to merge them. <b>Throw/drop any key to the left side</b> anytime to detach it and revert it back to its original individual worker form!</span>
             </div>
           </div>
           <div class="font-mono text-[11px] bg-white px-2.5 py-1 rounded border border-indigo-200 text-indigo-700 font-semibold whitespace-nowrap">
@@ -575,17 +575,17 @@
               </div>
             </div>
 
-            <!-- Assigned Keys Chips List (Draggable between worker cards) -->
+            <!-- Assigned Keys Chips List (Draggable between worker cards or to the left to reset) -->
             <div class="mb-4">
               <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center justify-between">
                 <span onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" class="cursor-pointer hover:text-indigo-600">Assigned Keys (${guy.keys.length})</span>
-                <span class="text-[10px] text-indigo-600 font-normal">Drag key to move to another worker</span>
+                <span class="text-[10px] text-indigo-600 font-normal">Drag to worker or throw left to reset</span>
               </div>
               <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 bg-slate-50 rounded-lg border border-slate-200">
                 ${guy.keys.map(k => {
                   const keyPaid = (Number(k.completedOrders) || 0) > 0 && (k.paymentStatus === 'paid' || (Number(k.paidCount) || 0) >= (Number(k.completedOrders) || 0));
                   return `
-                    <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" title="Drag to move to another worker card" class="inline-flex items-center gap-1 px-2 py-1 rounded ${keyPaid ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-300'} border text-[11px] font-mono shadow-2xs hover:border-indigo-500 hover:shadow-xs cursor-grab active:cursor-grabbing transition">
+                    <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" ondragend="handleKeyDragEnd(event)" title="Drag to move to another worker, or throw left to reset to original form" class="inline-flex items-center gap-1 px-2 py-1 rounded ${keyPaid ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-300'} border text-[11px] font-mono shadow-2xs hover:border-indigo-500 hover:shadow-xs cursor-grab active:cursor-grabbing transition">
                       <span class="text-slate-300 select-none text-[9px]">⋮⋮</span>
                       <span class="text-slate-800 font-semibold ${keyPaid ? 'line-through text-slate-400' : ''}">${escapeHtml(k.key)}</span>
                       <button onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
@@ -760,7 +760,7 @@
 
           <!-- Worker Key with Copy & Drag -->
           <td class="py-3 px-4 font-mono text-xs">
-            <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(w.key)}')" title="Drag to move to another worker" class="inline-flex items-center gap-1.5 px-2 py-1 rounded ${isPaidKey ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'} border cursor-grab active:cursor-grabbing hover:border-indigo-400 transition">
+            <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(w.key)}')" ondragend="handleKeyDragEnd(event)" title="Drag onto another worker, or throw left to reset to original form" class="inline-flex items-center gap-1.5 px-2 py-1 rounded ${isPaidKey ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'} border cursor-grab active:cursor-grabbing hover:border-indigo-400 transition">
               <span class="text-slate-300 select-none text-[9px]">⋮⋮</span>
               <span class="font-semibold ${isPaidKey ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHtml(w.key)}</span>
               <button onclick="copyToClipboard('${escapeHtml(w.key)}', 'Key')" title="Copy Key" class="text-slate-400 hover:text-indigo-600 p-0.5">
@@ -1726,14 +1726,121 @@
   };
 
   // ==========================================
-  // DRAG AND DROP KEY REASSIGNMENT
+  // DRAG AND DROP KEY REASSIGNMENT & LEFT-SIDE RESET ZONE
   // ==========================================
+  window.showLeftDeleteZone = function() {
+    const zone = document.getElementById('left-delete-zone');
+    if (zone) {
+      zone.classList.add('active-dragging');
+    }
+  };
+
+  window.hideLeftDeleteZone = function() {
+    const zone = document.getElementById('left-delete-zone');
+    if (zone) {
+      zone.classList.remove('active-dragging', 'drag-over-active');
+      const title = document.getElementById('left-zone-title');
+      const icon = document.getElementById('left-zone-icon');
+      if (title) title.innerHTML = 'THROW KEY HERE';
+      if (icon) icon.textContent = '🗑️';
+    }
+  };
+
   window.handleKeyDragStart = function(event, key) {
+    window.__isDraggingKey = true;
     window.__draggedKey = key;
     if (event.dataTransfer) {
       event.dataTransfer.setData('text/plain', key);
       event.dataTransfer.effectAllowed = 'move';
     }
+    showLeftDeleteZone();
+  };
+
+  window.handleKeyDragEnd = function(event) {
+    window.__isDraggingKey = false;
+    hideLeftDeleteZone();
+  };
+
+  window.handleLeftZoneDragOver = function(event) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    const zone = document.getElementById('left-delete-zone');
+    if (zone && !zone.classList.contains('drag-over-active')) {
+      zone.classList.add('drag-over-active');
+      const title = document.getElementById('left-zone-title');
+      const icon = document.getElementById('left-zone-icon');
+      if (title) title.innerHTML = 'RELEASE TO RESET!';
+      if (icon) icon.textContent = '✨';
+    }
+  };
+
+  window.handleLeftZoneDragLeave = function(event) {
+    const zone = document.getElementById('left-delete-zone');
+    if (zone) {
+      zone.classList.remove('drag-over-active');
+      const title = document.getElementById('left-zone-title');
+      const icon = document.getElementById('left-zone-icon');
+      if (title) title.innerHTML = 'THROW KEY HERE';
+      if (icon) icon.textContent = '🗑️';
+    }
+  };
+
+  window.handleLeftZoneDrop = async function(event) {
+    event.preventDefault();
+    hideLeftDeleteZone();
+
+    const key = (event.dataTransfer ? event.dataTransfer.getData('text/plain') : '') || window.__draggedKey;
+    if (!key) return;
+
+    await resetKeyToOriginalForm(key);
+  };
+
+  window.resetKeyToOriginalForm = async function(key) {
+    if (!key) return;
+    const cleanKey = key.trim().toUpperCase();
+    const worker = state.workers.find(w => w.key && w.key.toUpperCase() === cleanKey);
+    if (!worker) {
+      showToast(`Worker key ${cleanKey} not found`, 'warning');
+      return;
+    }
+
+    const previousGuy = worker.personName || worker.name || cleanKey;
+
+    // Delete custom guy groupings
+    delete worker.personName;
+    worker.telegramUsername = null;
+    worker.telegramId = null;
+
+    if (state.isApiOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/workers/reset-key`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: cleanKey })
+        });
+        const result = await res.json();
+        if (result.success) {
+          await fetchServerState();
+          if (window.__currentGuyId) {
+            closeGuyKeysModal();
+          }
+          showToast(`✨ Detached ${cleanKey} from "${previousGuy}" — Reverted back to original form!`, 'success');
+          return;
+        }
+      } catch (err) {
+        console.warn('API reset failed, applying local fallback:', err);
+      }
+    }
+
+    // Local fallback
+    saveToLocalStorage();
+    render();
+    if (window.__currentGuyId) {
+      closeGuyKeysModal();
+    }
+    showToast(`✨ Detached ${cleanKey} from "${previousGuy}" — Reverted back to original form!`, 'success');
   };
 
   window.handleKeyDragOver = function(event) {
@@ -1847,7 +1954,7 @@
           const paid = (completed > 0) && (k.paymentStatus === 'paid' || (Number(k.paidCount) || 0) >= completed);
 
           return `
-            <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" class="flex items-center justify-between gap-2 p-2.5 rounded-lg border ${paid ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200'} shadow-2xs cursor-grab active:cursor-grabbing hover:border-indigo-400 transition">
+            <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" ondragend="handleKeyDragEnd(event)" title="Drag onto another worker, or throw left to reset to original form" class="flex items-center justify-between gap-2 p-2.5 rounded-lg border ${paid ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200'} shadow-2xs cursor-grab active:cursor-grabbing hover:border-indigo-400 transition">
               <div class="flex items-center gap-2 font-mono text-xs">
                 <span class="text-slate-300 select-none text-[10px]">⋮⋮</span>
                 <span class="font-bold ${paid ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHtml(k.key)}</span>
@@ -1860,8 +1967,8 @@
                 <span class="font-bold ${paid ? 'text-emerald-700' : 'text-slate-700'}">${completed} ✓</span>
                 <span class="text-xs text-sky-600 font-semibold">${k.todayDone || 0} today</span>
                 ${paid ? '<span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">PAID</span>' : ''}
-                <button onclick="removeKeyFromGuy('${escapeHtml(k.key)}')" title="Detach key from this guy" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition text-xs font-bold">
-                  ✕ Detach
+                <button onclick="removeKeyFromGuy('${escapeHtml(k.key)}')" title="Detach key and revert to original worker form" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition text-xs font-bold flex items-center gap-1">
+                  <span>↩</span> Detach
                 </button>
               </div>
             </div>
@@ -1943,34 +2050,7 @@
 
   window.removeKeyFromGuy = async function(key) {
     if (!key) return;
-    const worker = state.workers.find(w => w.key.toUpperCase() === key.toUpperCase());
-    if (!worker) return;
-
-    worker.personName = worker.name || worker.key;
-
-    if (state.isApiOnline) {
-      try {
-        await fetch(`${API_BASE}/workers/assign-telegram`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            key: worker.key,
-            personName: worker.name || worker.key,
-            telegramUsername: ''
-          })
-        });
-        await fetchServerState();
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    saveToLocalStorage();
-    render();
-    if (window.__currentGuyId) {
-      openGuyKeysModal(window.__currentGuyId);
-    }
-    showToast(`Detached key ${key}`, 'info');
+    await resetKeyToOriginalForm(key);
   };
 
   // ==========================================
@@ -2271,7 +2351,7 @@
     showToast(`Attached ${tg} to ${guy.displayName}!`, 'success');
   };
 
-  // Search input event listeners
+  // Search input and global drag event listeners
   function setupEventListeners() {
     const searchInput = document.getElementById('global-search');
     if (searchInput) {
@@ -2280,6 +2360,21 @@
         render();
       });
     }
+
+    // Safety net: ensure left-delete-zone hides whenever any drag ends or drops anywhere
+    window.addEventListener('dragend', () => {
+      window.__isDraggingKey = false;
+      if (typeof window.hideLeftDeleteZone === 'function') {
+        window.hideLeftDeleteZone();
+      }
+    });
+
+    window.addEventListener('drop', () => {
+      window.__isDraggingKey = false;
+      if (typeof window.hideLeftDeleteZone === 'function') {
+        window.hideLeftDeleteZone();
+      }
+    });
   }
 
   window.clearSearch = function() {

@@ -309,11 +309,44 @@ const requestHandler = async (req, res) => {
         if (!worker) return sendJson(res, 404, { success: false, error: 'Worker key not found' });
 
         worker.telegramUsername = tg || null;
-        if (personName) worker.personName = personName.trim();
+        if (personName !== undefined) {
+          if (personName && personName.trim()) {
+            worker.personName = personName.trim();
+          } else {
+            delete worker.personName;
+          }
+        }
         worker.updatedAt = new Date().toISOString();
         dbManager.saveDb();
 
         return sendJson(res, 200, { success: true, worker });
+      }
+
+      // POST /api/workers/reset-key (Detach key from guy and restore to original worker form)
+      if (req.method === 'POST' && parsedUrl === '/api/workers/reset-key') {
+        const body = await parseJsonBody(req);
+        const searchKey = (body.key || '').trim().toUpperCase();
+        const searchId = (body.id || '').trim();
+
+        const worker = db.workers.find(w =>
+          (searchKey && w.key && w.key.toUpperCase() === searchKey) ||
+          (searchId && w.id === searchId)
+        );
+
+        if (!worker) return sendJson(res, 404, { success: false, error: 'Worker key not found' });
+
+        const originalName = worker.name || worker.key;
+        delete worker.personName;
+        worker.telegramUsername = null;
+        worker.telegramId = null;
+        worker.updatedAt = new Date().toISOString();
+
+        dbManager.saveDb();
+        return sendJson(res, 200, {
+          success: true,
+          worker,
+          message: `Key ${worker.key} restored to original form (${originalName})`
+        });
       }
 
       // POST /api/workers/:id/mark-paid (Complete payment & notify via Telegram)

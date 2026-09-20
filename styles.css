@@ -161,3 +161,39 @@ body {
   background-color: #dcfce7 !important;
 }
 
+/* Left Side Drop Zone to Reset / Detach Key */
+#left-delete-zone {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+}
+
+#left-delete-zone.active-dragging {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+  pointer-events: auto !important;
+}
+
+#left-delete-zone.drag-over-active {
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.98), rgba(159, 18, 57, 0.98)) !important;
+  border-color: #fecdd3 !important;
+  box-shadow: 0 0 45px rgba(225, 29, 72, 0.65), 10px 0 30px rgba(0, 0, 0, 0.4) !important;
+  transform: translateX(0) scale(1.02) !important;
+}
+
+#left-delete-zone.drag-over-active #left-zone-icon {
+  transform: scale(1.25) rotate(-12deg);
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: #ffffff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes pulse-left-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.left-zone-pulse {
+  animation: pulse-left-ring 1.8s infinite ease-in-out;
+}
+
+
