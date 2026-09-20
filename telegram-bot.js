@@ -170,9 +170,77 @@ class TelegramBotEngine {
     }
   }
 
+  // Helper: Normalize username (lowercase, trimmed, without leading @)
+  normalizeUsername(uname) {
+    if (!uname) return '';
+    return uname.toString().trim().toLowerCase().replace(/^@/, '');
+  }
+
+  // Helper: Owner display name for key
+  getWorkerOwnerName(worker) {
+    if (!worker) return 'System Admin';
+    if (worker.telegramUsername) {
+      const u = worker.telegramUsername.trim();
+      return u.startsWith('@') ? u : `@${u}`;
+    }
+    if (worker.personName) return worker.personName;
+    if (worker.name) return worker.name;
+    return 'System Admin';
+  }
+
+  // Helper: Find all worker keys assigned to this Telegram user
+  findWorkersForUser(chatId, from) {
+    const db = this.dbManager.getDb();
+    const userUname = this.normalizeUsername(from?.username);
+    const cid = chatId ? chatId.toString() : null;
+
+    return db.workers.filter(w => {
+      const assignedUname = this.normalizeUsername(w.telegramUsername);
+      // Strict match: admin assigned this telegram username to this key
+      if (userUname && assignedUname && assignedUname === userUname) {
+        return true;
+      }
+      // Or already authenticated with this chat ID
+      if (cid && w.telegramId && w.telegramId.toString() === cid) {
+        if (!assignedUname || (userUname && assignedUname === userUname)) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }
+
+  // Helper: Find primary worker by Telegram Chat ID
+  findWorkerByChatId(chatId) {
+    const db = this.dbManager.getDb();
+    return db.workers.find(w => w.telegramId && w.telegramId.toString() === chatId.toString());
+  }
+
+  // Helper: Check if a key is authorized for this Telegram user
+  isKeyAuthorizedForUser(worker, from, chatId) {
+    if (!worker) return false;
+    const userUname = this.normalizeUsername(from?.username);
+    const assignedUname = this.normalizeUsername(worker.telegramUsername);
+    const cid = chatId ? chatId.toString() : null;
+
+    // 1. If admin assigned a username to this key, user's Telegram username MUST match it
+    if (userUname && assignedUname && assignedUname === userUname) {
+      return true;
+    }
+
+    // 2. If already linked to this chat ID and username matches
+    if (cid && worker.telegramId && worker.telegramId.toString() === cid) {
+      if (!assignedUname || (userUname && assignedUname === userUname)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   // Handle incoming update
   async handleUpdate(update) {
-    // Handle inline button callbacks (e.g. "I Have Joined" check)
+    // Handle inline button callbacks
     if (update.callback_query) {
       const cb = update.callback_query;
       const chatId = cb.message ? cb.message.chat.id : cb.from.id;
@@ -196,14 +264,23 @@ class TelegramBotEngine {
           return;
         }
 
-        // Verified or bot not admin yet
-        await this.sendMessage(chatId, `🎉 *Channel Verified! Welcome!*\n\nNow you can access all features:\n• Send your worker key directly (e.g. \`WORKER-XXXX-XXXX-XXXX-XXXX\`)\n• Type \`/bill\` to see your live completed orders\n• Type \`/balance\` to see your settled orders & leftover count\n• Type \`/withdraw <orders>\` or \`/reqforleftover\` to withdraw\n• Type \`/help\` for all commands`, {
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: '📢 Visit Official Channel', url: OFFICIAL_CHANNEL }]
-            ]
-          }
-        });
+        // Verified
+        await this.handleStart(chatId, cb.from);
+        return;
+      } else if (data === 'view_bill') {
+        await this.handleBill(chatId, cb.from);
+        return;
+      } else if (data === 'view_balance') {
+        await this.handleBalance(chatId, cb.from);
+        return;
+      } else if (data === 'withdraw_leftover') {
+        await this.handleLeftoverRequest(chatId, cb.from);
+        return;
+      } else if (data === 'my_keys') {
+        await this.handleMyKeys(chatId, cb.from);
+        return;
+      } else if (data === 'prompt_connect') {
+        await this.sendMessage(chatId, `🔑 *Please send your worker key directly:*\n\`WORKER-XXXX-XXXX-XXXX-XXXX\``);
         return;
       }
     }
@@ -223,8 +300,10 @@ class TelegramBotEngine {
       await this.handleStart(chatId, from, args[0]);
     } else if (command === '/channel') {
       await this.handleChannel(chatId);
-    } else if (command === '/link' || command === '/register') {
-      await this.handleLink(chatId, from, args[0]);
+    } else if (command === '/connect' || command === '/link' || command === '/register') {
+      await this.handleConnectKey(chatId, from, args.join(' '));
+    } else if (command === '/mykeys' || command === '/keys') {
+      await this.handleMyKeys(chatId, from);
     } else if (command === '/request' || command === '/payout' || command === '/withdraw') {
       await this.handlePayoutRequest(chatId, from, args[0]);
     } else if (command === '/reqforleftover' || command === '/leftover' || command === '/withdrawleftover') {
@@ -242,25 +321,21 @@ class TelegramBotEngine {
     } else if (command === '/help') {
       await this.handleHelp(chatId);
     } else if (!text.startsWith('/')) {
-      // Worker just types their key or name directly (no command needed)
-      await this.handleBill(chatId, from, text.trim());
+      // User typed their key or search query directly -> connect & verify username match
+      await this.handleConnectKey(chatId, from, text.trim());
     } else {
-      if (text.startsWith('/')) {
-        await this.sendMessage(chatId, `❓ Unknown command: \`${command}\`\nSend /help to see all available commands.`);
-      }
+      await this.sendMessage(chatId, `❓ Unknown command: \`${command}\`\nSend /help to see all available commands.`);
     }
   }
 
   // Command: /channel — Show official channel link
   async handleChannel(chatId) {
-    const channelMsg = `
-📢 *OFFICIAL CHANNEL — JOIN 1ST!*
+    const channelMsg = `📢 *OFFICIAL CHANNEL — JOIN 1ST!*
 ━━━━━━━━━━━━━━━━━━━━━━━━
 Join our official channel for real-time task announcements, order assignments, and payout receipts:
 
 👉 *Official Channel:* https://t.me/madmax00711
-━━━━━━━━━━━━━━━━━━━━━━━━
-`;
+━━━━━━━━━━━━━━━━━━━━━━━━`;
     await this.sendMessage(chatId, channelMsg, {
       reply_markup: {
         inline_keyboard: [
@@ -275,14 +350,13 @@ Join our official channel for real-time task announcements, order assignments, a
     if (payload) {
       const cleanKey = payload.replace(/^link_/, '').trim();
       if (cleanKey) {
-        return await this.handleLink(chatId, from, cleanKey);
+        return await this.handleConnectKey(chatId, from, cleanKey);
       }
     }
 
     const inChannel = await this.isUserInChannel(from?.id);
     if (inChannel === false) {
-      const gateMsg = `
-👋 *Welcome to Worker Bill Bot!*
+      const gateMsg = `👋 *Welcome to Worker Hub!*
 
 📢 *ACTION REQUIRED: JOIN OUR OFFICIAL CHANNEL 1ST!*
 ━━━━━━━━━━━━━━━━━━━━━━━━
@@ -292,8 +366,7 @@ You must join our official channel before accessing orders and bills:
 _We post all task announcements, order updates & payment receipts there._
 ━━━━━━━━━━━━━━━━━━━━━━━━
 1️⃣ Click the button below to join the channel.
-2️⃣ Then tap "✅ I Have Joined" to unlock your dashboard!
-`;
+2️⃣ Then tap "✅ I Have Joined" to unlock your account!`;
       await this.sendMessage(chatId, gateMsg, {
         reply_markup: {
           inline_keyboard: [
@@ -305,137 +378,320 @@ _We post all task announcements, order updates & payment receipts there._
       return;
     }
 
-    const welcomeText = `
-👋 *Welcome to the Worker Bill Bot!*
+    const userUname = this.normalizeUsername(from?.username);
+    const userWorkers = this.findWorkersForUser(chatId, from);
+
+    // If user has NO assigned keys: show ONLY the connect onboarding
+    if (userWorkers.length === 0) {
+      const connectOnlyMsg = `👋 *Welcome to Worker Hub!*
 
 📢 *OFFICIAL CHANNEL (JOIN 1ST!):*
 👉 https://t.me/madmax00711
-_Join our official channel for task announcements, order updates & payout receipts!_
-
-🧾 *Track completed orders & request withdrawals:*
-
-Just send your worker key like this:
+_Join our official channel for task announcements & payout receipts._
+━━━━━━━━━━━━━━━━━━━━━━━━
+🔑 *Connect Your Worker Key:*
+Please send your assigned worker key directly in this chat:
 \`WORKER-XXXX-XXXX-XXXX-XXXX\`
 
-Commands:
-• \`/bill YOUR_KEY\` — Generate live bill with recent orders
-• \`/balance\` — Check settled orders (e.g. 20/20) & leftover balance
-• \`/withdraw <orders>\` — Request payout for specific number of orders
-• \`/reqforleftover\` — Request withdrawal for all leftover orders
-• \`/refresh\` — Re-fetch live stats & update bill
-• \`/link YOUR_KEY\` — Save your key to this account
-• \`/channel\` — Official channel link
-• \`/help\` — All commands
+${userUname ? `_Your Telegram account:_ *@${userUname}*` : `_⚠️ Note: Please set a username in your Telegram profile so your key can be verified._`}
 
-_Synced live with masi.cc.cd_ 🔄
-`;
-    await this.sendMessage(chatId, welcomeText, {
+_🔒 Note: Each key is locked to its authorized Telegram username. If you need a key assigned, please contact support:_
+• *Official Channel:* https://t.me/madmax00711
+• *Support:* @madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━`;
+      await this.sendMessage(chatId, connectOnlyMsg, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
+      return;
+    }
+
+    // User ALREADY has connected keys: show welcome back summary (NO orders dump)
+    const primary = userWorkers[0];
+    const totalCompleted = userWorkers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const totalPaid = userWorkers.reduce((sum, w) => sum + (Number(w.paidCount) || 0), 0);
+    const totalLeftover = Math.max(0, totalCompleted - totalPaid);
+    const totalTodayDone = userWorkers.reduce((sum, w) => sum + (Number(w.todayDone) || 0), 0);
+    const isSettled = (totalCompleted > 0 && totalPaid >= totalCompleted);
+
+    const welcomeBackMsg = `👋 *Welcome Back, ${primary.personName || primary.name}!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Telegram:* @${userUname}
+🔑 *Connected Keys (${userWorkers.length}):*
+${userWorkers.map(w => `• \`${w.key}\` (${w.personName || w.name})`).join('\n')}
+
+📊 *Orders Settlement Status:*
+• 📦 *Total Completed Orders:* *${totalCompleted}*
+• ✅ *Total Settled:* *${totalPaid}/${totalCompleted}*
+• ⏳ *Leftover Unsettled:* *${totalLeftover}* order(s)
+• 🌅 *Today Done:* *${totalTodayDone}* orders
+
+📌 *Status:* ${isSettled ? '✅ *Fully Settled*' : (totalLeftover > 0 ? `⏳ *${totalLeftover} Leftover Orders Pending Settlement*` : '⚪ *No Orders Yet*')}
+
+📢 *Official Channel:* https://t.me/madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━
+💡 *Commands:*
+• \`/balance\` — View settlement progress & leftover
+• \`/withdraw <orders>\` — Request payout (e.g. \`/withdraw 10\`)
+• \`/reqforleftover\` — Withdraw all ${totalLeftover} leftover orders
+• \`/bill\` — View performance bill
+• \`/mykeys\` — View your connected keys`;
+
+    await this.sendMessage(chatId, welcomeBackMsg, {
       reply_markup: {
         inline_keyboard: [
-          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+          [{ text: '🧾 View Bill', callback_data: 'view_bill' }, { text: '💳 Balance', callback_data: 'view_balance' }],
+          [{ text: '💸 Withdraw Leftover', callback_data: 'withdraw_leftover' }],
+          [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }]
         ]
       }
     });
   }
 
-  // Command: /link <KEY>
-  async handleLink(chatId, from, rawKey) {
-    if (!rawKey) {
-      await this.sendMessage(chatId, `⚠️ *Missing Key!*\nUsage: \`/link YOUR_KEY\`\n_Example: \`/link KEY-ALEX-9921\`_`);
+  // Command: /connect or /link or direct key input
+  async handleConnectKey(chatId, from, rawInput) {
+    const userUname = this.normalizeUsername(from?.username);
+
+    // 1. Telegram username required
+    if (!userUname) {
+      await this.sendMessage(chatId, `⚠️ *Telegram Username Required!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+Your Telegram account does not have a public @username set.
+
+Worker keys are locked to authorized Telegram usernames configured by your admin.
+
+*To set your username:*
+1️⃣ Open Telegram *Settings*
+2️⃣ Tap *Edit Profile* (or tap *Username*)
+3️⃣ Choose an @username and save
+4️⃣ Return here and send your worker key again!
+
+👉 *Official Channel / Support:* https://t.me/madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
       return;
     }
 
-    const key = rawKey.trim();
+    // 2. Extract key from input
+    if (!rawInput || !rawInput.trim()) {
+      await this.sendMessage(chatId, `🔑 *Enter Your Assigned Worker Key*
+━━━━━━━━━━━━━━━━━━━━━━━━
+Please send your worker key to connect your account:
+\`WORKER-XXXX-XXXX-XXXX-XXXX\`
+
+_You can retry as many times as needed._
+━━━━━━━━━━━━━━━━━━━━━━━━`);
+      return;
+    }
+
+    const trimmed = rawInput.trim();
+    // Match any WORKER-... or KEY-... pattern or use whole string
+    const keyMatch = trimmed.match(/(WORKER-[A-Za-z0-9-]+|KEY-[A-Za-z0-9-]+)/i);
+    const searchKey = keyMatch ? keyMatch[1].trim() : trimmed.split(/\s+/)[0];
+
     const db = this.dbManager.getDb();
-    const worker = db.workers.find(w => w.key && w.key.toUpperCase() === key.toUpperCase());
+    let worker = db.workers.find(w =>
+      (w.key && w.key.toUpperCase() === searchKey.toUpperCase()) ||
+      (w.name && w.name.toLowerCase() === searchKey.toLowerCase())
+    );
 
+    // If not in DB, attempt live sync from Masi to see if it's a valid Masi worker key
     if (!worker) {
-      await this.sendMessage(chatId, `❌ *Invalid Worker Key: \`${key}\`*\nCould not find a worker assigned to this key. Please ask your admin for your assigned key.`);
+      try {
+        const { liveWorker } = await this.fetchLiveWorkerDataAndOrders(searchKey);
+        if (liveWorker) {
+          worker = db.workers.find(w => w.key && w.key.toUpperCase() === (liveWorker.access_key || searchKey).toUpperCase());
+          if (!worker) {
+            worker = {
+              id: `w-masi-${Date.now()}`,
+              name: liveWorker.name,
+              key: liveWorker.access_key || searchKey,
+              worker_id: liveWorker.worker_id,
+              telegramId: null,
+              telegramUsername: null,
+              rate: 15.00,
+              completedOrders: Number(liveWorker.completed_count || 0),
+              paidAmount: 0,
+              paidCount: 0,
+              status: 'active',
+              source: 'masi'
+            };
+            db.workers.push(worker);
+            this.dbManager.saveDb();
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 3. If key still not found: allow multiple attempts
+    if (!worker) {
+      await this.sendMessage(chatId, `❌ *Worker Key Not Recognized:* \`${searchKey}\`
+━━━━━━━━━━━━━━━━━━━━━━━━
+We could not find any active worker key matching this.
+
+🔄 *Please check your spelling and try again!*
+You can copy-paste the exact key directly in this chat. Multiple attempts are allowed.
+
+_Example:_ \`WORKER-0BE2-72E7-D72A-E15F\`
+
+👉 *Need Help? Contact Support:*
+• *Official Channel:* https://t.me/madmax00711
+• *Support:* @madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📢 Join Official Channel', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
       return;
     }
 
-    const username = from.username ? `@${from.username}` : (from.first_name || 'Worker');
+    // 4. CHECK USERNAME AUTHORIZATION
+    const isAuthorized = this.isKeyAuthorizedForUser(worker, from, chatId);
+
+    if (!isAuthorized) {
+      const ownerDisplay = this.getWorkerOwnerName(worker);
+      await this.sendMessage(chatId, `🚫 *Access Denied!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+This key (\`${worker.key}\`) belongs to owner: *${ownerDisplay}*
+
+Your Telegram account (@${userUname}) is not authorized to access this key.
+
+👉 *Please contact the owner or contact support:*
+• *Official Channel:* https://t.me/madmax00711
+• *Admin Support:* @madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }],
+            [{ text: '💬 Contact Support', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
+      return;
+    }
+
+    // 5. SUCCESS: Link account!
     worker.telegramId = chatId.toString();
-    worker.telegramUsername = username;
+    worker.telegramUsername = `@${userUname}`;
     worker.linkedAt = new Date().toISOString();
 
-    // Auto-link ALL other keys assigned to this same Telegram username or guy
-    const otherLinkedKeys = [];
+    // Also link any other keys in db.workers assigned to this same username
     db.workers.forEach(w => {
-      if (w.key.toUpperCase() !== worker.key.toUpperCase()) {
-        const matchesUsername = w.telegramUsername && w.telegramUsername.toLowerCase() === username.toLowerCase();
-        const matchesGuy = (worker.personName && w.personName && w.personName.toLowerCase() === worker.personName.toLowerCase());
-        if (matchesUsername || matchesGuy) {
-          w.telegramId = chatId.toString();
-          w.telegramUsername = username;
-          w.linkedAt = new Date().toISOString();
-          otherLinkedKeys.push(w);
-        }
-      }
-    });
-
-    // Also update matching worker orders with username
-    db.orders.forEach(o => {
-      if (o.workerKey === worker.key || o.workerName === worker.name) {
-        o.telegramUsername = username;
+      const wAssigned = this.normalizeUsername(w.telegramUsername);
+      if (wAssigned && wAssigned === userUname) {
+        w.telegramId = chatId.toString();
+        w.telegramUsername = `@${userUname}`;
+        w.linkedAt = new Date().toISOString();
       }
     });
 
     this.dbManager.saveDb();
 
-    let keysListText = `🔑 *Assigned Key:* \`${worker.key}\``;
-    if (otherLinkedKeys.length > 0) {
-      keysListText = `🔑 *Primary Key:* \`${worker.key}\`\n👥 *Additional Keys Grouped to You (${otherLinkedKeys.length}):*\n` +
-        otherLinkedKeys.map(k => `• \`${k.key}\` (${k.name})`).join('\n');
-    }
+    // Calculate aggregated totals across all user's keys
+    const userWorkers = this.findWorkersForUser(chatId, from);
+    const totalCompleted = userWorkers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const totalPaid = userWorkers.reduce((sum, w) => sum + (Number(w.paidCount) || 0), 0);
+    const totalLeftover = Math.max(0, totalCompleted - totalPaid);
+    const totalTodayDone = userWorkers.reduce((sum, w) => sum + (Number(w.todayDone) || 0), 0);
+    const isSettled = (totalCompleted > 0 && totalPaid >= totalCompleted);
+    const hasPendingWithdrawal = userWorkers.some(w => w.payoutRequestStatus === 'pending');
+    const pendingOrders = userWorkers.reduce((sum, w) => sum + (w.payoutRequestStatus === 'pending' ? (Number(w.payoutRequestedOrders) || 0) : 0), 0);
 
-    const successMsg = `
-✅ *Account Linked Successfully!*
+    const keysListText = userWorkers.map(w => `• \`${w.key}\` (${w.personName || w.name || 'Worker'})`).join('\n');
 
-👤 *Guy / Worker:* ${worker.personName || worker.name} (${username})
+    const successMsg = `✅ *Account Connected Successfully!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Worker:* ${worker.personName || worker.name} (@${userUname})
+🔑 *Total Keys Connected (${userWorkers.length}):*
 ${keysListText}
-⚡ *Status:* Active Worker Account
 
-📢 *IMPORTANT: JOIN OUR OFFICIAL CHANNEL 1ST!*
-👉 https://t.me/madmax00711
-_Join the channel for task announcements, order assignments & payout receipts._
+📊 *Orders Settlement Status:*
+• 📦 *Total Completed Orders:* *${totalCompleted}*
+• ✅ *Total Settled:* *${totalPaid}/${totalCompleted}*
+• ⏳ *Leftover Unsettled:* *${totalLeftover}* order(s)
+• 🌅 *Today Done:* *${totalTodayDone}* orders
 
-📌 *What you can do now:*
-• Send your key anytime to get your latest live bill
-• \`/bill\` — View your performance summary & recent completed orders
-• \`/balance\` — Check settled orders (e.g. 20/20) & leftover balance
-• \`/withdraw <num>\` — Request payout for specific order count
-• \`/reqforleftover\` — Request withdrawal for all leftover orders
-• \`/refresh\` — Refresh live data & update bill
-• \`/channel\` — Official channel link
-• \`/help\` — See command details
-`;
+📌 *Status:* ${isSettled ? '✅ *Fully Settled*' : (totalLeftover > 0 ? `⏳ *${totalLeftover} Leftover Orders Pending Settlement*` : '⚪ *No Orders Yet*')}
+${hasPendingWithdrawal ? `• 🔔 *Pending Withdrawal Request:* ${pendingOrders || totalLeftover} order(s)\n` : ''}
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━
+💡 *Available Commands:*
+• \`/balance\` — Check settled orders & leftover count
+• \`/withdraw <orders>\` — Request withdrawal (e.g. \`/withdraw 10\`)
+• \`/reqforleftover\` — Request withdrawal for all ${totalLeftover} leftover orders
+• \`/bill\` — View performance bill
+• \`/mykeys\` — View your connected keys
+• \`/help\` — See all commands`;
+
     await this.sendMessage(chatId, successMsg, {
       reply_markup: {
         inline_keyboard: [
-          [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+          [{ text: '🧾 View Bill', callback_data: 'view_bill' }, { text: '💳 Balance', callback_data: 'view_balance' }],
+          [{ text: '💸 Withdraw Leftover', callback_data: 'withdraw_leftover' }],
+          [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }]
         ]
       }
     });
   }
 
-  // Helper: Find all worker keys assigned to this Telegram user
-  findWorkersForUser(chatId, from) {
-    const db = this.dbManager.getDb();
-    const uname = (from && from.username) ? `@${from.username.toLowerCase()}` : null;
-    const cid = chatId ? chatId.toString() : null;
-
-    return db.workers.filter(w => {
-      if (cid && w.telegramId && w.telegramId.toString() === cid) return true;
-      if (uname && w.telegramUsername && w.telegramUsername.toLowerCase() === uname) return true;
-      return false;
-    });
+  // Command: /link alias to handleConnectKey
+  async handleLink(chatId, from, rawKey) {
+    return await this.handleConnectKey(chatId, from, rawKey);
   }
 
-  // Helper: Find primary worker by Telegram Chat ID
-  findWorkerByChatId(chatId) {
-    const db = this.dbManager.getDb();
-    return db.workers.find(w => w.telegramId && w.telegramId.toString() === chatId.toString());
+  // Command: /mykeys — Show all keys assigned to this Telegram account
+  async handleMyKeys(chatId, from) {
+    const userWorkers = this.findWorkersForUser(chatId, from);
+    const userUname = this.normalizeUsername(from?.username);
+
+    if (!userWorkers || userWorkers.length === 0) {
+      await this.sendMessage(chatId, `⚠️ *No Keys Connected Yet!*\n\nPlease send your assigned worker key to connect your account:\n\`WORKER-XXXX-XXXX-XXXX-XXXX\`\n\nOr contact support: @madmax00711`);
+      return;
+    }
+
+    const totalCompleted = userWorkers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const totalPaid = userWorkers.reduce((sum, w) => sum + (Number(w.paidCount) || 0), 0);
+    const totalLeftover = Math.max(0, totalCompleted - totalPaid);
+
+    let keysList = userWorkers.map((w, i) => {
+      const c = Number(w.completedOrders) || 0;
+      const p = Number(w.paidCount) || 0;
+      const l = Math.max(0, c - p);
+      return `${i + 1}️⃣ *Key:* \`${w.key}\`\n   • Name: ${w.personName || w.name}\n   • Orders: ${c} completed | ${p}/${c} settled | Leftover: ${l}`;
+    }).join('\n\n');
+
+    const msg = `🔑 *YOUR CONNECTED KEYS (${userWorkers.length})*
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Telegram:* @${userUname}
+
+${keysList}
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+📊 *Combined Totals:*
+• 📦 Total Completed: *${totalCompleted}* orders
+• ✅ Settled: *${totalPaid}/${totalCompleted}*
+• ⏳ Leftover: *${totalLeftover}* order(s)
+
+📢 *Official Channel:* https://t.me/madmax00711`;
+
+    await this.sendMessage(chatId, msg, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🧾 View Bill', callback_data: 'view_bill' }, { text: '💳 Balance', callback_data: 'view_balance' }],
+          [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }]
+        ]
+      }
+    });
   }
 
   // Command: /submit <order_id> <order_number> <unique_id> [notes]
@@ -511,58 +767,68 @@ Your order is now live on the dashboard and waiting to be sold!
     await this.sendMessage(chatId, confirmationMsg);
   }
 
-  // Command: /stats — shows live bill & recent completed orders with NO rates
+  // Command: /stats — shows live bill summary
   async handleStats(chatId, from) {
-    const workers = this.findWorkersForUser(chatId, from);
-    if (!workers || workers.length === 0) {
-      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\`\nOr simply send your worker key directly.`);
-      return;
-    }
-    await this.handleBill(chatId, from, workers[0].key);
+    await this.handleBill(chatId, from);
   }
 
-  // Command: /pay or /balance
+  // Command: /pay or /balance — shows performance & settlement status
   async handleBalance(chatId, from) {
-    const workers = this.findWorkersForUser(chatId, from);
-    if (!workers || workers.length === 0) {
-      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease link your account first with: \`/link YOUR_KEY\`\nOr simply send your worker key directly.`);
+    const userWorkers = this.findWorkersForUser(chatId, from);
+    const userUname = this.normalizeUsername(from?.username);
+
+    if (!userWorkers || userWorkers.length === 0) {
+      await this.sendMessage(chatId, `⚠️ *No Worker Key Connected!*
+
+Please send your assigned worker key to connect:
+\`WORKER-XXXX-XXXX-XXXX-XXXX\`
+
+_Or contact support: @madmax00711_`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
       return;
     }
 
-    const primaryWorker = workers[0];
-    const completed = Number(primaryWorker.completedOrders) || 0;
-    const paidCount = Number(primaryWorker.paidCount) || 0;
-    const leftover = Math.max(0, completed - paidCount);
-    const todayDone = Number(primaryWorker.todayDone) || 0;
-    const isSettled = (completed > 0 && paidCount >= completed) || primaryWorker.paymentStatus === 'paid';
+    const primaryWorker = userWorkers[0];
+    const totalCompleted = userWorkers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const totalPaid = userWorkers.reduce((sum, w) => sum + (Number(w.paidCount) || 0), 0);
+    const totalLeftover = Math.max(0, totalCompleted - totalPaid);
+    const totalTodayDone = userWorkers.reduce((sum, w) => sum + (Number(w.todayDone) || 0), 0);
+    const isSettled = (totalCompleted > 0 && totalPaid >= totalCompleted);
+    const hasPendingWithdrawal = userWorkers.some(w => w.payoutRequestStatus === 'pending');
+    const pendingOrders = userWorkers.reduce((sum, w) => sum + (w.payoutRequestStatus === 'pending' ? (Number(w.payoutRequestedOrders) || 0) : 0), 0);
 
-    let keysList = workers.map(w => `\`${w.key}\``).join(', ');
+    let keysList = userWorkers.map(w => `\`${w.key}\``).join(', ');
 
-    const balanceMsg = `
-💳 *Your Performance & Settlement Status*
+    const balanceMsg = `💳 *Your Settlement & Performance Status*
 ━━━━━━━━━━━━━━━━━━━━━━━━
-👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
-🔑 *Keys:* ${keysList}
+👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (@${userUname})
+🔑 *Keys (${userWorkers.length}):* ${keysList}
 
 📊 *Orders Settlement:*
-• 📦 *Total Completed:* *${completed}* orders
-• ✅ *Total Settled:* *${paidCount}/${completed}*
-• ⏳ *Leftover Unsettled:* *${leftover}* order(s)
-• 🌅 *Today Done:* ${todayDone}
+• 📦 *Total Completed Orders:* *${totalCompleted}*
+• ✅ *Total Settled:* *${totalPaid}/${totalCompleted}*
+• ⏳ *Leftover Unsettled:* *${totalLeftover}* order(s)
+• 🌅 *Today Done:* *${totalTodayDone}*
 
 📌 *Status:*
-${isSettled ? `• ✅ *Fully Settled (${completed}/${completed})*` : (leftover > 0 ? `• ⏳ *${leftover} Leftover Orders Pending Settlement*` : '• ⚪ *No Orders Yet*')}
-${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawal Request:* ${primaryWorker.payoutRequestedOrders || leftover} order(s)\n` : ''}${isSettled && primaryWorker.lastPaidAt ? `• 📅 *Last Settled:* ${new Date(primaryWorker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}
+${isSettled ? `• ✅ *Fully Settled (${totalCompleted}/${totalCompleted})*` : (totalLeftover > 0 ? `• ⏳ *${totalLeftover} Leftover Orders Pending Settlement*` : '• ⚪ *No Orders Yet*')}
+${hasPendingWithdrawal ? `• 🔔 *Pending Withdrawal Request:* ${pendingOrders || totalLeftover} order(s)\n` : ''}${isSettled && primaryWorker.lastPaidAt ? `• 📅 *Last Settled:* ${new Date(primaryWorker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}
 📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
 
 💡 *Withdrawal Options:*
 • \`/withdraw <orders>\` — Request payout for specific number of orders (e.g. \`/withdraw 5\`)
-• \`/reqforleftover\` — Request withdrawal for all ${leftover} leftover orders
-• \`/bill\` — View live bill & recent orders
-`;
+• \`/reqforleftover\` — Request withdrawal for all ${totalLeftover} leftover orders
+• \`/bill\` — View performance bill`;
+
     await this.sendMessage(chatId, balanceMsg, {
       reply_markup: {
         inline_keyboard: [
+          [{ text: '🧾 View Bill', callback_data: 'view_bill' }, { text: '💸 Withdraw Leftover', callback_data: 'withdraw_leftover' }],
           [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
         ]
       }
@@ -571,32 +837,29 @@ ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawa
 
   // Command: /help
   async handleHelp(chatId) {
-    const helpMsg = `
-🤖 *Worker Bill Bot — Commands:*
+    const helpMsg = `🤖 *Worker Hub Bot — Commands:*
 
 📢 *OFFICIAL CHANNEL (JOIN 1ST!):*
 👉 https://t.me/madmax00711
 
-🧾 *Billing & Orders:*
-• Send your key directly → instant live bill with recent orders
-• \`/bill [YOUR_KEY]\` — Generate live bill with recent completed orders
+🔑 *Account & Keys:*
+• Send your worker key directly to connect (e.g. \`WORKER-XXXX-XXXX-XXXX-XXXX\`)
+• \`/mykeys\` — View all keys assigned to your Telegram account
+• \`/connect YOUR_KEY\` — Connect your assigned worker key
+• \`/channel\` — Official announcements channel link
+
+🧾 *Billing & Balance:*
+• \`/bill\` — View your performance summary bill (strictly NO order spam)
 • \`/balance\` — Check settled orders (e.g. 20/20) & leftover balance
-• \`/refresh\` — Re-fetch live stats from masi.cc.cd & update bill
-• \`/stats\` — View latest performance overview
+• \`/refresh\` — Refresh live data from masi.cc.cd
 
 💸 *Withdrawals:*
-• \`/withdraw <number>\` — Request withdrawal for specific order count (e.g. \`/withdraw 10\`)
+• \`/withdraw <orders>\` — Request withdrawal for specific order count (e.g. \`/withdraw 10\`)
 • \`/reqforleftover\` — Request withdrawal for all remaining leftover orders
 
-🔗 *Account & Channel:*
-• \`/link YOUR_KEY\` — Save your key to this Telegram account
-• \`/channel\` — Join official announcements channel
-
 📦 *Orders:*
-• \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit order
+• \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit new order`;
 
-• \`/help\` — Show this message
-`;
     await this.sendMessage(chatId, helpMsg, {
       reply_markup: {
         inline_keyboard: [
@@ -606,9 +869,9 @@ ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawa
     });
   }
 
-  // ── LIVE MASI DATA & RECENT ORDERS SYNC ───────────────────────────────────
+  // ── LIVE MASI DATA SYNC ───────────────────────────────────────────────────
 
-  // Fetch live worker stats and recent completed orders from masi.cc.cd
+  // Fetch live worker stats from masi.cc.cd
   async fetchLiveWorkerDataAndOrders(workerKeyOrName) {
     const db = this.dbManager.getDb();
     const bossKey = (db.settings && db.settings.bossKey) || 'WORKER-B030-0827-9A88-4A04';
@@ -619,19 +882,12 @@ ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawa
     const { callMasiApi } = require('./sync-masi');
     try {
       const searchKey = (workerKeyOrName || '').trim();
-      const [teamData, ordersData] = await Promise.all([
-        callMasiApi('api/worker/team', bossKey, {}).catch(e => {
-          console.warn('[Bot Sync] Team API error:', e.message);
-          return { team: [] };
-        }),
-        callMasiApi('api/worker/team', bossKey, { action: 'orders', range: 'all', limit: 1000 }).catch(e => {
-          console.warn('[Bot Sync] Orders API error:', e.message);
-          return { orders: [] };
-        })
-      ]);
+      const teamData = await callMasiApi('api/worker/team', bossKey, {}).catch(e => {
+        console.warn('[Bot Sync] Team API error:', e.message);
+        return { team: [] };
+      });
 
       const teamList = teamData.team || [];
-      const allOrders = ordersData.orders || [];
 
       // Find worker by access_key or name
       const liveWorker = teamList.find(w =>
@@ -639,46 +895,9 @@ ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawa
         (w.name && w.name.toLowerCase() === searchKey.toLowerCase())
       );
 
-      // Find completed orders for this worker
-      let completedOrders = [];
-      if (liveWorker) {
-        completedOrders = allOrders.filter(o =>
-          (o.worker_id && o.worker_id === liveWorker.worker_id) ||
-          (o.worker_name && o.worker_name.toLowerCase() === liveWorker.name.toLowerCase())
-        ).filter(o => o.status === 'completed' || (Number(o.completed_at) || 0) > 0);
-      } else {
-        completedOrders = allOrders.filter(o =>
-          o.worker_name && o.worker_name.toLowerCase() === searchKey.toLowerCase()
-        ).filter(o => o.status === 'completed' || (Number(o.completed_at) || 0) > 0);
-      }
-
-      // Also merge any completed orders from local db
-      const localOrders = (db.orders || []).filter(o =>
-        (o.workerKey && o.workerKey.toUpperCase() === searchKey.toUpperCase()) ||
-        (liveWorker && o.workerKey && o.workerKey.toUpperCase() === (liveWorker.access_key || '').toUpperCase()) ||
-        (liveWorker && o.workerName && o.workerName.toLowerCase() === liveWorker.name.toLowerCase())
-      ).filter(o => o.fulfillmentStatus === 'fulfilled' || o.inventoryStatus === 'sold');
-
-      localOrders.forEach(lo => {
-        const already = completedOrders.some(co => co.order_id === lo.orderId || co.order_id === lo.id);
-        if (!already) {
-          completedOrders.push({
-            order_id: lo.orderId || lo.id,
-            completed_at: lo.fulfilledAt ? Math.floor(new Date(lo.fulfilledAt).getTime() / 1000) : (lo.createdAt ? Math.floor(new Date(lo.createdAt).getTime() / 1000) : 0),
-            ticket: lo.uniqueId || lo.orderNumber || '',
-            email: lo.telegramUsername || '',
-            reward_cents: (Number(lo.payoutAmount) || 15) * 100,
-            status: 'completed'
-          });
-        }
-      });
-
-      // Sort newest completed first
-      completedOrders.sort((a, b) => (Number(b.completed_at) || 0) - (Number(a.completed_at) || 0));
-
       return {
         liveWorker,
-        completedOrders
+        completedOrders: []
       };
     } catch (err) {
       console.error('[Bot Sync Error]:', err.message);
@@ -686,15 +905,15 @@ ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawa
     }
   }
 
-  // ── BILL GENERATION ──────────────────────────────────────────────────────
+  // ── BILL GENERATION (NO COMPLETED ORDERS LIST) ─────────────────────────────
 
-  // Build the bill text from a worker record (strictly NO rate, with recent completed orders)
-  buildBillText(worker, db, completedOrders = []) {
+  // Build the bill text from a worker record (strictly NO rate, NO order list dump)
+  buildBillText(worker, db) {
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-    const completed = Number(worker.completedOrders) || (completedOrders ? completedOrders.length : 0);
+    const completed = Number(worker.completedOrders) || 0;
     const paidCount = Number(worker.paidCount) || 0;
     const leftover = Math.max(0, completed - paidCount);
     const d7Done = Number(worker.d7Done) || 0;
@@ -703,146 +922,178 @@ ${primaryWorker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawa
     const isSettled = (completed > 0 && paidCount >= completed) || worker.paymentStatus === 'paid';
     const statusText = isSettled ? `✅ *Fully Settled (${completed}/${completed})*` : (leftover > 0 ? `⏳ *${leftover} Leftover Orders Pending Settlement*` : '⚪ *No Orders Yet*');
 
-    // Format recent completed orders
-    let recentOrdersSection = '';
-    if (completedOrders && completedOrders.length > 0) {
-      const topOrders = completedOrders.slice(0, 10);
-      const ordersLines = topOrders.map((o, idx) => {
-        let time = 'Recent';
-        if (o.completed_at) {
-          try {
-            const d = new Date(Number(o.completed_at) * 1000);
-            time = d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true });
-          } catch (e) {}
-        }
-        const ticketPart = o.ticket ? ` | 🎟️ \`${o.ticket}\`` : '';
-        const emailPart = o.email ? ` (${o.email})` : '';
-        return `• \`${o.order_id}\` — ${time}${ticketPart}${emailPart}`;
-      }).join('\n');
-
-      recentOrdersSection = `
-📋 *MOST RECENT COMPLETED ORDERS (${topOrders.length}):*
-${ordersLines}
-${completedOrders.length > 10 ? `_...and ${completedOrders.length - 10} more completed orders recorded_` : ''}
-`;
-    } else {
-      recentOrdersSection = `
-📋 *MOST RECENT COMPLETED ORDERS:*
-• _No recent completed orders found in current batch._
-`;
-    }
-
-    return `
-🧾 *WORKER PERFORMANCE BILL*
+    return `🧾 *WORKER PERFORMANCE BILL*
 ━━━━━━━━━━━━━━━━━━━━━━━━
 📅 *Date:* ${dateStr} ${timeStr}
 ━━━━━━━━━━━━━━━━━━━━━━━━
 
-👤 *Worker:* ${worker.personName || worker.name}
+👤 *Worker:* ${worker.personName || worker.name} (${worker.telegramUsername || ''})
 🔑 *Key:* \`${worker.key}\`
 📍 *Online Status:* ${worker.online ? '🟢 Online' : '⚪ Offline'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
 📦 *COMPLETED ORDERS OVERVIEW:*
-• ✅ *Total Completed Orders:* ${completed}
-• 🌅 *Today Done:* ${todayDone} orders
-• 📅 *Last 7 Days:* ${d7Done} orders
+• ✅ *Total Completed Orders:* *${completed}*
+• 🌅 *Today Done:* *${todayDone}* orders
+• 📅 *Last 7 Days:* *${d7Done}* orders
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
 💰 *SETTLEMENT STATUS:*
 • 📊 *Progress:* *${paidCount}/${completed}* orders settled
 • ⏳ *Leftover Unsettled:* *${leftover}* order(s)
 • 📌 *Status:* ${statusText}
-${worker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Request:* ${worker.payoutRequestedOrders || leftover} order(s)\n` : ''}${isSettled && worker.lastPaidAt ? `• 📅 *Settled Date:* ${new Date(worker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
+${worker.payoutRequestStatus === 'pending' ? `• 🔔 *Pending Withdrawal Request:* ${worker.payoutRequestedOrders || leftover} order(s)\n` : ''}${isSettled && worker.lastPaidAt ? `• 📅 *Settled Date:* ${new Date(worker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}━━━━━━━━━━━━━━━━━━━━━━━━
 📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
-_🔄 Synced live with masi.cc.cd_
-`;
+_🔄 Synced live with masi.cc.cd_`;
   }
 
-  // Command: /bill [KEY] — generate bill for a key (or linked account) synced with live data
+  // Command: /bill [KEY] — generate bill with live data (strictly NO order dump)
   async handleBill(chatId, from, rawKey) {
     const db = this.dbManager.getDb();
+    const userUname = this.normalizeUsername(from?.username);
+
     let searchKey = '';
 
     if (rawKey && rawKey.trim()) {
       searchKey = rawKey.trim();
-    } else {
-      const workers = this.findWorkersForUser(chatId, from);
-      if (!workers || workers.length === 0) {
-        await this.sendMessage(chatId, `⚠️ *No key linked!*\n\nSend your key directly:\n\`WORKER-XXXX-XXXX-XXXX-XXXX\`\n\nOr link it: \`/link YOUR_KEY\``);
+      let worker = db.workers.find(w =>
+        (w.key && w.key.toUpperCase() === searchKey.toUpperCase()) ||
+        (w.name && w.name.toLowerCase() === searchKey.toLowerCase())
+      );
+
+      if (!worker) {
+        await this.sendMessage(chatId, `❌ *Worker Key Not Recognized:* \`${searchKey}\`\nPlease check your key and try again, or contact support (@madmax00711).`);
         return;
       }
-      searchKey = workers[0].key;
+
+      // Check authorization
+      const isAuthorized = this.isKeyAuthorizedForUser(worker, from, chatId);
+      if (!isAuthorized) {
+        const ownerDisplay = this.getWorkerOwnerName(worker);
+        await this.sendMessage(chatId, `🚫 *Access Denied!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+This key (\`${worker.key}\`) belongs to owner: *${ownerDisplay}*
+
+Your Telegram account (@${userUname || 'no_username'}) is not authorized to access this key.
+
+👉 *Please contact the owner or contact support:*
+• *Official Channel:* https://t.me/madmax00711
+• *Support:* @madmax00711
+━━━━━━━━━━━━━━━━━━━━━━━━`, {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }],
+              [{ text: '💬 Contact Support', url: OFFICIAL_CHANNEL }]
+            ]
+          }
+        });
+        return;
+      }
+
+      await this.sendMessage(chatId, `⏳ *Syncing live data from masi.cc.cd...*`);
+      const { liveWorker } = await this.fetchLiveWorkerDataAndOrders(worker.key);
+      if (liveWorker) {
+        worker.completedOrders = Number(liveWorker.completed_count || 0);
+        worker.online = Boolean(liveWorker.online);
+        const d7 = (liveWorker.recent && liveWorker.recent.d7) || {};
+        worker.d7Done = Number(d7.ok || 0);
+        worker.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
+        this.dbManager.saveDb();
+      }
+
+      const billText = this.buildBillText(worker, db);
+      await this.sendMessage(chatId, billText, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '💳 Balance', callback_data: 'view_balance' }, { text: '💸 Withdraw Leftover', callback_data: 'withdraw_leftover' }],
+            [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
+      return;
+    }
+
+    // No rawKey: fetch for all keys belonging to this user
+    const userWorkers = this.findWorkersForUser(chatId, from);
+    if (!userWorkers || userWorkers.length === 0) {
+      await this.sendMessage(chatId, `⚠️ *No Worker Key Connected!*
+
+Please send your assigned worker key to connect:
+\`WORKER-XXXX-XXXX-XXXX-XXXX\`
+
+_🔒 Note: Access is locked to authorized Telegram accounts._`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📢 Official Channel', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
+      return;
     }
 
     await this.sendMessage(chatId, `⏳ *Syncing live data from masi.cc.cd...*`);
 
-    // Fetch live data & live completed orders
-    const { liveWorker, completedOrders } = await this.fetchLiveWorkerDataAndOrders(searchKey);
-
-    let worker = db.workers.find(w =>
-      (w.key && w.key.toUpperCase() === searchKey.toUpperCase()) ||
-      (w.name && w.name.toLowerCase() === searchKey.toLowerCase())
-    );
-
+    // Sync live data for primary worker
+    const primaryWorker = userWorkers[0];
+    const { liveWorker } = await this.fetchLiveWorkerDataAndOrders(primaryWorker.key);
     if (liveWorker) {
-      if (!worker) {
-        worker = {
-          id: `w-masi-${Date.now()}`,
-          name: liveWorker.name,
-          key: liveWorker.access_key || searchKey,
-          worker_id: liveWorker.worker_id,
-          telegramId: chatId ? chatId.toString() : null,
-          telegramUsername: from && from.username ? `@${from.username}` : null,
-          rate: Number(db.settings && db.settings.defaultRate) || 15.00,
-          paidAmount: 0,
-          paidCount: 0,
-          status: liveWorker.active !== false ? 'active' : 'paused',
-          source: 'masi'
-        };
-        db.workers.push(worker);
-      }
-
-      // Update worker with live masi stats
-      worker.name = liveWorker.name;
-      worker.key = liveWorker.access_key || worker.key;
-      worker.worker_id = liveWorker.worker_id;
-      worker.completedOrders = Number(liveWorker.completed_count || 0);
-      worker.failCount = Number(liveWorker.release_count || 0) + Number(liveWorker.expired_count || 0) + Number(liveWorker.not_landed_count || 0);
+      primaryWorker.completedOrders = Number(liveWorker.completed_count || 0);
+      primaryWorker.online = Boolean(liveWorker.online);
       const d7 = (liveWorker.recent && liveWorker.recent.d7) || {};
-      worker.d7Done = Number(d7.ok || 0);
-      worker.d7Fail = Number(d7.fail || 0);
-      worker.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
-      worker.online = Boolean(liveWorker.online);
-      // Always auto-link Telegram Chat ID and username so admin can reply from dashboard
-      if (chatId) {
-        worker.telegramId = chatId.toString();
-        if (from && from.username) {
-          worker.telegramUsername = `@${from.username}`;
-        }
-        worker.linkedAt = new Date().toISOString();
-      }
-
+      primaryWorker.d7Done = Number(d7.ok || 0);
+      primaryWorker.todayDone = Number((liveWorker.recent && liveWorker.recent.today && liveWorker.recent.today.ok) || 0);
       this.dbManager.saveDb();
     }
 
-    if (!worker) {
-      await this.sendMessage(chatId, `❌ *Worker Key Not Found:* \`${searchKey}\`\nPlease check your key and send it again.`);
+    if (userWorkers.length === 1) {
+      const billText = this.buildBillText(primaryWorker, db);
+      await this.sendMessage(chatId, billText, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '💳 Balance', callback_data: 'view_balance' }, { text: '💸 Withdraw Leftover', callback_data: 'withdraw_leftover' }],
+            [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
+          ]
+        }
+      });
       return;
     }
 
-    // Even if no liveWorker, if worker exists in db, link telegram
-    if (chatId && !worker.telegramId) {
-      worker.telegramId = chatId.toString();
-      if (from && from.username) worker.telegramUsername = `@${from.username}`;
-      worker.linkedAt = new Date().toISOString();
-      this.dbManager.saveDb();
-    }
+    // Multi-key summary
+    const totalCompleted = userWorkers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const totalPaid = userWorkers.reduce((sum, w) => sum + (Number(w.paidCount) || 0), 0);
+    const totalLeftover = Math.max(0, totalCompleted - totalPaid);
+    const totalTodayDone = userWorkers.reduce((sum, w) => sum + (Number(w.todayDone) || 0), 0);
+    const isSettled = (totalCompleted > 0 && totalPaid >= totalCompleted);
 
-    const billText = this.buildBillText(worker, db, completedOrders);
-    await this.sendMessage(chatId, billText, {
+    let breakdown = userWorkers.map(w => {
+      const c = Number(w.completedOrders) || 0;
+      const p = Number(w.paidCount) || 0;
+      const l = Math.max(0, c - p);
+      return `• \`${w.key}\`: *${c}* completed | *${p}/${c}* settled | *${l}* leftover`;
+    }).join('\n');
+
+    const multiBillText = `🧾 *MULTI-KEY PERFORMANCE BILL*
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (@${userUname})
+🔑 *Connected Keys (${userWorkers.length}):*
+
+${breakdown}
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+📦 *COMBINED OVERVIEW:*
+• ✅ *Total Completed Orders:* *${totalCompleted}*
+• 📊 *Total Settled:* *${totalPaid}/${totalCompleted}*
+• ⏳ *Leftover Unsettled:* *${totalLeftover}* order(s)
+• 🌅 *Today Done:* *${totalTodayDone}* orders
+• 📌 *Status:* ${isSettled ? '✅ *Fully Settled*' : `⏳ *${totalLeftover} Pending Settlement*`}
+━━━━━━━━━━━━━━━━━━━━━━━━
+📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
+_🔄 Synced live with masi.cc.cd_`;
+
+    await this.sendMessage(chatId, multiBillText, {
       reply_markup: {
         inline_keyboard: [
+          [{ text: '💳 Balance', callback_data: 'view_balance' }, { text: '💸 Withdraw Leftover', callback_data: 'withdraw_leftover' }],
           [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
         ]
       }
@@ -851,33 +1102,30 @@ _🔄 Synced live with masi.cc.cd_
 
   // Command: /withdraw or /request [orders] — worker requests withdrawal for specified orders
   async handlePayoutRequest(chatId, from, rawOrders) {
-    const workers = this.findWorkersForUser(chatId, from);
-    const worker = workers[0] || this.findWorkerByChatId(chatId);
+    const userWorkers = this.findWorkersForUser(chatId, from);
+    const userUname = this.normalizeUsername(from?.username);
 
-    if (!worker) {
-      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease send your worker key first (e.g. \`WORKER-XXXX-XXXX-XXXX-XXXX\`) so we can link your profile.`);
+    if (!userWorkers || userWorkers.length === 0) {
+      await this.sendMessage(chatId, `⚠️ *No Worker Key Connected!*\nPlease send your worker key to connect your account:\n\`WORKER-XXXX-XXXX-XXXX-XXXX\``);
       return;
     }
 
-    // Auto-update Telegram ID & Username
-    worker.telegramId = chatId.toString();
-    if (from && from.username) worker.telegramUsername = `@${from.username}`;
+    const primaryWorker = userWorkers[0];
+    const totalCompleted = userWorkers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const totalPaid = userWorkers.reduce((sum, w) => sum + (Number(w.paidCount) || 0), 0);
+    const totalLeftover = Math.max(0, totalCompleted - totalPaid);
 
-    const completed = Number(worker.completedOrders) || 0;
-    const paidCount = Number(worker.paidCount) || 0;
-    const leftover = Math.max(0, completed - paidCount);
-
-    if (completed === 0) {
+    if (totalCompleted === 0) {
       await this.sendMessage(chatId, `⚪ *No Completed Orders Yet!*\nDo some tasks first to complete orders.`);
       return;
     }
 
-    if (leftover <= 0) {
-      await this.sendMessage(chatId, `ℹ️ *Already Settled!*\nAll your completed tasks (*${completed}/${completed}*) are already marked as Paid & Settled.`);
+    if (totalLeftover <= 0) {
+      await this.sendMessage(chatId, `ℹ️ *Already Settled!*\nAll your completed tasks (*${totalCompleted}/${totalCompleted}*) are already marked as Paid & Settled.`);
       return;
     }
 
-    let requestedOrders = leftover;
+    let requestedOrders = totalLeftover;
     let requestType = 'all';
 
     if (rawOrders && rawOrders.trim()) {
@@ -886,40 +1134,40 @@ _🔄 Synced live with masi.cc.cd_
         await this.sendMessage(chatId, `⚠️ *Invalid Order Count!*\nPlease specify a positive number of orders to withdraw.\n_Example: \`/withdraw 10\` or \`/reqforleftover\`_`);
         return;
       }
-      if (parsed > leftover) {
-        await this.sendMessage(chatId, `⚠️ *Request Exceeds Leftover Balance!*\n• Total Completed: *${completed}*\n• Already Settled: *${paidCount}/${completed}*\n• Leftover Available: *${leftover}* order(s)\n\nYou cannot request ${parsed} orders. Please request up to *${leftover}* orders (e.g. \`/withdraw ${leftover}\` or \`/reqforleftover\`).`);
+      if (parsed > totalLeftover) {
+        await this.sendMessage(chatId, `⚠️ *Request Exceeds Leftover Balance!*\n• Total Completed: *${totalCompleted}*\n• Already Settled: *${totalPaid}/${totalCompleted}*\n• Leftover Available: *${totalLeftover}* order(s)\n\nYou cannot request ${parsed} orders. Please request up to *${totalLeftover}* orders (e.g. \`/withdraw ${totalLeftover}\` or \`/reqforleftover\`).`);
         return;
       }
       requestedOrders = parsed;
       requestType = 'custom';
     }
 
-    worker.payoutRequestedOrders = requestedOrders;
-    worker.payoutRequestType = requestType;
-    worker.payoutRequestedAt = new Date().toISOString();
-    worker.payoutRequestStatus = 'pending';
+    primaryWorker.payoutRequestedOrders = requestedOrders;
+    primaryWorker.payoutRequestType = requestType;
+    primaryWorker.payoutRequestedAt = new Date().toISOString();
+    primaryWorker.payoutRequestStatus = 'pending';
     this.dbManager.saveDb();
 
-    const ackMsg = `
-✅ *WITHDRAWAL REQUEST SUBMITTED!*
+    const ackMsg = `✅ *WITHDRAWAL REQUEST SUBMITTED!*
 ━━━━━━━━━━━━━━━━━━━━━━━━
-👤 *Worker:* ${worker.personName || worker.name}
-🔑 *Key:* \`${worker.key}\`
+👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (@${userUname})
+🔑 *Key(s):* ${userWorkers.map(w => `\`${w.key}\``).join(', ')}
 
 📦 *Requested to Withdraw:* *${requestedOrders}* order(s)
-📊 *Current Status:* *${paidCount}/${completed}* settled
-⏳ *Remaining After Payout:* *${leftover - requestedOrders}* order(s)
+📊 *Current Status:* *${totalPaid}/${totalCompleted}* settled
+⏳ *Remaining After Payout:* *${totalLeftover - requestedOrders}* order(s)
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 
 ⏳ *Status:* *Sent to Admin on Dashboard*
 Your administrator has been notified to settle your *${requestedOrders}* requested orders. You will receive an instant alert here as soon as payout is processed!
 
 📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
-━━━━━━━━━━━━━━━━━━━━━━━━
-`;
+━━━━━━━━━━━━━━━━━━━━━━━━`;
+
     await this.sendMessage(chatId, ackMsg, {
       reply_markup: {
         inline_keyboard: [
+          [{ text: '💳 Balance', callback_data: 'view_balance' }],
           [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
         ]
       }
@@ -928,52 +1176,49 @@ Your administrator has been notified to settle your *${requestedOrders}* request
 
   // Command: /reqforleftover — worker requests withdrawal for all remaining unsettled orders
   async handleLeftoverRequest(chatId, from) {
-    const workers = this.findWorkersForUser(chatId, from);
-    const worker = workers[0] || this.findWorkerByChatId(chatId);
+    const userWorkers = this.findWorkersForUser(chatId, from);
+    const userUname = this.normalizeUsername(from?.username);
 
-    if (!worker) {
-      await this.sendMessage(chatId, `⚠️ *Account Not Linked!*\nPlease send your worker key first (e.g. \`WORKER-XXXX-XXXX-XXXX-XXXX\`) so we can link your profile.`);
+    if (!userWorkers || userWorkers.length === 0) {
+      await this.sendMessage(chatId, `⚠️ *No Worker Key Connected!*\nPlease send your worker key to connect your account:\n\`WORKER-XXXX-XXXX-XXXX-XXXX\``);
       return;
     }
 
-    // Auto-update Telegram ID & Username
-    worker.telegramId = chatId.toString();
-    if (from && from.username) worker.telegramUsername = `@${from.username}`;
+    const primaryWorker = userWorkers[0];
+    const totalCompleted = userWorkers.reduce((sum, w) => sum + (Number(w.completedOrders) || 0), 0);
+    const totalPaid = userWorkers.reduce((sum, w) => sum + (Number(w.paidCount) || 0), 0);
+    const totalLeftover = Math.max(0, totalCompleted - totalPaid);
 
-    const completed = Number(worker.completedOrders) || 0;
-    const paidCount = Number(worker.paidCount) || 0;
-    const leftover = Math.max(0, completed - paidCount);
-
-    if (leftover <= 0) {
-      await this.sendMessage(chatId, `ℹ️ *No Leftover Balance!*\nAll your completed tasks (*${completed}/${completed}*) are already paid and settled.`);
+    if (totalLeftover <= 0) {
+      await this.sendMessage(chatId, `ℹ️ *No Leftover Balance!*\nAll your completed tasks (*${totalCompleted}/${totalCompleted}*) are already paid and settled.`);
       return;
     }
 
-    worker.payoutRequestedOrders = leftover;
-    worker.payoutRequestType = 'leftover';
-    worker.payoutRequestedAt = new Date().toISOString();
-    worker.payoutRequestStatus = 'pending';
+    primaryWorker.payoutRequestedOrders = totalLeftover;
+    primaryWorker.payoutRequestType = 'leftover';
+    primaryWorker.payoutRequestedAt = new Date().toISOString();
+    primaryWorker.payoutRequestStatus = 'pending';
     this.dbManager.saveDb();
 
-    const ackMsg = `
-✅ *LEFTOVER WITHDRAWAL REQUESTED!*
+    const ackMsg = `✅ *LEFTOVER WITHDRAWAL REQUESTED!*
 ━━━━━━━━━━━━━━━━━━━━━━━━
-👤 *Worker:* ${worker.personName || worker.name}
-🔑 *Key:* \`${worker.key}\`
+👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (@${userUname})
+🔑 *Key(s):* ${userWorkers.map(w => `\`${w.key}\``).join(', ')}
 
-📦 *Leftover Orders to Settle:* *${leftover}* order(s)
-📊 *Current Status:* *${paidCount}/${completed}* settled
+📦 *Leftover Orders to Settle:* *${totalLeftover}* order(s)
+📊 *Current Status:* *${totalPaid}/${totalCompleted}* settled
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 
 ⏳ *Status:* *Sent to Admin on Dashboard*
-Your administrator has been notified to settle your *${leftover}* leftover orders. You will receive an instant alert here as soon as payout is processed!
+Your administrator has been notified to settle your *${totalLeftover}* leftover orders. You will receive an instant alert here as soon as payout is processed!
 
 📢 *Official Channel (Join 1st!):* https://t.me/madmax00711
-━━━━━━━━━━━━━━━━━━━━━━━━
-`;
+━━━━━━━━━━━━━━━━━━━━━━━━`;
+
     await this.sendMessage(chatId, ackMsg, {
       reply_markup: {
         inline_keyboard: [
+          [{ text: '💳 Balance', callback_data: 'view_balance' }],
           [{ text: '📢 Join Official Channel 1st', url: OFFICIAL_CHANNEL }]
         ]
       }
@@ -982,12 +1227,7 @@ Your administrator has been notified to settle your *${leftover}* leftover order
 
   // Command: /refresh — refresh live stats for linked account then show bill
   async handleRefreshAndBill(chatId, from) {
-    const workers = this.findWorkersForUser(chatId, from);
-    if (!workers || workers.length === 0) {
-      await this.sendMessage(chatId, `⚠️ *No key linked!*\n\nSend your key: \`WORKER-XXXX-XXXX-XXXX-XXXX\`\nOr: \`/link YOUR_KEY\``);
-      return;
-    }
-    await this.handleBill(chatId, from, workers[0].key);
+    await this.handleBill(chatId, from);
   }
 
   // ── END BILL SECTION ────────────────────────────────────────────────────
