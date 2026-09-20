@@ -299,31 +299,31 @@ body {
         <div class="text-[11px] text-purple-600 font-medium mt-0.5">Official & Admin Set</div>
       </div>
 
-      <!-- Total Calculated Pay -->
-      <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/30 to-white shadow-2xs">
+      <!-- Total Paid Today (Withdrawn from Masi) -->
+      <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/40 to-white shadow-2xs">
         <div class="text-xs font-semibold text-emerald-800 uppercase tracking-wider flex items-center justify-between">
-          <span>Calculated Pay</span>
+          <span>Paid Today</span>
           <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
         </div>
-        <div id="kpi-total-pay" class="text-2xl font-black text-emerald-900 mt-1">₹0.00</div>
-        <div class="text-[11px] text-emerald-700 font-medium mt-0.5">Earned by workers</div>
+        <div id="kpi-paid-today" class="text-2xl font-black text-emerald-900 mt-1">$0.00</div>
+        <div id="kpi-paid-today-sub" class="text-[11px] text-emerald-700 font-medium mt-0.5">Withdrawn Today (Masi)</div>
       </div>
 
-      <!-- Team Guys (Unique Members) -->
+      <!-- Total Withdrawn All-time (Masi) -->
       <div class="bg-white p-4 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50/40 to-white shadow-2xs col-span-2 sm:col-span-1">
         <div class="text-xs font-semibold text-sky-700 uppercase tracking-wider flex items-center justify-between">
-          <span>Team Guys</span>
+          <span>Total Withdrawn</span>
           <span class="w-2 h-2 rounded-full bg-sky-500"></span>
         </div>
-        <div id="kpi-team-guys" class="text-2xl font-black text-sky-900 mt-1">0</div>
-        <div class="text-[11px] text-sky-600 font-medium mt-0.5">Grouped profiles</div>
+        <div id="kpi-total-withdrawn" class="text-2xl font-black text-sky-900 mt-1">$0.00</div>
+        <div id="kpi-total-withdrawn-sub" class="text-[11px] text-sky-600 font-medium mt-0.5">All-time Paid Out (Masi)</div>
       </div>
     </section>
 
     <!-- Search & Navigation Tab Bar -->
     <section class="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
       <div class="p-3 sm:p-4 border-b border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
-        <!-- Tab Navigation Buttons (Dedicated Task 2 Tabs) -->
+        <!-- Tab Navigation Buttons -->
         <nav class="flex items-center gap-1 sm:gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0" aria-label="Tabs">
           <!-- 1. Team & Guys Grouped Tab (DEFAULT) -->
           <button onclick="switchTab('guys')" data-tab="guys" class="tab-btn active px-3.5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap bg-indigo-50 text-indigo-700 border border-indigo-200">
@@ -339,14 +339,7 @@ body {
             <span id="tab-badge-keys" class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700">128</span>
           </button>
 
-          <!-- 3. Worker Payouts & Balances Tab -->
-          <button onclick="switchTab('workers')" data-tab="workers" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
-            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span>💰 Payouts & Calculator</span>
-            <span id="tab-badge-workers" class="px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800">$0</span>
-          </button>
-
-          <!-- 4. Telegram Bot & Linker Tab -->
+          <!-- 3. Telegram Bot & Linker Tab -->
           <button onclick="switchTab('bot')" data-tab="bot" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
             <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
             <span>🤖 Telegram Bot</span>
@@ -532,10 +525,7 @@ body {
           <p class="text-[11px] text-slate-400 mt-1">Give this key to the worker. They send <code>/link KEY</code> in Telegram to connect.</p>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Default Pay Rate ($ / order)</label>
-          <input type="number" step="0.5" id="input-new-worker-rate" value="15.00" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
+
 
         <div>
           <div class="flex items-center justify-between mb-1">
@@ -835,8 +825,7 @@ body {
     workers: [],
     settings: {
       botToken: '',
-      botUsername: '',
-      defaultRate: 15.00
+      botUsername: ''
     },
     botStatus: {
       isConfigured: false,
@@ -844,7 +833,12 @@ body {
       botUsername: '',
       lastError: null
     },
-    currentTab: 'guys', // 'guys', 'keys', 'workers', 'bot'
+    masiOverview: {
+      paidTodayTotal: 0,
+      withdrawnPaidTotal: 0,
+      balanceTotal: 0
+    },
+    currentTab: 'guys', // 'guys', 'keys', 'bot'
     searchQuery: '',
     teamAssignTab: 'paste',
     isApiOnline: true,
@@ -871,18 +865,16 @@ body {
         const data = await res.json();
         state.isApiOnline = true;
         if (data.workers && data.workers.length > 0) {
-          // Merge incoming workers while preserving local paid status if higher
+          // Merge incoming workers while preserving local paid status if paid
           const currentMap = new Map((state.workers || []).map(w => [w.id, w]));
           state.workers = data.workers.map(nw => {
             const cur = currentMap.get(nw.id);
             if (cur) {
-              const curPaid = Number(cur.paidAmount) || 0;
-              const newPaid = Number(nw.paidAmount) || 0;
-              if (curPaid > newPaid) {
+              if (cur.paymentStatus === 'paid' && nw.paymentStatus !== 'paid' && (Number(nw.completedOrders) || 0) <= (Number(cur.paidCount) || 0)) {
                 return {
                   ...nw,
-                  paidAmount: curPaid,
-                  paidCount: Math.max(Number(nw.paidCount) || 0, Number(cur.paidCount) || 0),
+                  paymentStatus: 'paid',
+                  paidCount: cur.paidCount || nw.completedOrders,
                   lastPaidAt: cur.lastPaidAt || nw.lastPaidAt
                 };
               }
@@ -892,6 +884,7 @@ body {
         }
         if (data.settings) state.settings = { ...state.settings, ...data.settings };
         if (data.botStatus) state.botStatus = data.botStatus;
+        if (data.masiOverview) state.masiOverview = data.masiOverview;
 
         saveToLocalStorage();
         updateBotStatusPill();
@@ -1070,7 +1063,6 @@ body {
           telegramUsername: tgHandle,
           telegramId: worker.telegramId,
           keys: [],
-          rate: Number(worker.rate) || 15.00,
           customSuccessRate: worker.customSuccessRate
         });
       }
@@ -1084,9 +1076,11 @@ body {
       guy.keys.push(worker);
     });
 
-    // Compute metrics for each guy
+    // Compute metrics for each guy (sorted highest to lowest completed orders)
     return Array.from(groups.values()).map(guy => {
       const completedOrders = guy.keys.reduce((sum, k) => sum + (Number(k.completedOrders) || 0), 0);
+      const todayDone = guy.keys.reduce((sum, k) => sum + (Number(k.todayDone) || 0), 0);
+      const d7Done = guy.keys.reduce((sum, k) => sum + (Number(k.d7Done) || 0), 0);
       const failCount = guy.keys.reduce((sum, k) => sum + (Number(k.failCount) || 0), 0);
       const totalOrders = completedOrders + failCount;
 
@@ -1101,16 +1095,15 @@ body {
       }
       const successRate = rateNum.toFixed(1);
 
-      const baseRate = guy.rate || 15.00;
-      const totalEarned = completedOrders * baseRate;
-
-      // Calculate paid and unpaid
-      const paidAmount = guy.keys.reduce((sum, k) => sum + (Number(k.paidAmount) || 0), 0);
-      const unpaidAmount = Math.max(0, totalEarned - paidAmount);
+      // Settle check: worker is paid & settled if all keys with orders are paid
+      const isSettled = completedOrders > 0 && guy.keys.every(k => {
+        const c = Number(k.completedOrders) || 0;
+        if (c === 0) return true;
+        return k.paymentStatus === 'paid' || (Number(k.paidCount) || 0) >= c;
+      });
 
       // Payout requests from Telegram (/request)
-      const payoutRequestedAmount = guy.keys.reduce((sum, k) => sum + (Number(k.payoutRequestedAmount) || 0), 0);
-      const hasPendingPayoutRequest = guy.keys.some(k => k.payoutRequestStatus === 'pending' && (Number(k.payoutRequestedAmount) || 0) > 0);
+      const hasPendingPayoutRequest = guy.keys.some(k => k.payoutRequestStatus === 'pending');
 
       let rateColor = 'text-slate-600 bg-slate-100';
       let progressColor = 'bg-slate-400';
@@ -1128,16 +1121,15 @@ body {
       return {
         ...guy,
         completedOrders,
+        todayDone,
+        d7Done,
         totalOrders,
         isCustomRate,
         rateNum,
         successRate,
         rateColor,
         progressColor,
-        totalEarned,
-        paidAmount,
-        unpaidAmount,
-        payoutRequestedAmount,
+        isSettled,
         hasPendingPayoutRequest
       };
     }).sort((a, b) => (Number(b.completedOrders) || 0) - (Number(a.completedOrders) || 0));
@@ -1154,10 +1146,11 @@ body {
       renderGuysPanel(container);
     } else if (state.currentTab === 'keys') {
       renderKeysPanel(container);
-    } else if (state.currentTab === 'workers') {
-      renderWorkersPanel(container);
     } else if (state.currentTab === 'bot') {
       renderBotPanel(container);
+    } else {
+      state.currentTab = 'guys';
+      renderGuysPanel(container);
     }
   }
 
@@ -1171,7 +1164,7 @@ body {
     render();
   }
 
-  // Update top KPI cards
+  // Update top KPI cards with Masi live metrics
   function renderKPIs() {
     const guys = getGroupedGuys();
     const totalKeys = state.workers.length;
@@ -1190,29 +1183,30 @@ body {
       }
     }
     
-    const totalPay = guys.reduce((sum, g) => sum + (Number(g.totalEarned) || 0), 0);
     const totalGuys = guys.length;
 
     const elKeys = document.getElementById('kpi-total-keys');
     const elCompleted = document.getElementById('kpi-completed-orders');
     const elSuccess = document.getElementById('kpi-team-success');
-    const elPay = document.getElementById('kpi-total-pay');
-    const elGuys = document.getElementById('kpi-team-guys');
+    const elPaidToday = document.getElementById('kpi-paid-today');
+    const elTotalWithdrawn = document.getElementById('kpi-total-withdrawn');
 
     if (elKeys) elKeys.textContent = totalKeys;
     if (elCompleted) elCompleted.textContent = totalCompletedOrders.toLocaleString();
     if (elSuccess) elSuccess.textContent = teamSuccessRate;
-    if (elPay) elPay.textContent = `₹${totalPay.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    if (elGuys) elGuys.textContent = totalGuys;
+
+    const paidTodayVal = (state.masiOverview && state.masiOverview.paidTodayTotal !== undefined) ? Number(state.masiOverview.paidTodayTotal) : 0;
+    const totalWithdrawnVal = (state.masiOverview && state.masiOverview.withdrawnPaidTotal !== undefined) ? Number(state.masiOverview.withdrawnPaidTotal) : 0;
+
+    if (elPaidToday) elPaidToday.textContent = `${paidTodayVal.toFixed(2)}`;
+    if (elTotalWithdrawn) elTotalWithdrawn.textContent = `${totalWithdrawnVal.toFixed(2)}`;
 
     // Badges
     const badgeGuys = document.getElementById('tab-badge-guys');
     const badgeKeys = document.getElementById('tab-badge-keys');
-    const badgeWorkers = document.getElementById('tab-badge-workers');
 
     if (badgeGuys) badgeGuys.textContent = totalGuys;
     if (badgeKeys) badgeKeys.textContent = totalKeys;
-    if (badgeWorkers) badgeWorkers.textContent = `₹${totalPay.toFixed(0)}`;
   }
 
   // Filter guys or workers by global search (Always sorted highest to lowest completed orders)
@@ -1310,12 +1304,11 @@ body {
 
     guys.forEach(guy => {
       const isLinked = Boolean(guy.telegramId);
-      const isSettled = guy.completedOrders > 0 ? guy.unpaidAmount === 0 : false;
       const cardDomId = 'guy-card-' + String(guy.id).replace(/[^a-zA-Z0-9_-]/g, '_');
 
       html += `
-        <div id="${cardDomId}" data-guy-id="${escapeHtml(guy.id)}" ondragover="handleKeyDragOver(event)" ondragleave="handleKeyDragLeave(event)" ondrop="handleKeyDrop(event, '${escapeHtml(guy.id)}')" class="bg-white rounded-xl shadow-sm border ${isSettled ? 'paid-card-settled' : 'border-slate-200'} hover:border-indigo-400 transition-all overflow-hidden flex flex-col justify-between relative">
-          ${isSettled ? `
+        <div id="${cardDomId}" data-guy-id="${escapeHtml(guy.id)}" ondragover="handleKeyDragOver(event)" ondragleave="handleKeyDragLeave(event)" ondrop="handleKeyDrop(event, '${escapeHtml(guy.id)}')" class="bg-white rounded-xl shadow-sm border ${guy.isSettled ? 'paid-card-settled' : 'border-slate-200'} hover:border-indigo-400 transition-all overflow-hidden flex flex-col justify-between relative">
+          ${guy.isSettled ? `
             <div class="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest py-0.5 px-3 text-center flex items-center justify-center gap-1">
               <span>✓</span> PAYMENT COMPLETED & SETTLED
             </div>
@@ -1328,10 +1321,10 @@ body {
                   <span class="text-xl">🔔</span>
                   <div>
                     <div class="text-[11px] font-black uppercase tracking-wider text-amber-900">Payout Requested!</div>
-                    <div class="text-xs text-amber-800 font-medium">Worker requested <strong class="font-extrabold text-slate-900">₹${guy.payoutRequestedAmount.toFixed(2)}</strong></div>
+                    <div class="text-xs text-amber-800 font-medium">Worker requested settlement for <strong class="font-extrabold text-slate-900">${guy.completedOrders} completed orders</strong></div>
                   </div>
                 </div>
-                <button onclick="approveGuyPayout('${escapeHtml(guy.id)}', ${guy.payoutRequestedAmount})" class="px-3.5 py-1.5 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1 whitespace-nowrap">
+                <button onclick="approveGuyPayout('${escapeHtml(guy.id)}')" class="px-3.5 py-1.5 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1 whitespace-nowrap">
                   <span>✓</span> Approve & Pay
                 </button>
               </div>
@@ -1340,15 +1333,15 @@ body {
             <!-- Header: Guy Name & Telegram -->
             <div class="flex items-start justify-between gap-3 mb-4">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm cursor-pointer" onclick="openGuyKeysModal('${escapeHtml(guy.id)}')">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${guy.isSettled ? 'from-emerald-600 to-teal-600' : 'from-indigo-600 to-sky-600'} text-white flex items-center justify-center font-extrabold text-lg shadow-sm cursor-pointer" onclick="openGuyKeysModal('${escapeHtml(guy.id)}')">
                   ${escapeHtml((guy.displayName || 'G').charAt(0).toUpperCase())}
                 </div>
                 <div>
                   <h3 class="font-extrabold text-slate-900 text-base leading-tight flex items-center gap-2">
                     <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" class="text-left font-extrabold text-slate-900 text-base leading-tight hover:text-indigo-600 transition flex items-center gap-2">
-                      <span class="${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(guy.displayName)}</span>
+                      <span class="${guy.isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(guy.displayName)}</span>
                     </button>
-                    <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" title="Click to view & manage keys" class="text-[10px] px-2 py-0.5 rounded-full font-bold cursor-pointer transition ${isSettled ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'}">
+                    <button onclick="openGuyKeysModal('${escapeHtml(guy.id)}')" title="Click to view & manage keys" class="text-[10px] px-2 py-0.5 rounded-full font-bold cursor-pointer transition ${guy.isSettled ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'}">
                       ${guy.keys.length} ${guy.keys.length === 1 ? 'Key' : 'Keys'} 🔍
                     </button>
                   </h3>
@@ -1399,7 +1392,7 @@ body {
               </div>
               <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 bg-slate-50 rounded-lg border border-slate-200">
                 ${guy.keys.map(k => {
-                  const keyPaid = (k.completedOrders > 0) && ((Number(k.paidAmount) || 0) >= (Number(k.completedOrders) || 0) * (Number(k.rate) || 15));
+                  const keyPaid = (Number(k.completedOrders) || 0) > 0 && (k.paymentStatus === 'paid' || (Number(k.paidCount) || 0) >= (Number(k.completedOrders) || 0));
                   return `
                     <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" title="Drag to move to another worker card" class="inline-flex items-center gap-1 px-2 py-1 rounded ${keyPaid ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-slate-300'} border text-[11px] font-mono shadow-2xs hover:border-indigo-500 hover:shadow-xs cursor-grab active:cursor-grabbing transition">
                       <span class="text-slate-300 select-none text-[9px]">⋮⋮</span>
@@ -1414,21 +1407,19 @@ body {
               </div>
             </div>
 
-            <!-- Aggregated Metrics Grid -->
-            <div class="grid grid-cols-3 gap-2 ${isSettled ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-100'} p-3 rounded-lg border text-center mb-3">
+            <!-- Aggregated Performance Metrics Grid (3 columns: Completed Orders, Today Done, 7-Day Performance) -->
+            <div class="grid grid-cols-3 gap-2 bg-slate-50 border border-slate-100 p-3 rounded-lg text-center mb-3">
               <div>
                 <div class="text-xs text-slate-400 font-medium">Completed Orders</div>
-                <div class="text-base font-black text-emerald-700 ${isSettled ? 'line-through' : ''}">${guy.completedOrders}</div>
+                <div class="text-base font-black text-emerald-700 ${guy.isSettled ? 'line-through' : ''}">${guy.completedOrders}</div>
               </div>
               <div>
-                <div class="text-xs text-slate-400 font-medium">Total Amount</div>
-                <div class="text-base font-black text-slate-800 ${isSettled ? 'line-through opacity-60' : ''}">₹${guy.totalEarned.toFixed(2)}</div>
+                <div class="text-xs text-slate-400 font-medium">Today Done</div>
+                <div class="text-base font-black text-sky-700">${guy.todayDone}</div>
               </div>
               <div>
-                <div class="text-xs text-slate-400 font-medium">Pending Due</div>
-                <div class="text-base font-black ${isSettled ? 'paid-crossed-text text-emerald-700' : (guy.unpaidAmount > 0 ? 'text-rose-600' : 'text-slate-400')}">
-                  ${isSettled ? `<span class="paid-strike-bar">₹${guy.totalEarned.toFixed(2)}</span>` : `₹${guy.unpaidAmount.toFixed(2)}`}
-                </div>
+                <div class="text-xs text-slate-400 font-medium">7-Day Done</div>
+                <div class="text-base font-black text-indigo-700">${guy.d7Done}</div>
               </div>
             </div>
 
@@ -1445,27 +1436,30 @@ body {
           </div>
 
           <!-- Card Actions Footer -->
-          <div class="p-3 ${isSettled ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50 border-slate-200'} border-t flex items-center justify-between gap-2 flex-wrap">
-            <div class="text-xs text-slate-500 font-medium">
-              Total: <strong class="text-slate-800 font-bold">₹${guy.totalEarned.toFixed(2)}</strong>
+          <div class="p-3 ${guy.isSettled ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50 border-slate-200'} border-t flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
+              ${guy.isSettled ? `
+                <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 rounded-md flex items-center gap-1">
+                  <span>✓</span> Paid & Settled
+                </span>
+              ` : `
+                <span class="px-2.5 py-1 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-md">
+                  ⏳ Unpaid (${guy.completedOrders} orders)
+                </span>
+              `}
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap">
-              ${guy.unpaidAmount > 0 ? `
-                <button onclick="markGuyPaid('${escapeHtml(guy.id)}')" title="Mark paid and notify via Telegram" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1">
-                  <span>✓</span> Pay ₹${guy.unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
+              ${(!guy.isSettled && guy.completedOrders > 0) ? `
+                <button onclick="markGuyPaid('${escapeHtml(guy.id)}')" title="Mark completed orders as paid and notify via Telegram" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1">
+                  <span>✓</span> Mark Paid / Complete ${isLinked ? '📲' : ''}
                 </button>
-              ` : `
-                <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 rounded-md flex items-center gap-1">
-                  <span class="line-through opacity-75">₹${guy.totalEarned.toFixed(2)}</span>
-                  <span>✓ PAID</span>
-                </span>
-                ${guy.completedOrders > 0 ? `
-                  <button onclick="unmarkGuyPaid('${escapeHtml(guy.id)}')" title="Reset / Mark Unpaid" class="px-2 py-1 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-md transition flex items-center gap-1">
-                    <span>↩</span> Mark Unpaid
-                  </button>
-                ` : ''}
-              `}
+              ` : ''}
+              ${(guy.isSettled && guy.completedOrders > 0) ? `
+                <button onclick="unmarkGuyPaid('${escapeHtml(guy.id)}')" title="Reset / Mark Unpaid" class="px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-md transition flex items-center gap-1">
+                  <span>↩</span> Mark Unpaid
+                </button>
+              ` : ''}
 
               <button onclick="openSendMsgModal('${escapeHtml(guy.keys[0]?.id || '')}', '${escapeHtml(guy.displayName || '')}', '${escapeHtml(guy.telegramUsername || '')}')" title="Send direct Telegram message to worker" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition flex items-center gap-1">
                 <span>💬</span> Msg
@@ -1524,16 +1518,15 @@ body {
 
         <!-- Keys Table Container -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
+          <div clas              <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th class="py-3.5 px-4 font-bold">Worker & Guy Name</th>
                   <th class="py-3.5 px-4 font-bold">Worker Key</th>
                   <th class="py-3.5 px-4 font-bold">Telegram (@...)</th>
                   <th class="py-3.5 px-4 font-bold text-center">Completed Orders</th>
+                  <th class="py-3.5 px-4 font-bold text-center">Today Done</th>
                   <th class="py-3.5 px-4 font-bold text-center">Success Rate %</th>
-                  <th class="py-3.5 px-4 font-bold">Calculated Pay</th>
+                  <th class="py-3.5 px-4 font-bold text-center">Status</th>
                   <th class="py-3.5 px-4 font-bold text-right">Actions</th>
                 </tr>
               </thead>
@@ -1543,7 +1536,7 @@ body {
     if (workers.length === 0) {
       html += `
         <tr>
-          <td colspan="7" class="py-8 text-center text-slate-500 text-xs">
+          <td colspan="8" class="py-8 text-center text-slate-500 text-xs">
             No worker keys match your search query.
           </td>
         </tr>
@@ -1560,11 +1553,9 @@ body {
       else if (rateNum >= 50) badgeClass = 'text-amber-800 bg-amber-100';
       else if (rateNum > 0) badgeClass = 'text-rose-800 bg-rose-100';
 
-      const baseRate = Number(w.rate) || 15.00;
       const completed = Number(w.completedOrders) || 0;
-      const totalEarned = completed * baseRate;
-
-      const isPaidKey = completed > 0 && ((Number(w.paidAmount) || 0) >= totalEarned);
+      const todayDone = Number(w.todayDone) || 0;
+      const isPaidKey = completed > 0 && (w.paymentStatus === 'paid' || (Number(w.paidCount) || 0) >= completed);
 
       html += `
         <tr class="hover:bg-slate-50/80 transition group ${isPaidKey ? 'paid-row-settled' : ''}">
@@ -1605,6 +1596,11 @@ body {
             <span class="${isPaidKey ? 'line-through opacity-60' : ''}">${completed}</span>
           </td>
 
+          <!-- Today Done -->
+          <td class="py-3 px-4 text-center font-semibold text-sky-700">
+            ${todayDone}
+          </td>
+
           <!-- Success Rate % -->
           <td class="py-3 px-4 text-center">
             <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeClass}">
@@ -1613,27 +1609,32 @@ body {
             ${isCustomRate ? `<span class="block text-[10px] text-indigo-600 font-medium mt-0.5">Admin Decided</span>` : ''}
           </td>
 
-          <!-- Calculated Pay -->
-          <td class="py-3 px-4 font-bold text-slate-800">
+          <!-- Status -->
+          <td class="py-3 px-4 text-center">
             ${isPaidKey ? `
-              <div class="paid-crossed-text text-emerald-700">₹${totalEarned.toFixed(2)}</div>
-              <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded inline-block mt-0.5">✓ PAID</span>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
+                <span>✓</span> Paid
+              </span>
+            ` : (completed > 0 ? `
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
+                <span>⏳</span> Unpaid
+              </span>
             ` : `
-              <div>₹${totalEarned.toFixed(2)}</div>
-            `}
+              <span class="text-[11px] text-slate-400 font-medium">—</span>
+            `)}
           </td>
 
           <!-- Actions -->
           <td class="py-3 px-4 text-right whitespace-nowrap">
             <div class="flex items-center justify-end gap-1.5">
               ${(!isPaidKey && completed > 0) ? `
-                <button onclick="markWorkerPaid('${w.id}')" title="Mark this key as paid" class="px-2.5 py-1 text-xs font-bold rounded bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
-                  Pay ₹${totalEarned.toFixed(2)}
+                <button onclick="markWorkerPaid('${w.id}')" title="Mark this key as paid / complete" class="px-2.5 py-1 text-xs font-bold rounded bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1">
+                  <span>✓</span> Mark Paid
                 </button>
               ` : ''}
               ${(isPaidKey && completed > 0) ? `
-                <button onclick="unmarkWorkerPaid('${w.id}')" title="Reset payment to unpaid" class="px-2 py-1 text-xs font-semibold rounded bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition">
-                  ↩ Unpay
+                <button onclick="unmarkWorkerPaid('${w.id}')" title="Reset payment to unpaid" class="px-2 py-1 text-xs font-semibold rounded bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition flex items-center gap-1">
+                  <span>↩</span> Unpay
                 </button>
               ` : ''}
               <button onclick="openSendMsgModal('${w.id}', '${escapeHtml(w.name || '')}', '${escapeHtml(w.telegramUsername || '')}')" title="Send direct Telegram message" class="px-2 py-1 text-xs font-bold rounded bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition flex items-center gap-1">
@@ -1667,410 +1668,6 @@ body {
 
     container.innerHTML = html;
   }
-
-  // ==========================================
-  // PANEL 3: WORKER PAYOUTS & BALANCES
-  // ==========================================
-  function renderWorkersPanel(container) {
-    const guys = getGroupedGuys();
-    const totalEarnedTeam = guys.reduce((sum, g) => sum + g.totalEarned, 0);
-    const totalPaidTeam = guys.reduce((sum, g) => sum + g.paidAmount, 0);
-    const totalDueTeam = Math.max(0, totalEarnedTeam - totalPaidTeam);
-
-    let html = `
-      <div class="space-y-6">
-        <!-- Banner -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-emerald-50/50 via-teal-50/30 to-white flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-              <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              Payouts & Worker Pay Calculator
-            </h2>
-            <p class="text-sm text-slate-500 mt-1">
-              Calculates earnings based on completed orders read from Masi. Mark payouts and send automatic Telegram receipts.
-            </p>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <button onclick="exportCSV()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg shadow-sm transition">
-              📥 Export Payouts CSV
-            </button>
-          </div>
-        </div>
-
-        <!-- Payout Summary Metric Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs">
-            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Team Earnings</div>
-            <div class="text-2xl font-black text-slate-900 mt-1">₹${totalEarnedTeam.toFixed(2)}</div>
-            <div class="text-[11px] text-slate-500 mt-0.5">Completed orders across all keys</div>
-          </div>
-          <div class="bg-white p-5 rounded-xl border border-emerald-200 bg-emerald-50/20 shadow-2xs">
-            <div class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Total Settled / Paid</div>
-            <div class="text-2xl font-black text-emerald-800 mt-1">₹${totalPaidTeam.toFixed(2)}</div>
-            <div class="text-[11px] text-emerald-600 mt-0.5">Recorded historical payments</div>
-          </div>
-          <div class="bg-white p-5 rounded-xl border border-rose-200 bg-rose-50/20 shadow-2xs">
-            <div class="text-xs font-bold text-rose-700 uppercase tracking-wider">Pending Balance Due</div>
-            <div class="text-2xl font-black text-rose-800 mt-1">₹${totalDueTeam.toFixed(2)}</div>
-            <div class="text-[11px] text-rose-600 mt-0.5">Currently owed to workers</div>
-          </div>
-        </div>
-
-        <!-- Payouts List Table -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="p-4 border-b border-slate-200 font-bold text-slate-800 text-sm flex items-center justify-between">
-            <span>Worker & Guy Balances</span>
-            <span class="text-xs font-normal text-slate-500">${guys.length} Accounts</span>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
-                <tr>
-                  <th class="py-3 px-4 font-bold">Guy / Worker</th>
-                  <th class="py-3 px-4 font-bold">Keys Assigned</th>
-                  <th class="py-3 px-4 font-bold text-center">Completed Orders</th>
-                  <th class="py-3 px-4 font-bold">Rate</th>
-                  <th class="py-3 px-4 font-bold">Total Earned</th>
-                  <th class="py-3 px-4 font-bold">Paid So Far</th>
-                  <th class="py-3 px-4 font-bold">Pending Due</th>
-                  <th class="py-3 px-4 font-bold text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100">
-      `;
-
-      guys.forEach(g => {
-        const hasDue = g.unpaidAmount > 0;
-        const isSettled = g.completedOrders > 0 && !hasDue;
-        const isLinked = Boolean(g.telegramId);
-
-        html += `
-          <tr class="hover:bg-slate-50/80 transition ${isSettled ? 'paid-row-settled' : ''}">
-            <td class="py-3 px-4">
-              <div class="font-bold text-slate-900 ${isSettled ? 'paid-strike-bar' : ''}">${escapeHtml(g.displayName)}</div>
-              ${g.telegramUsername ? `<div class="text-xs text-sky-600 font-mono">${escapeHtml(g.telegramUsername)}</div>` : ''}
-            </td>
-            <td class="py-3 px-4 text-xs font-mono text-slate-600">
-              ${g.keys.length} ${g.keys.length === 1 ? 'key' : 'keys'}
-            </td>
-            <td class="py-3 px-4 text-center font-bold text-emerald-700">
-              <span class="${isSettled ? 'line-through opacity-60' : ''}">${g.completedOrders}</span>
-            </td>
-            <td class="py-3 px-4 text-xs text-slate-600 font-medium">
-              ₹${g.rate.toFixed(2)}/order
-            </td>
-            <td class="py-3 px-4 font-bold text-slate-800">
-              <span class="${isSettled ? 'line-through opacity-60' : ''}">₹${g.totalEarned.toFixed(2)}</span>
-            </td>
-            <td class="py-3 px-4 text-xs font-semibold text-emerald-700">
-              ₹${g.paidAmount.toFixed(2)}
-            </td>
-            <td class="py-3 px-4 font-black ${hasDue ? 'text-rose-600' : 'text-slate-400'}">
-              ${isSettled ? `
-                <span class="paid-strike-bar paid-crossed-text text-emerald-700 font-bold">₹${g.totalEarned.toFixed(2)}</span>
-              ` : `₹${g.unpaidAmount.toFixed(2)}`}
-            </td>
-            <td class="py-3 px-4 text-right">
-              <div class="inline-flex items-center gap-1.5 justify-end">
-                <button onclick="openSendMsgModal('${escapeHtml(g.keys[0]?.id || '')}', '${escapeHtml(g.displayName || '')}', '${escapeHtml(g.telegramUsername || '')}')" title="Send direct Telegram message" class="p-1.5 rounded-lg text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition">
-                  💬
-                </button>
-                ${hasDue ? `
-                  <button onclick="markGuyPaid('${escapeHtml(g.id)}')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
-                    Pay ₹${g.unpaidAmount.toFixed(2)} ${isLinked ? '📲' : ''}
-                  </button>
-                ` : `
-                  <span class="text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-md flex items-center gap-1">
-                    <span class="line-through opacity-75">₹${g.totalEarned.toFixed(2)}</span>
-                    <span>✓ PAID</span>
-                  </span>
-                  ${g.completedOrders > 0 ? `
-                    <button onclick="unmarkGuyPaid('${escapeHtml(g.id)}')" title="Reset / Mark Unpaid" class="px-2 py-1 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-md transition">
-                      ↩ Unpaid
-                    </button>
-                  ` : ''}
-                `}
-              </div>
-            </td>
-          </tr>
-        `;
-      });
-
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    `;
-
-    container.innerHTML = html;
-  }
-
-  // ==========================================
-  // PANEL 4: TELEGRAM BOT & LINKER
-  // ==========================================
-  function renderBotPanel(container) {
-    const isOnline = state.botStatus && state.botStatus.isPolling;
-    const botUser = state.botStatus && state.botStatus.botUsername ? `@${state.botStatus.botUsername}` : 'Not Connected';
-
-    let html = `
-      <div class="space-y-6">
-        <!-- Banner -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 bg-gradient-to-r from-sky-50/50 via-indigo-50/30 to-white flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-              <svg class="w-6 h-6 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-              Telegram Bot Integration Hub
-            </h2>
-            <p class="text-sm text-slate-500 mt-1">
-              Connects your workers directly to their Masi keys, completed order counts, and pay statistics on Telegram.
-            </p>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <button onclick="openBotConfigModal()" class="px-4 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition">
-              ⚙️ Bot Settings
-            </button>
-          </div>
-        </div>
-
-        <!-- Bot Status Card -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Bot Connection Status</h3>
-            <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-              <span class="w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-400'}"></span>
-              <div>
-                <div class="font-bold text-slate-900">${isOnline ? 'Active & Polling' : 'Offline / Needs Token'}</div>
-                <div class="text-xs text-slate-500 font-mono">${botUser}</div>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Telegram Bot Token</label>
-              <div class="flex items-center gap-2">
-                <input type="password" id="tab-bot-token-input" value="${state.settings.botToken || ''}" placeholder="Paste token from @BotFather" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
-                <button onclick="saveBotTokenFromTab()" class="px-4 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm whitespace-nowrap">
-                  Save & Connect
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Instructions Card for Workers -->
-          <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3 text-xs">
-            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">How Workers Use the Bot</h3>
-            <ol class="list-decimal list-inside space-y-2 text-slate-600">
-              <li>Open your bot in Telegram (search <b>${botUser}</b>).</li>
-              <li>Worker sends command to link their key:
-                <code class="block font-mono bg-slate-100 p-2 rounded text-indigo-700 mt-1">/link YOUR_WORKER_KEY</code>
-              </li>
-              <li>Worker can view their stats anytime:
-                <code class="block font-mono bg-slate-100 p-2 rounded text-indigo-700 mt-1">/stats</code>
-              </li>
-              <li>Worker checks unpaid balance:
-                <code class="block font-mono bg-slate-100 p-2 rounded text-indigo-700 mt-1">/balance</code>
-              </li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    `;
-
-    container.innerHTML = html;
-  }
-
-  // ==========================================
-  // PAYOUT ACTIONS (Mark Paid / Unmark Paid)
-  // ==========================================
-  window.markGuyPaid = async function(guyId) {
-    const guys = getGroupedGuys();
-    const guy = guys.find(g => g.id === guyId);
-    if (!guy) return;
-
-    // Immediately mark all keys as fully paid in local state
-    const now = new Date().toISOString();
-    let totalPaidNow = 0;
-
-    guy.keys.forEach(k => {
-      const keyRate = Number(k.rate) || 15;
-      const completed = Number(k.completedOrders) || 0;
-      const fullEarned = completed * keyRate;
-      k.paidAmount = fullEarned;
-      k.paidCount = completed;
-      k.lastPaidAt = now;
-      totalPaidNow += fullEarned;
-    });
-
-    // Save immediately to local storage and re-render
-    saveToLocalStorage();
-    render();
-    showToast(`✓ Marked ${guy.displayName} as PAID (₹${guy.totalEarned.toFixed(2)})!`, 'success');
-
-    // Notify backend and Telegram in parallel
-    for (const key of guy.keys) {
-      if (state.isApiOnline) {
-        try {
-          fetch(`${API_BASE}/workers/${key.id}/mark-paid`, { method: 'POST' }).catch(() => {});
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-  };
-
-  window.unmarkGuyPaid = async function(guyId) {
-    const guys = getGroupedGuys();
-    const guy = guys.find(g => g.id === guyId);
-    if (!guy) return;
-
-    // Reset paid amount to 0 for this guy's keys
-    guy.keys.forEach(k => {
-      k.paidAmount = 0;
-      k.paidCount = 0;
-      k.lastPaidAt = null;
-      if (state.isApiOnline) {
-        fetch(`${API_BASE}/workers/${k.id}/mark-unpaid`, { method: 'POST' }).catch(() => {});
-      }
-    });
-
-    saveToLocalStorage();
-    render();
-    showToast(`↩ Marked ${guy.displayName} as UNPAID (₹${guy.totalEarned.toFixed(2)} due)`, 'info');
-  };
-
-  window.markWorkerPaid = async function(workerId) {
-    const worker = state.workers.find(w => w.id === workerId);
-    if (!worker) return;
-
-    const rate = Number(worker.rate) || 15;
-    const completed = Number(worker.completedOrders) || 0;
-    const fullEarned = completed * rate;
-    const now = new Date().toISOString();
-
-    worker.paidAmount = fullEarned;
-    worker.paidCount = completed;
-    worker.lastPaidAt = now;
-
-    saveToLocalStorage();
-    render();
-    showToast(`✓ Key ${worker.key} marked as PAID (₹${fullEarned.toFixed(2)})`, 'success');
-
-    if (state.isApiOnline) {
-      try {
-        fetch(`${API_BASE}/workers/${worker.id}/mark-paid`, { method: 'POST' }).catch(() => {});
-      } catch (e) {}
-    }
-  };
-
-  // Direct 1-click live sync from laptop dashboard
-  window.syncMasiLiveDirect = async function() {
-    const btn = document.getElementById('btn-sync-masi-direct');
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = `<span style="display:inline-block;animation:spin 1s linear infinite">↻</span> Syncing...`;
-    }
-    try {
-      showToast('Fetching live stats from masi.cc.cd...', 'info');
-      const res = await fetch(`${API_BASE}/masi/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
-      });
-      const data = await res.json();
-      if (data.success && Array.isArray(data.workers)) {
-        state.workers = data.workers;
-        saveToLocalStorage();
-        render();
-        showToast(`✓ Live Synced: ${data.workers.length} workers updated with latest stats!`, 'success');
-      } else {
-        showToast(data.error || 'Live sync failed', 'danger');
-      }
-    } catch (e) {
-      showToast('Sync error: ' + e.message, 'danger');
-    } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = `<span>⚡</span> <span>Live Sync Masi</span>`;
-      }
-    }
-  };
-
-  // Send Direct Message to Worker's Telegram
-  let activeMsgWorkerId = null;
-
-  window.openSendMsgModal = function(workerId, workerName, tgUsername) {
-    activeMsgWorkerId = workerId;
-    const modal = document.getElementById('send-msg-modal');
-    const desc = document.getElementById('send-msg-target-desc');
-    const warning = document.getElementById('send-msg-warning');
-    const input = document.getElementById('send-msg-input');
-
-    if (desc) desc.textContent = `To: ${workerName} ${tgUsername ? `(${tgUsername})` : ''}`;
-    if (input) {
-      input.value = '';
-      setTimeout(() => input.focus(), 100);
-    }
-
-    const worker = state.workers.find(w => w.id === workerId || w.key === workerId);
-    const hasTg = worker && (worker.telegramId || worker.telegramUsername);
-    if (warning) {
-      if (!hasTg) {
-        warning.classList.remove('hidden');
-        warning.textContent = `⚠️ Worker "${worker ? worker.name : ''}" has not linked Telegram yet. Give them their key: ${worker ? worker.key : ''}`;
-      } else {
-        warning.classList.add('hidden');
-      }
-    }
-
-    if (modal) modal.classList.remove('hidden');
-  };
-
-  window.closeSendMsgModal = function() {
-    const modal = document.getElementById('send-msg-modal');
-    if (modal) modal.classList.add('hidden');
-    activeMsgWorkerId = null;
-  };
-
-  window.submitSendMsg = async function() {
-    if (!activeMsgWorkerId) return;
-    const input = document.getElementById('send-msg-input');
-    const text = (input ? input.value : '').trim();
-    if (!text) {
-      showToast('Please type a message first', 'warning');
-      return;
-    }
-
-    const btn = document.getElementById('btn-do-send-msg');
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
-    }
-
-    try {
-      const res = await fetch(`${API_BASE}/workers/${activeMsgWorkerId}/message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast('✓ Message delivered to Telegram!', 'success');
-        closeSendMsgModal();
-      } else {
-        showToast(data.error || 'Failed to deliver message', 'danger');
-      }
-    } catch (e) {
-      showToast('Delivery error: ' + e.message, 'danger');
-    } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = `<span>🚀</span> Send to Telegram`;
-      }
-    }
-  };
 
   // ==========================================
   // MULTI-KEY TEAM ASSIGNMENT MODAL
@@ -2386,6 +1983,7 @@ body {
 
       if (data.success && data.workers) {
         window.__tempMasiWorkers = data.workers;
+        window.__tempMasiOverview = data.overview;
         if (syncBtn) syncBtn.disabled = false;
         const withOrders = data.workers.filter(w => (Number(w.completedOrders) || Number(w.completedCount) || 0) > 0);
         const totalCompleted = data.workers.reduce((s, w) => s + (Number(w.completedOrders) || Number(w.completedCount) || 0), 0);
@@ -2438,7 +2036,10 @@ body {
       const res = await fetch(`${API_BASE}/masi/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ masiWorkers: window.__tempMasiWorkers })
+        body: JSON.stringify({
+          masiWorkers: window.__tempMasiWorkers,
+          masiOverview: window.__tempMasiOverview
+        })
       });
       const result = await res.json();
       syncBtn.disabled = false;
@@ -2855,7 +2456,7 @@ body {
   window.exportCSV = function() {
     const guys = getGroupedGuys();
     const rows = [
-      ['Guy / Person Name', 'Telegram Username', 'Keys Count', 'Keys List', 'Completed Orders', 'Success Rate %', 'Base Rate', 'Total Calculated Pay', 'Paid Amount', 'Pending Balance']
+      ['Guy / Person Name', 'Telegram Username', 'Keys Count', 'Keys List', 'Completed Orders', 'Today Done', '7-Day Done', 'Success Rate %', 'Settlement Status']
     ];
 
     guys.forEach(g => {
@@ -2865,11 +2466,10 @@ body {
         g.keys.length,
         g.keys.map(k => k.key).join('; '),
         g.completedOrders,
+        g.todayDone,
+        g.d7Done,
         g.successRate + '%',
-        `₹${g.rate.toFixed(2)}`,
-        `₹${g.totalEarned.toFixed(2)}`,
-        `₹${g.paidAmount.toFixed(2)}`,
-        `₹${g.unpaidAmount.toFixed(2)}`
+        g.isSettled ? 'Paid & Settled' : (g.completedOrders > 0 ? 'Unpaid' : 'No Orders')
       ]);
     });
 
@@ -3042,7 +2642,7 @@ body {
 
     if (title) title.textContent = `Keys for ${guy.displayName}`;
     if (subtitle) {
-      subtitle.textContent = `${guy.telegramUsername || 'No @telegram handle'} • Total Done: ${guy.completedOrders} orders • Total: ₹${guy.totalEarned.toFixed(2)}`;
+      subtitle.textContent = `${guy.telegramUsername || 'No @telegram handle'} • Total Done: ${guy.completedOrders} orders • Today: ${guy.todayDone} • 7-Day: ${guy.d7Done}`;
     }
     if (countEl) countEl.textContent = guy.keys.length;
     if (addInput) addInput.value = '';
@@ -3052,10 +2652,8 @@ body {
         container.innerHTML = `<div class="text-xs text-slate-400 p-3 bg-slate-50 rounded-lg text-center">No keys assigned to this guy yet.</div>`;
       } else {
         container.innerHTML = guy.keys.map(k => {
-          const rate = Number(k.rate) || 15.00;
           const completed = Number(k.completedOrders) || 0;
-          const earned = completed * rate;
-          const paid = (completed > 0) && ((Number(k.paidAmount) || 0) >= earned);
+          const paid = (completed > 0) && (k.paymentStatus === 'paid' || (Number(k.paidCount) || 0) >= completed);
 
           return `
             <div draggable="true" ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" class="flex items-center justify-between gap-2 p-2.5 rounded-lg border ${paid ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200'} shadow-2xs cursor-grab active:cursor-grabbing hover:border-indigo-400 transition">
@@ -3069,7 +2667,7 @@ body {
 
               <div class="flex items-center gap-3 text-xs">
                 <span class="font-bold ${paid ? 'text-emerald-700' : 'text-slate-700'}">${completed} ✓</span>
-                <span class="font-semibold text-slate-900">₹${earned.toFixed(2)}</span>
+                <span class="text-xs text-sky-600 font-semibold">${k.todayDone || 0} today</span>
                 ${paid ? '<span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">PAID</span>' : ''}
                 <button onclick="removeKeyFromGuy('${escapeHtml(k.key)}')" title="Detach key from this guy" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition text-xs font-bold">
                   ✕ Detach
@@ -3272,30 +2870,18 @@ body {
     const guy = guys.find(g => g.id === guyId);
     if (!guy) return;
 
-    if (guy.unpaidAmount <= 0) {
-      showToast(`${guy.displayName} is already paid!`, 'info');
-      return;
-    }
-
     for (const k of guy.keys) {
-      const rate = Number(k.rate) || 15.00;
       const completed = Number(k.completedOrders) || 0;
-      const totalEarned = completed * rate;
-      const keyUnpaid = Math.max(0, totalEarned - (Number(k.paidAmount) || 0));
-
-      if (keyUnpaid > 0) {
-        if (state.isApiOnline) {
-          try {
-            await fetch(`${API_BASE}/workers/${k.id}/mark-paid`, { method: 'POST' });
-          } catch (e) {
-            console.error(e);
-          }
+      if (state.isApiOnline) {
+        try {
+          await fetch(`${API_BASE}/workers/${k.id}/mark-paid`, { method: 'POST' });
+        } catch (e) {
+          console.error(e);
         }
-        k.paidAmount = totalEarned;
-        k.paidCount = completed;
-        k.payoutRequestStatus = 'cleared';
-        k.payoutRequestedAmount = 0;
       }
+      k.paymentStatus = 'paid';
+      k.paidCount = completed;
+      k.payoutRequestStatus = 'approved';
     }
 
     if (state.isApiOnline) {
@@ -3305,7 +2891,7 @@ body {
       render();
     }
 
-    showToast(`✓ Marked ₹${guy.unpaidAmount.toFixed(2)} as PAID for ${guy.displayName}! Alert sent via Telegram.`, 'success');
+    showToast(`✓ Marked ${guy.displayName} as PAID & SETTLED! Alert sent via Telegram.`, 'success');
   };
 
   window.unmarkGuyPaid = async function(guyId) {
@@ -3313,7 +2899,7 @@ body {
     const guy = guys.find(g => g.id === guyId);
     if (!guy) return;
 
-    if (!confirm(`Reset payment for ${guy.displayName}? This will mark all their completed tasks as UNPAID.`)) return;
+    if (!confirm(`Reset payment status for ${guy.displayName}? This will mark their completed tasks as UNPAID.`)) return;
 
     for (const k of guy.keys) {
       if (state.isApiOnline) {
@@ -3323,7 +2909,7 @@ body {
           console.error(e);
         }
       }
-      k.paidAmount = 0;
+      k.paymentStatus = 'unpaid';
       k.paidCount = 0;
     }
 
@@ -3337,31 +2923,27 @@ body {
     showToast(`↩ Payment status reset to UNPAID for ${guy.displayName}`, 'info');
   };
 
-  window.approveGuyPayout = async function(guyId, amount) {
+  window.approveGuyPayout = async function(guyId) {
     const guys = getGroupedGuys();
     const guy = guys.find(g => g.id === guyId);
     if (!guy) return;
 
-    let clearedAmount = 0;
     for (const k of guy.keys) {
-      if (k.payoutRequestStatus === 'pending' || (Number(k.payoutRequestedAmount) || 0) > 0) {
-        const reqAmt = Number(k.payoutRequestedAmount) || amount;
+      if (k.payoutRequestStatus === 'pending') {
         if (state.isApiOnline) {
           try {
-            const res = await fetch(`${API_BASE}/workers/${k.id}/approve-payout`, {
+            await fetch(`${API_BASE}/workers/${k.id}/approve-payout`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ amount: reqAmt })
+              body: JSON.stringify({})
             });
-            const data = await res.json();
-            if (data.success) clearedAmount += reqAmt;
           } catch (e) {
             console.error(e);
           }
         }
-        k.paidAmount = (Number(k.paidAmount) || 0) + reqAmt;
+        k.paymentStatus = 'paid';
+        k.paidCount = Number(k.completedOrders) || 0;
         k.payoutRequestStatus = 'approved';
-        k.payoutRequestedAmount = 0;
       }
     }
 
@@ -3372,16 +2954,14 @@ body {
       render();
     }
 
-    showToast(`🎉 Approved & cleared payout of ₹${(clearedAmount || amount).toFixed(2)} for ${guy.displayName}! Alert sent to Telegram.`, 'success');
+    showToast(`🎉 Approved & settled payout for ${guy.displayName}! Alert sent to Telegram.`, 'success');
   };
 
   window.markWorkerPaid = async function(workerId) {
     const worker = state.workers.find(w => w.id === workerId || w.key === workerId);
     if (!worker) return;
 
-    const rate = Number(worker.rate) || 15.00;
     const completed = Number(worker.completedOrders) || 0;
-    const totalEarned = completed * rate;
 
     if (state.isApiOnline) {
       try {
@@ -3389,9 +2969,9 @@ body {
         const data = await res.json();
         await fetchServerState();
         if (data.telegramSent) {
-          showToast(`✓ Marked ₹${totalEarned.toFixed(2)} as PAID! Telegram notification delivered.`, 'success');
+          showToast(`✓ Marked ${worker.name} (${completed} orders) as PAID! Telegram notification delivered.`, 'success');
         } else {
-          showToast(`✓ Marked ₹${totalEarned.toFixed(2)} as PAID for ${worker.name}`, 'success');
+          showToast(`✓ Marked ${worker.name} (${completed} orders) as PAID`, 'success');
         }
         return;
       } catch (e) {
@@ -3399,11 +2979,11 @@ body {
       }
     }
 
-    worker.paidAmount = totalEarned;
+    worker.paymentStatus = 'paid';
     worker.paidCount = completed;
     saveToLocalStorage();
     render();
-    showToast(`✓ Marked ₹${totalEarned.toFixed(2)} as PAID for ${worker.name}`, 'success');
+    showToast(`✓ Marked ${worker.name} as PAID & SETTLED`, 'success');
   };
 
   window.unmarkWorkerPaid = async function(workerId) {
@@ -3418,7 +2998,7 @@ body {
         console.error(e);
       }
     } else {
-      worker.paidAmount = 0;
+      worker.paymentStatus = 'unpaid';
       worker.paidCount = 0;
       saveToLocalStorage();
       render();

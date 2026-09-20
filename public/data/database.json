@@ -68,7 +68,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z"
     },
     {
       "id": "w-masi-2",
@@ -89,7 +89,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z"
     },
     {
       "id": "w-masi-3",
@@ -110,7 +110,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z"
     },
     {
       "id": "w-masi-4",
@@ -120,18 +120,24 @@
       "telegramUsername": null,
       "rate": 15,
       "completedOrders": 3,
-      "failCount": 2,
-      "successRate": 60,
-      "customSuccessRate": 60,
+      "failCount": 3,
+      "successRate": 50,
+      "customSuccessRate": 50,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
-      "online": true,
+      "online": false,
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z",
+      "paymentStatus": "unpaid",
+      "paidCount": 0,
+      "lastPaidAt": null,
+      "payoutRequestStatus": "approved",
+      "payoutRequestedAmount": 0,
+      "paidAmount": 0
     },
     {
       "id": "w-masi-5",
@@ -152,7 +158,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z"
     },
     {
       "id": "w-masi-6",
@@ -173,7 +179,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z"
     },
     {
       "id": "w-masi-7",
@@ -194,7 +200,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z"
     },
     {
       "id": "w-masi-8",
@@ -215,7 +221,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z",
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z",
       "personName": "Alam",
       "updatedAt": "2026-09-19T22:01:54.911Z",
       "paidAmount": 0,
@@ -229,7 +235,7 @@
       "name": "Alam0000",
       "key": "WORKER-EEA7-F4C4-1EF8-7BBC",
       "telegramId": null,
-      "telegramUsername": "@alam_tg",
+      "telegramUsername": null,
       "rate": 15,
       "completedOrders": 15,
       "failCount": 17,
@@ -243,9 +249,9 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z",
-      "personName": "Alam",
-      "updatedAt": "2026-09-19T22:01:54.912Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.871Z",
+      "personName": "Rajxk",
+      "updatedAt": "2026-09-20T19:45:09.226Z"
     },
     {
       "id": "w-masi-10",
@@ -266,7 +272,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-masi-11",
@@ -287,7 +293,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-masi-12",
@@ -308,7 +314,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-masi-13",
@@ -329,7 +335,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-masi-14",
@@ -350,7 +356,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-masi-15",
@@ -371,7 +377,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-16",
@@ -392,7 +398,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-17",
@@ -413,7 +419,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-18",
@@ -434,7 +440,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-19",
@@ -455,7 +461,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-20",
@@ -476,7 +482,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-21",
@@ -497,7 +503,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-22",
@@ -514,11 +520,11 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
-      "online": true,
+      "online": false,
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-23",
@@ -539,7 +545,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-24",
@@ -560,7 +566,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-25",
@@ -581,7 +587,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-26",
@@ -602,7 +608,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-27",
@@ -623,7 +629,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-28",
@@ -644,7 +650,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-29",
@@ -661,11 +667,11 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
-      "online": false,
+      "online": true,
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-30",
@@ -686,7 +692,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-31",
@@ -707,7 +713,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-32",
@@ -728,7 +734,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-33",
@@ -749,7 +755,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-34",
@@ -770,7 +776,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-35",
@@ -791,7 +797,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-36",
@@ -812,7 +818,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-37",
@@ -833,7 +839,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-38",
@@ -854,7 +860,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-39",
@@ -875,7 +881,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-40",
@@ -896,7 +902,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-41",
@@ -917,7 +923,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-42",
@@ -938,7 +944,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-43",
@@ -959,7 +965,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-44",
@@ -980,7 +986,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-45",
@@ -1001,7 +1007,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-masi-46",
@@ -1022,7 +1028,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-47",
@@ -1043,7 +1049,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-49",
@@ -1064,7 +1070,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-50",
@@ -1085,7 +1091,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-51",
@@ -1106,7 +1112,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-52",
@@ -1127,7 +1133,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-53",
@@ -1148,7 +1154,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-54",
@@ -1169,7 +1175,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-55",
@@ -1190,7 +1196,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-56",
@@ -1211,7 +1217,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-57",
@@ -1232,7 +1238,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-58",
@@ -1253,7 +1259,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-59",
@@ -1274,7 +1280,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-60",
@@ -1295,7 +1301,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-61",
@@ -1316,7 +1322,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-62",
@@ -1337,7 +1343,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-63",
@@ -1358,7 +1364,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-masi-64",
@@ -1379,7 +1385,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-65",
@@ -1400,7 +1406,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-66",
@@ -1421,7 +1427,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-67",
@@ -1442,7 +1448,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-68",
@@ -1463,7 +1469,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-69",
@@ -1484,7 +1490,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-70",
@@ -1505,7 +1511,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-71",
@@ -1526,7 +1532,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-72",
@@ -1547,7 +1553,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-73",
@@ -1568,7 +1574,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-74",
@@ -1589,7 +1595,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-75",
@@ -1610,7 +1616,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-76",
@@ -1631,7 +1637,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-77",
@@ -1652,7 +1658,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-78",
@@ -1673,7 +1679,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-79",
@@ -1694,7 +1700,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-80",
@@ -1715,7 +1721,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-81",
@@ -1736,7 +1742,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-82",
@@ -1757,7 +1763,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-83",
@@ -1778,7 +1784,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-masi-84",
@@ -1799,7 +1805,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-85",
@@ -1820,7 +1826,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-86",
@@ -1841,7 +1847,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-87",
@@ -1862,7 +1868,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-88",
@@ -1883,7 +1889,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-89",
@@ -1904,7 +1910,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-91",
@@ -1925,7 +1931,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-92",
@@ -1946,7 +1952,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-93",
@@ -1967,7 +1973,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-94",
@@ -1988,7 +1994,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-95",
@@ -2009,7 +2015,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-96",
@@ -2030,7 +2036,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-97",
@@ -2051,7 +2057,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-98",
@@ -2072,7 +2078,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-99",
@@ -2093,7 +2099,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-100",
@@ -2114,7 +2120,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-101",
@@ -2135,7 +2141,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     },
     {
       "id": "w-masi-102",
@@ -2156,7 +2162,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-103",
@@ -2177,7 +2183,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-104",
@@ -2198,7 +2204,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-105",
@@ -2219,7 +2225,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-106",
@@ -2240,7 +2246,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-107",
@@ -2261,7 +2267,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-108",
@@ -2282,7 +2288,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-109",
@@ -2303,7 +2309,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-110",
@@ -2324,7 +2330,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.769Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-111",
@@ -2345,7 +2351,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.769Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-masi-112",
@@ -2366,7 +2372,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-113",
@@ -2387,7 +2393,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-114",
@@ -2408,7 +2414,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-115",
@@ -2429,7 +2435,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-116",
@@ -2450,7 +2456,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-117",
@@ -2471,7 +2477,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-118",
@@ -2492,7 +2498,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-119",
@@ -2513,7 +2519,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-120",
@@ -2534,14 +2540,14 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-masi-121",
       "name": "Woralam",
       "key": "WORKER-8109-C7C6-FB50-BC5A",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "@alam_tg",
       "rate": 15,
       "completedOrders": 41,
       "failCount": 16,
@@ -2555,7 +2561,12 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z",
+      "personName": "Alam",
+      "updatedAt": "2026-09-20T19:44:51.289Z",
+      "paidAmount": 0,
+      "paidCount": 0,
+      "lastPaidAt": null
     },
     {
       "id": "w-masi-122",
@@ -2576,7 +2587,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-masi-123",
@@ -2597,7 +2608,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-masi-124",
@@ -2618,7 +2629,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-masi-125",
@@ -2639,7 +2650,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-masi-126",
@@ -2660,7 +2671,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977569-468",
@@ -2680,7 +2691,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-1789931977569-519",
@@ -2700,7 +2711,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.762Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-1789931977569-245",
@@ -2720,7 +2731,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-1789931977569-659",
@@ -2740,7 +2751,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-1789931977569-363",
@@ -2760,7 +2771,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-1789931977569-602",
@@ -2780,7 +2791,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-1789931977570-972",
@@ -2800,7 +2811,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.763Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.872Z"
     },
     {
       "id": "w-1789931977570-634",
@@ -2820,7 +2831,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-1789931977570-966",
@@ -2840,7 +2851,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-1789931977570-943",
@@ -2860,7 +2871,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-1789931977570-756",
@@ -2880,7 +2891,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-1789931977570-135",
@@ -2900,7 +2911,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.764Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.873Z"
     },
     {
       "id": "w-1789931977570-851",
@@ -2920,7 +2931,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-452",
@@ -2940,7 +2951,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-107",
@@ -2960,7 +2971,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-256",
@@ -2980,7 +2991,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-263",
@@ -3000,7 +3011,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-787",
@@ -3020,7 +3031,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-908",
@@ -3040,7 +3051,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-914",
@@ -3060,7 +3071,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977570-201",
@@ -3080,7 +3091,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.765Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977571-655",
@@ -3100,7 +3111,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977571-54",
@@ -3120,7 +3131,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977571-657",
@@ -3140,7 +3151,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.874Z"
     },
     {
       "id": "w-1789931977571-848",
@@ -3160,7 +3171,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.766Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-1789931977571-275",
@@ -3180,7 +3191,7 @@
       "linkedAt": null,
       "status": "paused",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-1789931977571-525",
@@ -3200,7 +3211,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-1789931977571-729",
@@ -3220,7 +3231,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.767Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.875Z"
     },
     {
       "id": "w-1789931977572-34",
@@ -3240,7 +3251,7 @@
       "linkedAt": null,
       "status": "paused",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.768Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-1789931977572-440",
@@ -3260,7 +3271,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.769Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-1789931977572-944",
@@ -3280,7 +3291,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.769Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-1789931977572-600",
@@ -3300,7 +3311,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.769Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.877Z"
     },
     {
       "id": "w-1789931977613-329",
@@ -3320,7 +3331,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.770Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.878Z"
     },
     {
       "id": "w-1789931977614-487",
@@ -3340,7 +3351,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-249",
@@ -3360,7 +3371,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-386",
@@ -3380,7 +3391,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-786",
@@ -3400,7 +3411,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-664",
@@ -3420,7 +3431,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-103",
@@ -3440,7 +3451,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.771Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-146",
@@ -3460,7 +3471,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.772Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-907",
@@ -3480,7 +3491,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.772Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-876",
@@ -3500,7 +3511,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.772Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
     },
     {
       "id": "w-1789931977614-590",
@@ -3520,7 +3531,27 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-20T19:36:22.772Z"
+      "lastSyncedAt": "2026-09-20T19:54:13.879Z"
+    },
+    {
+      "id": "w-1789933984343-250",
+      "name": "SURAJIT",
+      "key": "WORKER-D0F9-1BE2-6D7A-4A8A",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-20T19:54:13.876Z"
     }
   ],
   "orders": [
@@ -3632,5 +3663,164 @@
       "fulfilledAt": "2026-09-17T16:00:00.000Z",
       "paidAt": null
     }
-  ]
+  ],
+  "masiOverview": {
+    "withdrawnPaidCents": 28900,
+    "withdrawnPaidTotal": 289,
+    "paidTodayCents": 14000,
+    "paidTodayTotal": 140,
+    "balanceCents": 2550,
+    "balanceTotal": 25.5,
+    "limitDay": "2026-09-20",
+    "todayWithdrawalsCount": 2,
+    "withdrawals": [
+      {
+        "withdrawal_id": "60401404912a1d3d",
+        "worker_id": "6fe3ccd5812e",
+        "worker_name": "oo1",
+        "amount_cents": 1500,
+        "gross_amount_cents": 1500,
+        "binance_id": "1158131752",
+        "binance_name": "User24dc",
+        "fee_bps": 200,
+        "fee_cents": 30,
+        "net_amount_cents": 1470,
+        "usdt_cny_rate": 7.2,
+        "estimated_cny_fen": 0,
+        "payment_method": "usdt",
+        "address": "0xab40ac212e1039ebdada72749d35e8348b108c0a",
+        "alipay_account": "",
+        "real_name": "",
+        "status": "paid",
+        "created_at": 1789666856,
+        "updated_at": 1789669247
+      },
+      {
+        "withdrawal_id": "68223123ac6f0176",
+        "worker_id": "6fe3ccd5812e",
+        "worker_name": "oo1",
+        "amount_cents": 6900,
+        "gross_amount_cents": 6900,
+        "binance_id": "1158131752",
+        "binance_name": "User2dc",
+        "fee_bps": 200,
+        "fee_cents": 138,
+        "net_amount_cents": 6762,
+        "usdt_cny_rate": 7.2,
+        "estimated_cny_fen": 0,
+        "payment_method": "usdt",
+        "address": "0xab40ac212e1039ebdada72749d35e8348b108c0a",
+        "alipay_account": "",
+        "real_name": "",
+        "status": "paid",
+        "created_at": 1789749662,
+        "updated_at": 1789749946
+      },
+      {
+        "withdrawal_id": "19d64242a8300b4a",
+        "worker_id": "6fe3ccd5812e",
+        "worker_name": "oo1",
+        "amount_cents": 3500,
+        "gross_amount_cents": 3500,
+        "binance_id": "1158131752",
+        "binance_name": "User2dc",
+        "fee_bps": 200,
+        "fee_cents": 70,
+        "net_amount_cents": 3430,
+        "usdt_cny_rate": 7.2,
+        "estimated_cny_fen": 0,
+        "payment_method": "usdt",
+        "address": "0xab40ac212e1039ebdada72749d35e8348b108c0a",
+        "alipay_account": "",
+        "real_name": "",
+        "status": "paid",
+        "created_at": 1789803183,
+        "updated_at": 1789813306
+      },
+      {
+        "withdrawal_id": "3652d484e53183e5",
+        "worker_id": "6fe3ccd5812e",
+        "worker_name": "oo1",
+        "amount_cents": 5000,
+        "gross_amount_cents": 5000,
+        "binance_id": "1158131752",
+        "binance_name": "User2dc",
+        "fee_bps": 200,
+        "fee_cents": 100,
+        "net_amount_cents": 4900,
+        "usdt_cny_rate": 7.2,
+        "estimated_cny_fen": 0,
+        "payment_method": "usdt",
+        "address": "0xab40ac212e1039ebdada72749d35e8348b108c0a",
+        "alipay_account": "",
+        "real_name": "",
+        "status": "rejected",
+        "created_at": 1789838286,
+        "updated_at": 1789841183
+      },
+      {
+        "withdrawal_id": "1b1d21a37d12da53",
+        "worker_id": "6fe3ccd5812e",
+        "worker_name": "oo1",
+        "amount_cents": 3000,
+        "gross_amount_cents": 3000,
+        "binance_id": "1158131752",
+        "binance_name": "User2dc",
+        "fee_bps": 200,
+        "fee_cents": 60,
+        "net_amount_cents": 2940,
+        "usdt_cny_rate": 7.2,
+        "estimated_cny_fen": 0,
+        "payment_method": "usdt",
+        "address": "0xab40ac212e1039ebdada72749d35e8348b108c0a",
+        "alipay_account": "",
+        "real_name": "",
+        "status": "paid",
+        "created_at": 1789841313,
+        "updated_at": 1789841515
+      },
+      {
+        "withdrawal_id": "c24f8f7f0f24f1c8",
+        "worker_id": "6fe3ccd5812e",
+        "worker_name": "oo1",
+        "amount_cents": 5000,
+        "gross_amount_cents": 5000,
+        "binance_id": "1158131752",
+        "binance_name": "User2dc",
+        "fee_bps": 200,
+        "fee_cents": 100,
+        "net_amount_cents": 4900,
+        "usdt_cny_rate": 7.2,
+        "estimated_cny_fen": 0,
+        "payment_method": "usdt",
+        "address": "",
+        "alipay_account": "",
+        "real_name": "",
+        "status": "paid",
+        "created_at": 1789899064,
+        "updated_at": 1789915932
+      },
+      {
+        "withdrawal_id": "b77af0ed0bf905b1",
+        "worker_id": "6fe3ccd5812e",
+        "worker_name": "oo1",
+        "amount_cents": 9000,
+        "gross_amount_cents": 9000,
+        "binance_id": "1158131752",
+        "binance_name": "User2dc",
+        "fee_bps": 200,
+        "fee_cents": 180,
+        "net_amount_cents": 8820,
+        "usdt_cny_rate": 7.2,
+        "estimated_cny_fen": 0,
+        "payment_method": "usdt",
+        "address": "",
+        "alipay_account": "",
+        "real_name": "",
+        "status": "paid",
+        "created_at": 1789914104,
+        "updated_at": 1789914549
+      }
+    ]
+  }
 }

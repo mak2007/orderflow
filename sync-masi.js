@@ -2,22 +2,25 @@
 // Extracts workers, access keys, completed orders count, and success rate from https://masi.cc.cd/boss
 const https = require('https');
 
-function callMasiApi(path, bossKey, payload = {}) {
+function callMasiApi(path, bossKey, payload = null, method = 'POST') {
   return new Promise((resolve, reject) => {
-    const postData = JSON.stringify(payload);
+    const postData = payload ? JSON.stringify(payload) : '';
     const options = {
       hostname: 'masi.cc.cd',
       port: 443,
       path: '/' + path.replace(/^\/+/, ''),
-      method: 'POST',
+      method: method,
       headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-Worker-Key': bossKey,
-        'Content-Length': Buffer.byteLength(postData)
+        'X-Worker-Key': bossKey
       },
       timeout: 15000
     };
+
+    if (method === 'POST') {
+      options.headers['Content-Type'] = 'application/json';
+      options.headers['Content-Length'] = Buffer.byteLength(postData);
+    }
 
     const req = https.request(options, (res) => {
       let body = '';
@@ -42,7 +45,7 @@ function callMasiApi(path, bossKey, payload = {}) {
       reject(new Error('Request to masi.cc.cd timed out'));
     });
 
-    req.write(postData);
+    if (method === 'POST') req.write(postData);
     req.end();
   });
 }
@@ -54,11 +57,19 @@ async function extractMasiData(bossKey) {
   }
   const key = bossKey.trim();
 
-  // 1. Fetch team members and overview
+  // 1. Fetch boss overview (withdrawals, balance, amount withdrawn total)
+  let masiOverview = {};
+  try {
+    masiOverview = await callMasiApi('api/worker/overview', key, null, 'GET');
+  } catch (err) {
+    console.warn('Could not fetch overview from masi:', err.message);
+  }
+
+  // 2. Fetch team members
   const teamData = await callMasiApi('api/worker/team', key, {});
   const teamList = teamData.team || [];
 
-  // 2. Fetch order history
+  // 3. Fetch order history
   let ordersList = [];
   try {
     const ordersData = await callMasiApi('api/worker/team', key, {
@@ -70,6 +81,20 @@ async function extractMasiData(bossKey) {
   } catch (err) {
     console.warn('Could not fetch orders list from masi:', err.message);
   }
+
+  // Calculate amount withdrawn total & paid today from Masi overview
+  const withdrawals = (masiOverview && masiOverview.withdrawals) || [];
+  const limitDay = (masiOverview && masiOverview.withdrawal_daily_limit && masiOverview.withdrawal_daily_limit.day) || new Date().toISOString().slice(0, 10);
+  
+  const paidTodayWithdrawals = withdrawals.filter(w => {
+    if (w.status !== 'paid') return false;
+    const d = new Date(w.created_at * 1000).toISOString().slice(0, 10);
+    return d === limitDay;
+  });
+
+  const paidTodayCents = paidTodayWithdrawals.reduce((sum, w) => sum + (Number(w.amount_cents) || 0), 0);
+  const withdrawnPaidCents = Number(masiOverview.withdrawn_paid_cents || 0);
+  const balanceCents = Number((masiOverview.worker && masiOverview.worker.balance_cents) || 0);
 
   // Parse workers
   const workers = teamList.map(w => {
@@ -96,7 +121,17 @@ async function extractMasiData(bossKey) {
   });
 
   return {
-    overview: teamData.overview || {},
+    overview: {
+      withdrawnPaidCents,
+      withdrawnPaidTotal: (withdrawnPaidCents / 100),
+      paidTodayCents,
+      paidTodayTotal: (paidTodayCents / 100),
+      balanceCents,
+      balanceTotal: (balanceCents / 100),
+      limitDay,
+      todayWithdrawalsCount: paidTodayWithdrawals.length,
+      withdrawals: withdrawals.slice(0, 10)
+    },
     workers,
     orders: ordersList
   };

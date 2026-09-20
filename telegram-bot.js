@@ -208,10 +208,10 @@ Just send your worker key like this:
 
 Commands:
 • \`/bill YOUR_KEY\` — Generate live bill with recent orders
-• \`/request [amount]\` — Request payout from your administrator
+• \`/request\` — Request payout settlement from administrator
 • \`/refresh\` — Re-fetch live stats & update bill
 • \`/link YOUR_KEY\` — Save your key to this account
-• \`/balance\` — Check unpaid earnings
+• \`/balance\` — Check completed orders & settlement status
 • \`/help\` — All commands
 
 _Synced live with masi.cc.cd_ 🔄
@@ -345,7 +345,6 @@ ${keysListText}
       return;
     }
 
-    const rate = Number(worker.rate) || Number(db.settings.defaultRate) || 15.00;
     const newOrder = {
       id: `ord-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       workerKey: worker.key,
@@ -354,7 +353,6 @@ ${keysListText}
       orderId: orderId,
       orderNumber: orderNumber,
       uniqueId: uniqueId,
-      payoutAmount: rate,
       inventoryStatus: 'unsold',
       fulfillmentStatus: 'unfulfilled',
       workerPaymentStatus: 'unpaid',
@@ -374,7 +372,6 @@ ${keysListText}
 • *Order ID:* \`${orderId}\`
 • *Order Number:* \`${orderNumber}\`
 • *Unique ID:* \`${uniqueId}\`
-• *Value:* ₹${rate.toFixed(2)}
 • *Status:* 🟡 *Unsold Inventory*
 • *Notes:* ${notes}
 
@@ -402,28 +399,24 @@ Your order is now live on the dashboard and waiting to be sold!
     }
 
     const primaryWorker = workers[0];
-    const db = this.dbManager.getDb();
-    const payPerOrder = Number(primaryWorker.rate) || Number(db.settings && db.settings.defaultRate) || 15.00;
     const completed = Number(primaryWorker.completedOrders) || 0;
-    const totalEarned = completed * payPerOrder;
-    const paidAmount = Number(primaryWorker.paidAmount) || 0;
-    const unpaid = Math.max(0, totalEarned - paidAmount);
+    const todayDone = Number(primaryWorker.todayDone) || 0;
+    const isSettled = primaryWorker.paymentStatus === 'paid' || ((Number(primaryWorker.paidCount) || 0) >= completed && completed > 0);
 
     let keysList = workers.map(w => `\`${w.key}\``).join(', ');
 
     const balanceMsg = `
-💳 *Your Payout Balance*
+💳 *Your Performance & Payout Status*
 ━━━━━━━━━━━━━━━━━━━━━━━━
 👤 *Worker:* ${primaryWorker.personName || primaryWorker.name} (${primaryWorker.telegramUsername || ''})
 🔑 *Keys:* ${keysList}
 📦 *Completed Orders:* ${completed}
+🌅 *Today Done:* ${todayDone}
 
-💰 *Payment Status:*
-• 🟢 *Total Amount in Rs Paid:* ₹${paidAmount.toFixed(2)}
-• 💵 *Total Amount in Rs:* ₹${totalEarned.toFixed(2)}
-${unpaid > 0 ? `• 🔴 *Pending Amount in Rs:* ₹${unpaid.toFixed(2)}` : '• ✅ *Status:* Fully Paid'}
-
-_Payments are recorded and verified by your administrator._
+💰 *Status:*
+${isSettled ? '• ✅ *Paid & Settled*' : (completed > 0 ? '• ⏳ *Pending Settlement by Admin*' : '• ⚪ *No Orders Yet*')}
+${isSettled && primaryWorker.lastPaidAt ? `• 📅 *Last Settled:* ${new Date(primaryWorker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}
+_Orders are verified live with Masi. Admin settles payouts directly._
 `;
     await this.sendMessage(chatId, balanceMsg);
   }
@@ -441,7 +434,7 @@ _Payments are recorded and verified by your administrator._
 
 🔗 *Account:*
 • \`/link YOUR_KEY\` — Save your key to this Telegram account
-• \`/balance\` — Check unpaid earnings balance
+• \`/balance\` — Check completed orders & settlement status
 
 📦 *Orders:*
 • \`/submit <order_id> <order_no> <unique_id> [notes]\` — Submit order
@@ -539,30 +532,12 @@ _Payments are recorded and verified by your administrator._
     const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-    const payPerOrder = Number(worker.rate) || Number(db.settings && db.settings.defaultRate) || 15;
     const completed = Number(worker.completedOrders) || (completedOrders ? completedOrders.length : 0);
     const d7Done = Number(worker.d7Done) || 0;
     const todayDone = Number(worker.todayDone) || 0;
 
-    const totalEarned = completed * payPerOrder;
-    const paidAmount = Number(worker.paidAmount) || 0;
-    const unpaid = Math.max(0, totalEarned - paidAmount);
-
-    let paymentBlock = '';
-    if (paidAmount > 0) {
-      paymentBlock = `• 🟢 *Total Amount in Rs Paid:* ₹${paidAmount.toFixed(2)}`;
-      if (unpaid > 0) {
-        paymentBlock += `\n• 💵 *Total Amount in Rs:* ₹${totalEarned.toFixed(2)}`;
-        paymentBlock += `\n• 🔴 *Pending in Rs:* ₹${unpaid.toFixed(2)}`;
-      } else {
-        paymentBlock += `\n• ✅ *Status:* Fully Paid`;
-      }
-    } else {
-      paymentBlock = `• 🟢 *Total Amount in Rs Paid:* ₹0.00\n• 💵 *Total Amount in Rs:* ₹${totalEarned.toFixed(2)}`;
-      if (unpaid > 0) {
-        paymentBlock += `\n• 🔴 *Pending in Rs:* ₹${unpaid.toFixed(2)}`;
-      }
-    }
+    const isSettled = worker.paymentStatus === 'paid' || ((Number(worker.paidCount) || 0) >= completed && completed > 0);
+    const statusText = isSettled ? '✅ *Paid & Settled*' : (completed > 0 ? '⏳ *Pending Settlement*' : '⚪ *No Orders Yet*');
 
     // Format recent completed orders
     let recentOrdersSection = '';
@@ -605,14 +580,14 @@ ${completedOrders.length > 10 ? `_...and ${completedOrders.length - 10} more com
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
 📦 *COMPLETED ORDERS OVERVIEW:*
-• ✅ *Total Completed:* ${completed} orders
+• ✅ *Total Completed Orders:* ${completed}
+• 🌅 *Today Done:* ${todayDone} orders
 • 📅 *Last 7 Days:* ${d7Done} orders
-• 🌅 *Today:* ${todayDone} orders
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
-💰 *PAYMENT:*
-${paymentBlock}
-━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
+💰 *SETTLEMENT STATUS:*
+• 📌 *Status:* ${statusText}
+${isSettled && worker.lastPaidAt ? `• 📅 *Settled Date:* ${new Date(worker.lastPaidAt).toLocaleDateString('en-IN')}\n` : ''}━━━━━━━━━━━━━━━━━━━━━━━━${recentOrdersSection}━━━━━━━━━━━━━━━━━━━━━━━━
 _🔄 Synced live with masi.cc.cd_
 `;
   }
@@ -701,7 +676,7 @@ _🔄 Synced live with masi.cc.cd_
     await this.sendMessage(chatId, billText);
   }
 
-  // Command: /request [amount] — worker requests payout from admin
+  // Command: /request — worker requests payout settlement from admin
   async handlePayoutRequest(chatId, from, rawAmount) {
     const workers = this.findWorkersForUser(chatId, from);
     const worker = workers[0] || this.findWorkerByChatId(chatId);
@@ -715,24 +690,14 @@ _🔄 Synced live with masi.cc.cd_
     worker.telegramId = chatId.toString();
     if (from && from.username) worker.telegramUsername = `@${from.username}`;
 
-    const db = this.dbManager.getDb();
-    const rate = Number(worker.rate) || 15;
     const completed = Number(worker.completedOrders) || 0;
-    const totalEarned = completed * rate;
-    const paidAmount = Number(worker.paidAmount) || 0;
-    const unpaid = Math.max(0, totalEarned - paidAmount);
+    const isSettled = worker.paymentStatus === 'paid' || ((Number(worker.paidCount) || 0) >= completed && completed > 0);
 
-    if (unpaid <= 0) {
-      await this.sendMessage(chatId, `ℹ️ *No Pending Balance!*\nAll your completed tasks are already paid. Total Cleared: ₹${paidAmount.toFixed(2)}.`);
+    if (isSettled) {
+      await this.sendMessage(chatId, `ℹ️ *Already Settled!*\nAll your completed tasks (${completed} orders) are already marked as Paid & Settled.`);
       return;
     }
 
-    let reqAmount = rawAmount ? Number(rawAmount) : unpaid;
-    if (isNaN(reqAmount) || reqAmount <= 0) {
-      reqAmount = unpaid;
-    }
-
-    worker.payoutRequestedAmount = reqAmount;
     worker.payoutRequestedAt = new Date().toISOString();
     worker.payoutRequestStatus = 'pending';
     this.dbManager.saveDb();
@@ -742,12 +707,11 @@ _🔄 Synced live with masi.cc.cd_
 ━━━━━━━━━━━━━━━━━━━━━━━━
 👤 *Worker:* ${worker.personName || worker.name}
 🔑 *Key:* \`${worker.key}\`
-💰 *Requested Amount:* *₹${reqAmount.toFixed(2)}*
 📦 *Completed Orders:* ${completed}
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 
 ⏳ *Status:* *Sent to Admin on Dashboard*
-Your administrator has been notified. You will get an instant alert message here as soon as your payout is cleared!
+Your administrator has been notified to settle your ${completed} completed orders. You will get an instant alert message here as soon as payout is cleared!
 ━━━━━━━━━━━━━━━━━━━━━━━━
 `;
     await this.sendMessage(chatId, ackMsg);
@@ -766,24 +730,23 @@ Your administrator has been notified. You will get an instant alert message here
   // ── END BILL SECTION ────────────────────────────────────────────────────
 
   // Send Automated Payout Notification when Admin marks as Paid
-  async sendPayoutNotification(workerKey, amount, ordersCount) {
+  async sendPayoutNotification(workerKey, ordersCount) {
     const db = this.dbManager.getDb();
-    const worker = db.workers.find(w => w.key && w.key.toUpperCase() === workerKey.toUpperCase());
+    const worker = db.workers.find(w => w.key && w.key.toUpperCase() === (workerKey || '').toUpperCase());
 
     if (!worker || !worker.telegramId) {
       return false;
     }
 
     const alertMsg = `
-🎉 *PAYMENT ALERT!*
+🎉 *PAYOUT COMPLETED & SETTLED!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+Hi ${worker.personName || worker.name}! Your administrator has cleared your payout:
 
-Hi ${worker.name}! Your administrator has just processed and cleared your payout:
-
-💵 *Total Amount in Rs Paid:* *₹${Number(amount).toFixed(2)}*
-📦 *Orders Settled:* ${ordersCount} order(s)
-📅 *Date:* ${new Date().toLocaleDateString()}
-
-Send \`/stats\` or \`/balance\` to check your updated account overview. Thank you for your work!
+📦 *Orders Settled:* *${ordersCount}* completed order(s)
+📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+━━━━━━━━━━━━━━━━━━━━━━━━
+Send \`/stats\` or \`/balance\` to check your updated settlement status. Thank you!
 `;
     return await this.sendMessage(worker.telegramId, alertMsg);
   }

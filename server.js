@@ -144,6 +144,7 @@ const requestHandler = async (req, res) => {
           orders: db.orders,
           workers: db.workers,
           settings: db.settings,
+          masiOverview: db.masiOverview || {},
           botStatus: botEngine.getStatus()
         });
       }
@@ -315,23 +316,20 @@ const requestHandler = async (req, res) => {
         return sendJson(res, 200, { success: true, worker });
       }
 
-      // POST /api/workers/:id/mark-paid (Batch pay & optional Telegram Alert)
+      // POST /api/workers/:id/mark-paid (Complete payment & notify via Telegram)
       if (req.method === 'POST' && parsedUrl.includes('/mark-paid')) {
         const id = parsedUrl.split('/')[3];
-        const worker = db.workers.find(w => w.id === id);
+        const worker = db.workers.find(w => w.id === id || w.key === id);
         if (!worker) return sendJson(res, 404, { success: false, error: 'Worker not found' });
 
         const now = new Date().toISOString();
-        const rate = Number(worker.rate) || Number(db.settings.defaultRate) || 15.00;
         const completed = Number(worker.completedOrders) || 0;
-        const previousPaid = Number(worker.paidAmount) || 0;
-        const totalEarned = completed * rate;
-        const unpaidAmount = Math.max(0, totalEarned - previousPaid);
-        const unpaidCount = Math.max(0, completed - (Number(worker.paidCount) || 0));
 
-        worker.paidAmount = totalEarned;
+        worker.paymentStatus = 'paid';
         worker.paidCount = completed;
         worker.lastPaidAt = now;
+        worker.payoutRequestStatus = 'approved';
+        worker.payoutRequestedAmount = 0;
 
         // Also update any orders if exist
         if (db.orders && Array.isArray(db.orders)) {
@@ -345,16 +343,31 @@ const requestHandler = async (req, res) => {
 
         dbManager.saveDb();
 
-        // Send Telegram payout alert if linked
+        // Send Telegram payout completed alert
         let telegramSent = false;
-        if (worker.telegramId && unpaidAmount > 0) {
-          telegramSent = await botEngine.sendPayoutNotification(worker.key, unpaidAmount, unpaidCount);
+        let tgChatId = worker.telegramId;
+        if (!tgChatId && worker.telegramUsername) {
+          const match = db.workers.find(w => w.telegramUsername && w.telegramUsername.toLowerCase() === worker.telegramUsername.toLowerCase() && w.telegramId);
+          if (match) tgChatId = match.telegramId;
+        }
+
+        if (tgChatId) {
+          const alertMsg = `
+🎉 *PAYOUT COMPLETED & SETTLED!*
+━━━━━━━━━━━━━━━━━━━━━━━━
+Hi ${worker.personName || worker.name}! Your payout has been completed and marked as settled by your administrator.
+
+📦 *Completed Orders:* *${completed}*
+📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+━━━━━━━━━━━━━━━━━━━━━━━━
+Thank you for your work!
+`;
+          telegramSent = await botEngine.sendMessage(tgChatId, alertMsg);
         }
 
         return sendJson(res, 200, {
           success: true,
-          paidCount: unpaidCount,
-          totalPaidAmount: unpaidAmount,
+          completedOrders: completed,
           telegramSent,
           worker
         });
@@ -366,6 +379,7 @@ const requestHandler = async (req, res) => {
         const worker = db.workers.find(w => w.id === id || w.key === id);
         if (!worker) return sendJson(res, 404, { success: false, error: 'Worker not found' });
 
+        worker.paymentStatus = 'unpaid';
         worker.paidAmount = 0;
         worker.paidCount = 0;
         worker.lastPaidAt = null;
@@ -391,13 +405,10 @@ const requestHandler = async (req, res) => {
         if (!worker) return sendJson(res, 404, { success: false, error: 'Worker not found' });
 
         const now = new Date().toISOString();
-        const rate = Number(worker.rate) || 15.00;
         const completed = Number(worker.completedOrders) || 0;
-        const totalEarned = completed * rate;
-        const requestedAmount = Number(body.amount) || Number(worker.payoutRequestedAmount) || Math.max(0, totalEarned - (Number(worker.paidAmount) || 0));
 
-        worker.paidAmount = Math.min(totalEarned, (Number(worker.paidAmount) || 0) + requestedAmount);
-        worker.paidCount = Math.floor(worker.paidAmount / rate);
+        worker.paymentStatus = 'paid';
+        worker.paidCount = completed;
         worker.lastPaidAt = now;
         worker.payoutRequestStatus = 'approved';
         worker.payoutRequestedAmount = 0;
@@ -416,18 +427,17 @@ const requestHandler = async (req, res) => {
           const alertMsg = `
 🎉 *PAYOUT APPROVED & CLEARED!*
 ━━━━━━━━━━━━━━━━━━━━━━━━
-Hi ${worker.name}! Your administrator has approved your payout:
+Hi ${worker.personName || worker.name}! Your administrator has approved your payout:
 
-💵 *Amount Paid:* *₹${requestedAmount.toFixed(2)}*
-🟢 *Total Paid to Date:* ₹${worker.paidAmount.toFixed(2)}
+📦 *Completed Orders:* *${completed}*
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 ━━━━━━━━━━━━━━━━━━━━━━━━
-Send /bill anytime to view your updated bill. Thank you for your work!
+Thank you for your work!
 `;
           telegramSent = await botEngine.sendMessage(tgChatId, alertMsg);
         }
 
-        return sendJson(res, 200, { success: true, amount: requestedAmount, worker, telegramSent });
+        return sendJson(res, 200, { success: true, completedOrders: completed, worker, telegramSent });
       }
 
       // POST /api/workers/:id/message (Send direct Telegram message to worker)
@@ -534,10 +544,16 @@ Send /bill anytime to view your updated bill. Thank you for your work!
         // Accept pre-extracted workers from client (avoids double API call)
         if (Array.isArray(masiWorkers) && masiWorkers.length > 0) {
           workerList = masiWorkers;
+          if (body.masiOverview) {
+            db.masiOverview = body.masiOverview;
+          }
         } else if (effectiveBossKey) {
           try {
             const masiData = await extractMasiData(effectiveBossKey);
             workerList = masiData.workers;
+            if (masiData.overview) {
+              db.masiOverview = masiData.overview;
+            }
           } catch (err) {
             return sendJson(res, 400, { success: false, error: err.message });
           }
@@ -601,6 +617,7 @@ Send /bill anytime to view your updated bill. Thank you for your work!
           importedWorkers,
           updatedWorkers,
           totalWorkers: db.workers.length,
+          masiOverview: db.masiOverview || {},
           workers: db.workers
         });
       }
