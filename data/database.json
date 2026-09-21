@@ -695,8 +695,10 @@
       "source": "masi",
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
-      "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "personName": "Shubhraj Singh",
+      "updatedAt": "2026-09-21T04:39:59.238Z",
+      "done24h": 1,
+      "fail24h": 5
     },
     {
       "id": "w-masi-30",
@@ -1408,8 +1410,10 @@
       "source": "masi",
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
-      "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "personName": "Shubhraj Singh",
+      "updatedAt": "2026-09-21T04:39:59.238Z",
+      "done24h": 2,
+      "fail24h": 4
     },
     {
       "id": "w-masi-64",
@@ -1475,8 +1479,10 @@
       "source": "masi",
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
-      "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.911Z"
+      "personName": "Shubhraj Singh",
+      "updatedAt": "2026-09-21T04:39:59.237Z",
+      "done24h": 4,
+      "fail24h": 4
     },
     {
       "id": "w-masi-67",
@@ -1635,8 +1641,10 @@
       "source": "masi",
       "linkedAt": null,
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
-      "personName": "Lokesh",
-      "updatedAt": "2026-09-20T20:35:03.912Z"
+      "personName": "Shubhraj Singh",
+      "updatedAt": "2026-09-21T04:39:59.237Z",
+      "done24h": 13,
+      "fail24h": 8
     },
     {
       "id": "w-masi-74",
@@ -1695,7 +1703,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
+      "completedOrders": 19,
       "failCount": 4,
       "successRate": 20,
       "customSuccessRate": 20,
@@ -1710,7 +1718,11 @@
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "paidAmount": 15,
       "paidCount": 1,
-      "lastPaidAt": "2026-09-20T02:34:16.640Z"
+      "lastPaidAt": "2026-09-20T02:34:16.640Z",
+      "personName": "Shubhraj Singh",
+      "done24h": 18,
+      "fail24h": 4,
+      "updatedAt": "2026-09-21T04:39:59.236Z"
     },
     {
       "id": "w-masi-77",
@@ -2070,7 +2082,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 33,
       "failCount": 0,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -2082,7 +2094,11 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.957Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.957Z",
+      "personName": "Shubhraj Singh",
+      "done24h": 33,
+      "fail24h": 6,
+      "updatedAt": "2026-09-21T04:39:59.237Z"
     },
     {
       "id": "w-masi-95",
@@ -2241,7 +2257,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 8,
+      "completedOrders": 12,
       "failCount": 10,
       "successRate": 44.4,
       "customSuccessRate": 44.4,
@@ -2256,7 +2272,11 @@
       "lastSyncedAt": "2026-09-19T21:53:52.958Z",
       "paidAmount": 120,
       "paidCount": 8,
-      "lastPaidAt": "2026-09-20T02:03:48.522Z"
+      "lastPaidAt": "2026-09-20T02:03:48.522Z",
+      "personName": "Shubhraj Singh",
+      "done24h": 4,
+      "fail24h": 1,
+      "updatedAt": "2026-09-21T04:39:59.237Z"
     },
     {
       "id": "w-masi-103",
@@ -2662,7 +2682,7 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 46,
       "failCount": 2,
       "successRate": 0,
       "customSuccessRate": 0,
@@ -2674,7 +2694,11 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.958Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.958Z",
+      "personName": "Shubhraj Singh",
+      "done24h": 41,
+      "fail24h": 12,
+      "updatedAt": "2026-09-21T04:39:59.233Z"
     },
     {
       "id": "w-masi-122",
@@ -2941,6 +2965,90 @@
       "source": "custom",
       "createdAt": "2026-09-20T20:35:03.912Z",
       "updatedAt": "2026-09-20T20:35:03.912Z"
+    },
+    {
+      "id": "w-shubhraj-1789965599236-306",
+      "name": "LuffyD",
+      "key": "WORKER-BAF8-8A3C-3CA1-5604",
+      "personName": "Shubhraj Singh",
+      "rate": 15,
+      "completedOrders": 15,
+      "done24h": 15,
+      "fail24h": 0,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-21T04:39:59.236Z",
+      "updatedAt": "2026-09-21T04:39:59.237Z"
+    },
+    {
+      "id": "w-shubhraj-1789965599237-968",
+      "name": "Ss03",
+      "key": "WORKER-E0EF-B1DA-9487-CD01",
+      "personName": "Shubhraj Singh",
+      "rate": 15,
+      "completedOrders": 7,
+      "done24h": 7,
+      "fail24h": 5,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-21T04:39:59.237Z",
+      "updatedAt": "2026-09-21T04:39:59.237Z"
+    },
+    {
+      "id": "w-shubhraj-1789965599237-890",
+      "name": "Ss02",
+      "key": "WORKER-3EA9-3172-83F5-8CBD",
+      "personName": "Shubhraj Singh",
+      "rate": 15,
+      "completedOrders": 1,
+      "done24h": 1,
+      "fail24h": 1,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-21T04:39:59.237Z",
+      "updatedAt": "2026-09-21T04:39:59.237Z"
+    },
+    {
+      "id": "w-shubhraj-1789965599238-860",
+      "name": "Ss01",
+      "key": "WORKER-79DB-1DC9-9F9D-4395",
+      "personName": "Shubhraj Singh",
+      "rate": 15,
+      "completedOrders": 12,
+      "done24h": 12,
+      "fail24h": 4,
+      "paidCount": 0,
+      "paidAmount": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "todayDone": 0,
+      "d7Done": 0,
+      "online": false,
+      "status": "active",
+      "source": "masi",
+      "createdAt": "2026-09-21T04:39:59.238Z",
+      "updatedAt": "2026-09-21T04:39:59.238Z"
     }
   ],
   "orders": [
