@@ -807,27 +807,139 @@ body {
   // 20+ QR (21-30): ₹35 / QR
   // 30+ QR: ₹40 / QR
   // Penalty: Success rate < 60% caps tier rate at ₹32/QR max.
+
+  // LocalStorage Helpers for Paid Status, Custom Pay Overrides, and Notes
+  function getPaidStatusMap() {
+    try {
+      return JSON.parse(localStorage.getItem('orderflow_paid_status') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function getCustomPayMap() {
+    try {
+      return JSON.parse(localStorage.getItem('orderflow_custom_pay') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function getCustomNotesMap() {
+    try {
+      return JSON.parse(localStorage.getItem('orderflow_custom_notes') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  window.toggleWorkerPaid = function(workerId, workerName, payAmount) {
+    const paidMap = getPaidStatusMap();
+    const isNowPaid = !paidMap[workerId];
+    paidMap[workerId] = isNowPaid;
+    localStorage.setItem('orderflow_paid_status', JSON.stringify(paidMap));
+    render();
+    if (isNowPaid) {
+      showToast(`✅ Marked ${workerName} as PAID (₹${payAmount})`, 'success');
+    } else {
+      showToast(`⏳ Marked ${workerName} as PENDING`, 'info');
+    }
+  };
+
+  window.promptCustomPayAndNote = function(workerId, workerName, currentCalculatedPay) {
+    const customPayMap = getCustomPayMap();
+    const customNotesMap = getCustomNotesMap();
+    
+    const existingPay = customPayMap[workerId] !== undefined ? customPayMap[workerId] : currentCalculatedPay;
+    const existingNote = customNotesMap[workerId] || '';
+
+    const newPayInput = prompt(`Custom Pay Override for ${workerName} (in ₹):\n(Current calculated pay is ₹${currentCalculatedPay}. Leave blank or enter 0 to reset to automatic calculation)`, existingPay);
+    if (newPayInput === null) return;
+
+    if (newPayInput.trim() === '' || Number(newPayInput) === 0 || isNaN(Number(newPayInput))) {
+      delete customPayMap[workerId];
+    } else {
+      customPayMap[workerId] = Number(newPayInput);
+    }
+    localStorage.setItem('orderflow_custom_pay', JSON.stringify(customPayMap));
+
+    const newNoteInput = prompt(`Add custom details / note for ${workerName}:\n(e.g. UPI reference ID, payment account, adjustment reason)`, existingNote);
+    if (newNoteInput !== null) {
+      if (newNoteInput.trim() === '') {
+        delete customNotesMap[workerId];
+      } else {
+        customNotesMap[workerId] = newNoteInput.trim();
+      }
+      localStorage.setItem('orderflow_custom_notes', JSON.stringify(customNotesMap));
+    }
+
+    render();
+    showToast(`Updated details for ${workerName}`, 'success');
+  };
+
+  window.resetWorkerCustomDetails = function(workerId, workerName) {
+    const customPayMap = getCustomPayMap();
+    const customNotesMap = getCustomNotesMap();
+    delete customPayMap[workerId];
+    delete customNotesMap[workerId];
+    localStorage.setItem('orderflow_custom_pay', JSON.stringify(customPayMap));
+    localStorage.setItem('orderflow_custom_notes', JSON.stringify(customNotesMap));
+    render();
+    showToast(`Reset custom details for ${workerName} to automatic`, 'info');
+  };
+
+  window.copyBanKeysToClipboard = function() {
+    const banKeys = [
+      "WORKER-4A7A-EE26-47D4-9F9A", // @Kelifor (1 QR, 12.5%)
+      "WORKER-A13D-9071-CB21-EEAB", // @Terajaat012 (2 QR, 25.0%)
+      "WORKER-F4CC-5C42-85A9-617F", // hyper (2 QR, 28.6%)
+      "WORKER-708B-BDA0-F8CC-FE52", // @Work4money_owner (2 QR, 28.6%)
+      "WORKER-0872-8B7E-1BD4-17CC", // idk (2 QR, 33.3%)
+      "WORKER-0452-3999-5B0F-FF48", // @LaksheswarX (3 QR, 37.5%)
+      "WORKER-037D-4846-737B-5143", // Paras19 in shub (3 QR, 37.5%)
+      "WORKER-7EDD-E24E-A7E0-8813", // Paras46 in @Tgrajout (1 QR, 16.7%)
+      "WORKER-8CAF-E03B-19C1-E66F"  // Shub5 in @Tgrajout (1 QR, 16.7%)
+    ];
+    navigator.clipboard.writeText(banKeys.join('\n')).then(() => {
+      showToast(`📋 Copied ${banKeys.length} underperforming keys to clipboard for banning!`, 'success');
+    }).catch(() => {
+      prompt('Copy these keys to ban:', banKeys.join('\n'));
+    });
+  };
+
+
+  // Rate Chart with Exact Emojis:
+  // 1-5 QR   -> 25rs 🪙🪙🪙
+  // 6-10 QR  -> 27rs 💸👻💸
+  // 11-20 QR -> 31rs 💰💰💰
+  // 20+ QR   -> 35rs. 👾💣💥
+  // 30+ QR   -> 40rs 🧸🧸🧸
+  // If success rate below 60% -> Max rate is 32rs ⚠️
   function calculateWorkerPay(completedCount, successRate) {
     const done = Number(completedCount) || 0;
     const rateNum = Number(successRate) || 0;
-    if (done <= 0) {
-      return { tierRate: 0, basePay: 0, isCapped: false, tierLabel: '0 QR' };
-    }
+    if (done <= 0) return { tierRate: 0, basePay: 0, isCapped: false, tierLabel: '0 QR', emoji: '' };
 
     let tierRate = 25;
     let tierLabel = '1–5 QR (₹25)';
+    let emoji = '🪙🪙🪙';
+
     if (done > 30) {
       tierRate = 40;
       tierLabel = '30+ QR (₹40)';
+      emoji = '🧸🧸🧸';
     } else if (done > 20) {
       tierRate = 35;
       tierLabel = '20+ QR (₹35)';
+      emoji = '👾💣💥';
     } else if (done > 10) {
       tierRate = 31;
       tierLabel = '11–20 QR (₹31)';
+      emoji = '💰💰💰';
     } else if (done > 5) {
       tierRate = 27;
       tierLabel = '6–10 QR (₹27)';
+      emoji = '💸👻💸';
     }
 
     let isCapped = false;
@@ -837,15 +949,9 @@ body {
       tierLabel += ' [Capped @ ₹32 (<60% success)]';
     }
 
-    return {
-      tierRate,
-      basePay: done * tierRate,
-      isCapped,
-      tierLabel
-    };
+    return { tierRate, basePay: done * tierRate, isCapped, tierLabel, emoji };
   }
 
-  // Adjustments & Bonus Pay State
   function getAdjustments() {
     try {
       return JSON.parse(localStorage.getItem('orderflow_adjustments') || '{}');
@@ -1339,6 +1445,9 @@ body {
   window.exportWorkersPdf = function() {
     const selectedDay = state.selectedDay || '23sep';
     const adjustments = getAdjustments();
+    const paidStatusMap = getPaidStatusMap();
+    const customPayMap = getCustomPayMap();
+    const customNotesMap = getCustomNotesMap();
     const search = (state.searchQuery || '').toLowerCase().trim();
 
     let rawGuysList = [];
@@ -1372,19 +1481,24 @@ body {
       return matchName || matchTg;
     });
 
-    // Compute payout and sort highest to lowest pay
     let totalOrders = 0;
     let totalPayout = 0;
+    let totalPaidCount = 0;
 
     let enrichedGuys = filteredGuys.map(guy => {
       const done = Number(guy.completedOrders) || 0;
       const rate = Number(guy.successRate) || 0;
       const payCalc = calculateWorkerPay(done, rate);
       const adj = Number(adjustments[guy.id] || 0);
-      const finalPay = Math.max(0, payCalc.basePay + adj);
+
+      const hasCustomPay = customPayMap[guy.id] !== undefined;
+      const finalPay = hasCustomPay ? Number(customPayMap[guy.id]) : Math.max(0, payCalc.basePay + adj);
+      const customNote = customNotesMap[guy.id] || '';
+      const isPaid = Boolean(paidStatusMap[guy.id]);
 
       totalOrders += done;
       totalPayout += finalPay;
+      if (isPaid) totalPaidCount++;
 
       return {
         ...guy,
@@ -1392,7 +1506,10 @@ body {
         rate,
         payCalc,
         adj,
-        finalPay
+        finalPay,
+        hasCustomPay,
+        customNote,
+        isPaid
       };
     });
 
@@ -1426,7 +1543,6 @@ body {
       font-size: 13px;
       line-height: 1.45;
     }
-    /* Controls banner (hidden in print/PDF) */
     .no-print-banner {
       background: #0f172a;
       color: #ffffff;
@@ -1470,7 +1586,6 @@ body {
       cursor: pointer;
       margin-left: 8px;
     }
-    /* Document Header */
     .doc-header {
       border-bottom: 2px solid #0f172a;
       padding-bottom: 14px;
@@ -1500,7 +1615,6 @@ body {
     .doc-meta strong {
       color: #0f172a;
     }
-    /* Summary KPI Bar */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -1527,7 +1641,6 @@ body {
       color: #0f172a;
       margin-top: 2px;
     }
-    /* Clean Table */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -1585,7 +1698,25 @@ body {
       font-size: 13px;
       color: #0f172a;
     }
-    /* Total Row */
+    .col-status {
+      text-align: center;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .badge-paid {
+      color: #065f46;
+      background: #d1fae5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .badge-pending {
+      color: #92400e;
+      background: #fef3c7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
     .row-total td {
       background: #f8fafc !important;
       font-weight: 800 !important;
@@ -1595,7 +1726,12 @@ body {
       border-bottom: 2px solid #0f172a !important;
       padding: 12px;
     }
-    /* Document Footer */
+    .custom-note-print {
+      font-size: 10px;
+      color: #475569;
+      margin-top: 2px;
+      font-style: italic;
+    }
     .doc-footer {
       border-top: 1px solid #e2e8f0;
       padding-top: 14px;
@@ -1659,7 +1795,7 @@ body {
     </div>
     <div class="doc-meta">
       <div>Generated: <strong>${escapeHtml(generatedAt)}</strong></div>
-      <div>Status: <strong style="color: #059669;">Verified & Approved</strong></div>
+      <div>Settlement: <strong style="color: #059669;">${totalPaidCount} of ${enrichedGuys.length} Paid</strong></div>
     </div>
   </div>
 
@@ -1674,8 +1810,8 @@ body {
       <div class="kpi-value">${totalOrders} QRs</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Average Rate</div>
-      <div class="kpi-value">₹${totalOrders > 0 ? (totalPayout / totalOrders).toFixed(1) : 0}/QR</div>
+      <div class="kpi-label">Paid / Settled</div>
+      <div class="kpi-value" style="color: #059669;">${totalPaidCount} / ${enrichedGuys.length}</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label" style="color: #059669;">Total Payout</div>
@@ -1694,6 +1830,7 @@ body {
         <th class="col-num">Success Rate</th>
         <th class="col-rate">Applied Rate</th>
         <th class="col-pay">Pay to Receive</th>
+        <th class="col-status">Status</th>
       </tr>
     </thead>
     <tbody>
@@ -1701,12 +1838,21 @@ body {
         return `
           <tr>
             <td class="col-rank">#${idx + 1}</td>
-            <td class="col-worker">${escapeHtml(guy.displayName || guy.personName || guy.id)}</td>
+            <td class="col-worker">
+              ${escapeHtml(guy.displayName || guy.personName || guy.id)}
+              ${guy.customNote ? `<div class="custom-note-print">📝 ${escapeHtml(guy.customNote)}</div>` : ''}
+            </td>
             <td class="col-tg">${guy.telegramUsername ? escapeHtml(guy.telegramUsername) : '—'}</td>
             <td class="col-num">${guy.done}</td>
             <td class="col-num">${guy.rate}%</td>
-            <td class="col-rate">₹${guy.payCalc.tierRate}/QR</td>
-            <td class="col-pay">₹${guy.finalPay.toLocaleString('en-IN')}</td>
+            <td class="col-rate">₹${guy.payCalc.tierRate}/QR ${guy.payCalc.emoji}</td>
+            <td class="col-pay">
+              ₹${guy.finalPay.toLocaleString('en-IN')}
+              ${guy.hasCustomPay ? `<div style="font-size: 10px; color: #4f46e5; font-weight: normal;">(Custom)</div>` : ''}
+            </td>
+            <td class="col-status">
+              ${guy.isPaid ? '<span class="badge-paid">✅ PAID</span>' : '<span class="badge-pending">⏳ PENDING</span>'}
+            </td>
           </tr>
         `;
       }).join('')}
@@ -1717,6 +1863,7 @@ body {
         <td class="col-num">—</td>
         <td class="col-rate">—</td>
         <td class="col-pay">₹${totalPayout.toLocaleString('en-IN')}</td>
+        <td class="col-status">${totalPaidCount} / ${enrichedGuys.length} Paid</td>
       </tr>
     </tbody>
   </table>
@@ -1732,7 +1879,6 @@ body {
   </div>
 
   <script>
-    // Automatically trigger print dialog on preview load
     window.onload = function() {
       setTimeout(function() {
         window.print();
@@ -1742,7 +1888,6 @@ body {
 </body>
 </html>`;
 
-    // Open print window
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.open();
@@ -1750,7 +1895,6 @@ body {
       printWindow.document.close();
       showToast('📄 PDF Export window opened — Print or Save as PDF', 'success');
     } else {
-      // If popup blocker intervened, provide in-page print fallback
       const printFrame = document.createElement('iframe');
       printFrame.style.position = 'fixed';
       printFrame.style.right = '0';
@@ -1771,7 +1915,7 @@ body {
     }
   };
 
-  window.setDayFilter = function(day) {
+    window.setDayFilter = function(day) {
     state.selectedDay = day;
     render();
     const dayLabel = day === '23sep' ? '23 Sep (Full Settlement)' : '24 Sep (Today Live)';
@@ -1903,6 +2047,9 @@ body {
   // ==========================================
   function renderGuysPanel(container) {
     const adjustments = getAdjustments();
+    const paidStatusMap = getPaidStatusMap();
+    const customPayMap = getCustomPayMap();
+    const customNotesMap = getCustomNotesMap();
     const usdInrRate = getUsdInrRate();
     const search = (state.searchQuery || '').toLowerCase().trim();
     const selectedDay = state.selectedDay || '23sep';
@@ -1921,7 +2068,6 @@ body {
       netCreditUsd = settlementData23Sep.bossMasi.netUsd;
       dayWindowLabel = settlementData23Sep.window;
 
-      // Base 23 Sep dataset with live drag-and-drop merge overrides
       rawGuysList = settlementData23Sep.users.map(u => ({
         id: u.id,
         displayName: u.displayName,
@@ -1940,10 +2086,7 @@ body {
         }))
       }));
     } else {
-      // Today / 24 Sep live data from state.workers
       const allGuys = getGroupedGuys();
-      grossCreditUsd = 0;
-      penaltyDeductionsUsd = 0;
       dayWindowLabel = '24 Sep 2026 (Live Ongoing)';
 
       rawGuysList = allGuys.filter(g => {
@@ -1972,17 +2115,32 @@ body {
       return matchName || matchTg || matchKey;
     });
 
-    // Compute payouts and flag underperforming status (< 4 QR and < 40% success rate)
     let totalTeamBasePay = 0;
     let totalTeamAdjustments = 0;
     let totalTeamCompletedOrders = 0;
+    let totalPaidAmount = 0;
+    let totalPaidCount = 0;
+
+    // Collect all red ban items (profiles + keys)
+    const redBanItems = [];
 
     let enrichedGuys = filteredGuys.map(guy => {
       const done = Number(guy.completedOrders) || 0;
       const rate = Number(guy.successRate) || 0;
       const payCalc = calculateWorkerPay(done, rate);
       const adjustment = Number(adjustments[guy.id] || 0);
-      const finalPay = Math.max(0, payCalc.basePay + adjustment);
+
+      // Check custom pay override
+      const hasCustomPay = customPayMap[guy.id] !== undefined;
+      const customPayVal = Number(customPayMap[guy.id]);
+      const finalPay = hasCustomPay ? customPayVal : Math.max(0, payCalc.basePay + adjustment);
+      const customNote = customNotesMap[guy.id] || '';
+      const isPaid = Boolean(paidStatusMap[guy.id]);
+
+      if (isPaid) {
+        totalPaidAmount += finalPay;
+        totalPaidCount++;
+      }
 
       // Underperforming Rule (< 4 QR & < 40% success rate)
       const isUnderperforming = (done < 4 && rate < 40);
@@ -1991,21 +2149,61 @@ body {
       totalTeamAdjustments += adjustment;
       totalTeamCompletedOrders += done;
 
-      // Check keys inside team for underperforming (< 4 QR & < 40%)
+      // Process keys inside team
       const processedKeys = (guy.keys || []).map(k => {
         const kDone = Number(k.completedOrders !== undefined ? k.completedOrders : (k.completedCount || 0));
         let kRate = Number(k.successRate || 0);
-        if (!kRate && (kDone + Number(k.failCount || 0)) > 0) {
-          kRate = Number(((kDone / (kDone + Number(k.failCount || 0))) * 100).toFixed(1));
+        const kFail = Number(k.failCount || 0);
+        const kTotal = kDone + kFail;
+        if (!kRate && kTotal > 0) {
+          kRate = Number(((kDone / kTotal) * 100).toFixed(1));
         }
         const isKeyUnderperforming = (kDone < 4 && kRate < 40);
+
+        // If team key is red, add to ban center
+        if (guy.keys.length > 1 && isKeyUnderperforming) {
+          redBanItems.push({
+            type: 'Team Key',
+            ownerName: guy.displayName,
+            telegramUsername: guy.telegramUsername,
+            keyName: k.name || k.key,
+            keyString: k.key,
+            done: kDone,
+            fail: kFail,
+            total: kTotal,
+            rate: kRate,
+            reason: `Low output (${kDone} QR) & high fail rate (${kRate}% success)`,
+            recommendation: '✂️ Detach from team & Ban Key'
+          });
+        }
+
         return {
           ...k,
           kDone,
+          kFail,
+          kTotal,
           kRate,
           isKeyUnderperforming
         };
       });
+
+      // If individual profile is red, add to ban center
+      if (guy.keys.length <= 1 && isUnderperforming) {
+        const singleKey = processedKeys[0] || {};
+        redBanItems.push({
+          type: 'Individual Worker',
+          ownerName: guy.displayName,
+          telegramUsername: guy.telegramUsername,
+          keyName: singleKey.name || singleKey.key || guy.displayName,
+          keyString: singleKey.key || '—',
+          done: done,
+          fail: Number(guy.failCount || (guy.totalOrders - done) || 0),
+          total: Number(guy.totalOrders || done),
+          rate: rate,
+          reason: `Critical low volume (${done} QR) with heavy fail rate (${rate}% success)`,
+          recommendation: '⛔ Ban Profile & Key'
+        });
+      }
 
       return {
         ...guy,
@@ -2014,12 +2212,16 @@ body {
         payCalc,
         adjustment,
         finalPay,
+        hasCustomPay,
+        customPayVal,
+        customNote,
+        isPaid,
         isUnderperforming,
         processedKeys
       };
     });
 
-    // Sort workers strictly (Default: Pay Highest to Lowest)
+    // Sort workers
     if (sortBy === 'pay-desc') {
       enrichedGuys.sort((a, b) => b.finalPay - a.finalPay || b.done - a.done);
     } else if (sortBy === 'pay-asc') {
@@ -2032,8 +2234,9 @@ body {
       enrichedGuys.sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
     }
 
-    // Boss Net Profit & Credit Inflow Calculations
-    const totalWorkerPayout = totalTeamBasePay + totalTeamAdjustments;
+    // Calculations
+    const totalWorkerPayout = enrichedGuys.reduce((sum, g) => sum + g.finalPay, 0);
+    const totalPendingPayout = Math.max(0, totalWorkerPayout - totalPaidAmount);
     const masiNetInr = netCreditUsd * usdInrRate;
     const bossDailyProfit = masiNetInr - totalWorkerPayout;
     const profitMarginPct = masiNetInr > 0 ? ((bossDailyProfit / masiNetInr) * 100).toFixed(1) : '0';
@@ -2058,9 +2261,8 @@ body {
             </button>
           </div>
 
-          <!-- Sort Selector -->
-          <div class="flex items-center gap-2 text-xs">
-            <!-- Export PDF Button -->
+          <!-- Actions & Sort Selector -->
+          <div class="flex items-center gap-2 text-xs flex-wrap">
             <button 
               onclick="exportWorkersPdf()" 
               title="Export clean worker payout summary as PDF (hides all keys and private credentials)" 
@@ -2069,6 +2271,8 @@ body {
               <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               <span>Export PDF</span>
             </button>
+
+            <span class="text-slate-400 font-medium">|</span>
 
             <span class="text-slate-500 font-medium">Sort by:</span>
             <select 
@@ -2123,7 +2327,13 @@ body {
             <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
               <div class="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Total Workers Outflow</div>
               <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">₹${totalWorkerPayout.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-              <div class="text-[10px] text-slate-500 mt-0.5">${totalTeamAdjustments !== 0 ? 'Base ₹' + totalTeamBasePay + ' + Adj ₹' + totalTeamAdjustments : '24 Workers Total'}</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">${totalPaidCount} / ${enrichedGuys.length} Paid</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Paid vs Pending</div>
+              <div class="text-base sm:text-lg font-black text-emerald-600 mt-0.5">₹${totalPaidAmount.toLocaleString('en-IN')}</div>
+              <div class="text-[10px] text-amber-600 font-bold mt-0.5">Pending: ₹${totalPendingPayout.toLocaleString('en-IN')}</div>
             </div>
 
             <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
@@ -2131,55 +2341,156 @@ body {
               <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">${totalTeamCompletedOrders}</div>
               <div class="text-[10px] text-slate-500 mt-0.5">Fulfilled Orders</div>
             </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-              <div class="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Active Profiles</div>
-              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">${enrichedGuys.length}</div>
-              <div class="text-[10px] text-slate-500 mt-0.5">Sorted Highest to Lowest</div>
-            </div>
-          </div>
-
-          <!-- Credit Received Breakdown Formula -->
-          <div class="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600 bg-slate-50/60 px-3 py-2 rounded-lg">
-            <div class="flex items-center gap-3 flex-wrap">
-              <span><strong>Gross Credit:</strong> ${grossCreditUsd.toFixed(2)}</span>
-              <span><strong>Penalties:</strong> ${penaltyDeductionsUsd.toFixed(2)}</span>
-              <span><strong>Net Credit:</strong> ${netCreditUsd.toFixed(2)} (= ₹${masiNetInr.toFixed(2)})</span>
-              <span><strong>Workers:</strong> -₹${totalWorkerPayout.toFixed(2)}</span>
-            </div>
-            <div class="font-extrabold text-emerald-700">
-              Take-Home: +₹${bossDailyProfit.toFixed(2)}
-            </div>
           </div>
         </div>
 
-        <!-- 3. RATES & UNDERPERFORMING RULE REFERENCE BAR -->
-        <div class="bg-white rounded-lg border border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 shadow-2xs">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="font-bold text-slate-800">Tiers:</span>
-            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">1–5: ₹25</span>
-            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">6–10: ₹27</span>
-            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">11–20: ₹31</span>
-            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">20+: ₹35</span>
-            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">30+: ₹40</span>
-            <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-semibold">&lt;60% max ₹32</span>
-            <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold border border-rose-200">
-              ⚠️ &lt;4 QR &amp; &lt;40%: Red Flag
+        <!-- 3. RATE CHART BAR WITH EXACT USER EMOJIS -->
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-2">
+          <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-2">
+            <span class="text-xs font-extrabold uppercase text-slate-900 tracking-wider flex items-center gap-1.5">
+              <span>📊 Rate Chart &amp; Success Rule</span>
+            </span>
+            <span class="text-[11px] text-slate-400">
+              ⚡ Tap key to copy • Drag key to merge • Drop left to separate
             </span>
           </div>
 
-          <div class="text-[11px] text-slate-400">
-            ⚡ 1-Tap Copy Key • Drag to Merge • Drop Left to Separate
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-center">
+              <div class="font-extrabold text-slate-800">1–5 QR</div>
+              <div class="text-sm font-black text-slate-900 mt-0.5">₹25</div>
+              <div class="text-xs mt-0.5 select-none">🪙🪙🪙</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-center">
+              <div class="font-extrabold text-slate-800">6–10 QR</div>
+              <div class="text-sm font-black text-slate-900 mt-0.5">₹27</div>
+              <div class="text-xs mt-0.5 select-none">💸👻💸</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-center">
+              <div class="font-extrabold text-slate-800">11–20 QR</div>
+              <div class="text-sm font-black text-slate-900 mt-0.5">₹31</div>
+              <div class="text-xs mt-0.5 select-none">💰💰💰</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-center">
+              <div class="font-extrabold text-slate-800">20+ QR</div>
+              <div class="text-sm font-black text-slate-900 mt-0.5">₹35</div>
+              <div class="text-xs mt-0.5 select-none">👾💣💥</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-center">
+              <div class="font-extrabold text-slate-800">30+ QR</div>
+              <div class="text-sm font-black text-slate-900 mt-0.5">₹40</div>
+              <div class="text-xs mt-0.5 select-none">🧸🧸🧸</div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 text-amber-800 border border-amber-200 font-bold">
+              <span>⚠️ Success Rule:</span>
+              <span class="font-medium">If success rate is below 60%, Max rate is capped at ₹32/QR.</span>
+            </div>
+
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-rose-50 text-rose-800 border border-rose-200 font-bold">
+              <span>🚨 Low Perf Flag:</span>
+              <span class="font-medium">&lt; 4 QR &amp; &lt; 40% Success Rate marks profile/key RED</span>
+            </div>
           </div>
         </div>
 
-        <!-- 4. WORKERS LIST (SORTED STRICTLY HIGHEST TO LOWEST PAY) -->
+        <!-- 4. DEDICATED RED BAN & ACTION CENTER (PROFILES & KEYS TO BAN) -->
+        <div class="bg-white rounded-xl border-2 border-rose-300 p-4 sm:p-5 shadow-2xs space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-rose-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm sm:text-base font-black text-rose-800 flex items-center gap-1.5">
+                  <span>🚨 Underperforming Ban &amp; Action Center</span>
+                  <span class="px-2 py-0.5 rounded-full text-xs bg-rose-100 text-rose-800 border border-rose-300">
+                    ${redBanItems.length} Flagged
+                  </span>
+                </span>
+              </div>
+              <p class="text-xs text-slate-600 mt-0.5">
+                Workers and keys that delivered <strong>&lt; 4 Completed QRs</strong> and had <strong>&lt; 40% Success Rate</strong> (Caused heavy penalties).
+              </p>
+            </div>
+
+            <button 
+              onclick="copyBanKeysToClipboard()" 
+              title="Copy all 9 underperforming keys to clipboard for banning"
+              class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition flex items-center gap-1.5 shadow-2xs active:scale-95"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+              <span>📋 Copy Keys to Ban</span>
+            </button>
+          </div>
+
+          <!-- Red Ban Table / Cards -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+              <thead>
+                <tr class="bg-rose-50/70 text-rose-900 border-b border-rose-200">
+                  <th class="py-2 px-2.5 font-bold">Type</th>
+                  <th class="py-2 px-2.5 font-bold">Worker / TG Handle</th>
+                  <th class="py-2 px-2.5 font-bold">Key / Alias</th>
+                  <th class="py-2 px-2.5 font-bold text-center">Done / Total</th>
+                  <th class="py-2 px-2.5 font-bold text-center">Success %</th>
+                  <th class="py-2 px-2.5 font-bold">Reason &amp; Why It's Red</th>
+                  <th class="py-2 px-2.5 font-bold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${redBanItems.map(item => `
+                  <tr class="hover:bg-rose-50/30 transition">
+                    <td class="py-2.5 px-2.5 font-bold text-slate-700">
+                      <span class="px-1.5 py-0.5 rounded text-[10px] ${item.type === 'Team Key' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800'}">
+                        ${item.type}
+                      </span>
+                    </td>
+                    <td class="py-2.5 px-2.5">
+                      <div class="font-extrabold text-slate-900">${escapeHtml(item.ownerName)}</div>
+                      <div class="text-[11px] font-mono text-slate-500">${escapeHtml(item.telegramUsername || '—')}</div>
+                    </td>
+                    <td class="py-2.5 px-2.5 font-mono">
+                      <div class="font-bold text-slate-800">${escapeHtml(item.keyName)}</div>
+                      <div 
+                        onclick="copyToClipboard('${escapeHtml(item.keyString)}', 'Ban Key')" 
+                        title="Click to copy key" 
+                        class="text-[11px] text-rose-700 hover:underline cursor-pointer"
+                      >
+                        ${escapeHtml(item.keyString)}
+                      </div>
+                    </td>
+                    <td class="py-2.5 px-2.5 text-center font-bold text-slate-800">
+                      ${item.done} / ${item.total} (${item.fail} fail)
+                    </td>
+                    <td class="py-2.5 px-2.5 text-center">
+                      <span class="px-1.5 py-0.5 rounded text-[11px] font-black bg-rose-100 text-rose-800 border border-rose-200">
+                        ${item.rate}%
+                      </span>
+                    </td>
+                    <td class="py-2.5 px-2.5 text-slate-600 text-[11px]">
+                      ${item.reason}
+                    </td>
+                    <td class="py-2.5 px-2.5 text-right">
+                      <span class="px-2 py-0.5 rounded font-extrabold text-[11px] bg-rose-600 text-white shadow-2xs whitespace-nowrap">
+                        ${item.recommendation}
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 5. WORKERS LIST (WITH TICK PAID CHECKBOX, CUSTOM OVERRIDES & EMOJIS) -->
         <div class="space-y-2.5">
           ${enrichedGuys.map((guy, idx) => {
             const hasMultipleKeys = (guy.processedKeys || []).length > 1;
             const isIndividual = !hasMultipleKeys;
-
-            // Individual underperforming (< 4 QR & < 40% success rate)
             const isRedProfit = isIndividual && guy.isUnderperforming;
 
             return `
@@ -2187,11 +2498,21 @@ body {
                 ondragover="handleKeyDragOver(event)"
                 ondragleave="handleKeyDragLeave(event)"
                 ondrop="handleKeyDrop(event, '${guy.id}')"
-                class="bg-white rounded-xl border ${isRedProfit ? 'border-rose-300 ring-1 ring-rose-100' : 'border-slate-200 hover:border-slate-300'} p-4 shadow-2xs transition"
+                class="bg-white rounded-xl border ${guy.isPaid ? 'border-emerald-300 bg-emerald-50/10' : (isRedProfit ? 'border-rose-300 ring-1 ring-rose-100' : 'border-slate-200 hover:border-slate-300')} p-4 shadow-2xs transition"
               >
                 <!-- Worker Row Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                   <div class="flex items-center gap-3">
+                    <!-- Paid Tick Checkbox -->
+                    <label class="cursor-pointer flex items-center" title="${guy.isPaid ? 'Paid - Click to unmark' : 'Click to mark as PAID'}">
+                      <input 
+                        type="checkbox" 
+                        ${guy.isPaid ? 'checked' : ''} 
+                        onchange="toggleWorkerPaid('${guy.id}', '${escapeHtml(guy.displayName)}', ${guy.finalPay})" 
+                        class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                      >
+                    </label>
+
                     <!-- Rank Badge -->
                     <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-100 text-amber-800 font-black' : (idx === 1 ? 'bg-slate-200 text-slate-800 font-black' : (idx === 2 ? 'bg-amber-50 text-amber-700 font-bold' : 'bg-slate-100 text-slate-600 font-semibold'))} flex items-center justify-center text-xs select-none">
                       #${idx + 1}
@@ -2207,15 +2528,22 @@ body {
                           </button>
                         ` : ''}
 
-                        <!-- Rate Badge -->
+                        <!-- Rate Badge with Emojis -->
                         <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                          Rate: ₹${guy.payCalc.tierRate}/QR
+                          Rate: ₹${guy.payCalc.tierRate}/QR ${guy.payCalc.emoji}
                         </span>
 
                         <!-- Success Rate Badge -->
                         <span class="px-2 py-0.5 rounded-md text-[11px] font-bold ${guy.rate >= 80 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : (guy.rate >= 50 ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-rose-50 text-rose-700 border border-rose-200')}">
                           ${guy.rate}% Success
                         </span>
+
+                        <!-- Paid Status Badge -->
+                        ${guy.isPaid ? `
+                          <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            ✅ PAID
+                          </span>
+                        ` : ''}
 
                         <!-- Individual Underperforming Warning Tag -->
                         ${isRedProfit ? `
@@ -2233,29 +2561,42 @@ body {
 
                       <div class="text-[11px] text-slate-400 mt-0.5">
                         ${guy.done} Completed QRs • Formula: ${guy.done} × ₹${guy.payCalc.tierRate} = ₹${guy.payCalc.basePay}
+                        ${guy.hasCustomPay ? `<span class="text-indigo-600 font-bold ml-1">(Custom Override Applied)</span>` : ''}
                       </div>
+
+                      <!-- Custom Details Note if present -->
+                      ${guy.customNote ? `
+                        <div class="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-mono text-slate-700">
+                          <span>📝</span>
+                          <span>${escapeHtml(guy.customNote)}</span>
+                        </div>
+                      ` : ''}
                     </div>
                   </div>
 
-                  <!-- Right Side: Bonus Adjustments & Final Pay Badge -->
-                  <div class="flex items-center gap-3 sm:justify-end">
+                  <!-- Right Side: Custom Details, Bonus Controls & Final Pay Badge -->
+                  <div class="flex items-center gap-3 sm:justify-end flex-wrap">
+                    <!-- Custom Details & Custom Pay Button -->
+                    <button 
+                      onclick="promptCustomPayAndNote('${guy.id}', '${escapeHtml(guy.displayName)}', ${guy.payCalc.basePay + guy.adjustment})" 
+                      title="Set custom pay or add custom note/details" 
+                      class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1 active:scale-95"
+                    >
+                      <span>✏️ Custom Pay / Note</span>
+                    </button>
+
                     <!-- Bonus / Adjustment Controls -->
                     <div class="flex items-center gap-1 text-[11px]">
-                      <span class="text-slate-400 mr-0.5">Bonus:</span>
                       <button onclick="setWorkerAdjustment('${guy.id}', 50)" title="+₹50 Bonus" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
                         +50
                       </button>
                       <button onclick="setWorkerAdjustment('${guy.id}', -50)" title="-₹50 Deduction" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
                         -50
                       </button>
-                      <button onclick="promptCustomAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Custom Bonus/Deduction" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
-                        ✏️
-                      </button>
                       ${guy.adjustment !== 0 ? `
                         <span class="font-bold ${guy.adjustment > 0 ? 'text-emerald-600' : 'text-rose-600'}">
                           (${guy.adjustment > 0 ? '+' : ''}₹${guy.adjustment})
                         </span>
-                        <button onclick="resetWorkerAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Reset to ₹0" class="text-slate-400 hover:text-rose-600">⟲</button>
                       ` : ''}
                     </div>
 
@@ -2265,11 +2606,15 @@ body {
                         <div class="px-3 py-1 rounded-lg bg-rose-100 border border-rose-300 text-rose-800 font-black text-base shadow-2xs inline-block">
                           ₹${guy.finalPay.toLocaleString('en-IN')}
                         </div>
+                      ` : (guy.isPaid ? `
+                        <div class="px-3 py-1 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 font-black text-base shadow-2xs inline-block">
+                          ₹${guy.finalPay.toLocaleString('en-IN')}
+                        </div>
                       ` : `
                         <div class="px-3 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 font-black text-base inline-block">
                           ₹${guy.finalPay.toLocaleString('en-IN')}
                         </div>
-                      `}
+                      `)}
                     </div>
                   </div>
                 </div>
