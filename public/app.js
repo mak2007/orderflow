@@ -918,6 +918,27 @@
     },
     users: [
       {
+        id: "person:scammer_no_1",
+        username: "+91 98756 12220",
+        displayName: "scammer no 1",
+        keys: [
+          { name: "Shub1", key: "WORKER-48A6-E6A7-89C5-A8E7", done: 5, fail: 1, total: 6, successRate: 83.3 },
+          { name: "Paras46", key: "WORKER-7EDD-E24E-A7E0-8813", done: 1, fail: 5, total: 6, successRate: 16.7 },
+          { name: "Shub6", key: "WORKER-B1B5-38E0-D897-E5D7", done: 4, fail: 6, total: 10, successRate: 40.0 },
+          { name: "Paras41", key: "WORKER-B9CC-39EC-1C71-DDEC", done: 6, fail: 7, total: 13, successRate: 46.2 },
+          { name: "Shub3", key: "WORKER-D4A3-4AA1-5B5E-0060", done: 1, fail: 1, total: 2, successRate: 50.0 },
+          { name: "Paras42", key: "WORKER-07BB-01F6-7743-7BE8", done: 2, fail: 1, total: 3, successRate: 66.7 },
+          { name: "ScamKey1", key: "WORKER-02EA-50EC-1F51-B508", done: 0, fail: 0, total: 0, successRate: 0 },
+          { name: "Paras19", key: "WORKER-037D-4846-737B-5143", done: 3, fail: 5, total: 8, successRate: 37.5 },
+          { name: "ScamKey2", key: "WORKER-13A1-13E1-B4B9-8CBE", done: 0, fail: 0, total: 0, successRate: 0 },
+          { name: "Shub5", key: "WORKER-8CAF-E03B-19C1-E66F", done: 1, fail: 5, total: 6, successRate: 16.7 }
+        ],
+        done: 23,
+        fail: 31,
+        total: 54,
+        successRate: 42.6
+      },
+      {
         id: "tg:@bnzaalam",
         username: "@Bnzaalam",
         displayName: "Bnzaalam",
@@ -966,38 +987,6 @@
         fail: 3,
         total: 18,
         successRate: 83.3
-      },
-      {
-        id: "person:shub",
-        username: "shub",
-        displayName: "Shubhraj Singh",
-        keys: [
-          { name: "Paras43", key: "WORKER-06D9-A94C-E26D-C1B2", done: 6, fail: 8, total: 14, successRate: 42.9 },
-          { name: "Shub6", key: "WORKER-B1B5-38E0-D897-E5D7", done: 4, fail: 6, total: 10, successRate: 40.0 },
-          { name: "Paras19", key: "WORKER-037D-4846-737B-5143", done: 3, fail: 5, total: 8, successRate: 37.5 },
-          { name: "Paras42", key: "WORKER-07BB-01F6-7743-7BE8", done: 2, fail: 1, total: 3, successRate: 66.7 }
-        ],
-        done: 15,
-        fail: 20,
-        total: 35,
-        successRate: 42.9
-      },
-      {
-        id: "tg:@tgrajout",
-        username: "@Tgrajout",
-        displayName: "Tg Rajput",
-        keys: [
-          { name: "Paras41", key: "WORKER-B9CC-39EC-1C71-DDEC", done: 6, fail: 7, total: 13, successRate: 46.2 },
-          { name: "Shub1", key: "WORKER-48A6-E6A7-89C5-A8E7", done: 5, fail: 1, total: 6, successRate: 83.3 },
-          { name: "Paras46", key: "WORKER-7EDD-E24E-A7E0-8813", done: 1, fail: 5, total: 6, successRate: 16.7 },
-          { name: "Shub5", key: "WORKER-8CAF-E03B-19C1-E66F", done: 1, fail: 5, total: 6, successRate: 16.7 },
-          { name: "Shub3", key: "WORKER-D4A3-4AA1-5B5E-0060", done: 1, fail: 1, total: 2, successRate: 50.0 },
-          { name: "Shub9", key: "WORKER-82FF-EC9D-35F4-8648", done: 1, fail: 0, total: 1, successRate: 100.0 }
-        ],
-        done: 15,
-        fail: 19,
-        total: 34,
-        successRate: 44.1
       },
       {
         id: "tg:@bcnami",
@@ -1051,6 +1040,18 @@
         fail: 3,
         total: 9,
         successRate: 66.7
+      },
+      {
+        id: "person:shub",
+        username: "shub",
+        displayName: "Shubhraj Singh",
+        keys: [
+          { name: "Paras43", key: "WORKER-06D9-A94C-E26D-C1B2", done: 6, fail: 8, total: 14, successRate: 42.9 }
+        ],
+        done: 6,
+        fail: 8,
+        total: 14,
+        successRate: 42.9
       },
       {
         id: "tg:@shauryagharat4103",
@@ -1146,6 +1147,18 @@
         successRate: 100.0
       },
       {
+        id: "tg:@tgrajout",
+        username: "@Tgrajout",
+        displayName: "Tg Rajput",
+        keys: [
+          { name: "Shub9", key: "WORKER-82FF-EC9D-35F4-8648", done: 1, fail: 0, total: 1, successRate: 100.0 }
+        ],
+        done: 1,
+        fail: 0,
+        total: 1,
+        successRate: 100.0
+      },
+      {
         id: "tg:@kelifor",
         username: "@Kelifor",
         displayName: "Kelifor",
@@ -1178,14 +1191,7 @@
     ]
   };
 
-
-  
-  // ==========================================
-  // SECURE PDF EXPORT FOR WORKERS PAYOUT
-  // HIDES ALL KEYS, PRIVATE IDS, AND BOSS MARGINS
-  // Shows ONLY: Telegram Username, Orders Completed, Success Rate, Rate, and Pay
-  // ==========================================
-  window.exportWorkersPdf = function() {
+    window.exportWorkersPdf = function() {
     const selectedDay = state.selectedDay || '23sep';
     const adjustments = getAdjustments();
     const paidStatusMap = getPaidStatusMap();
