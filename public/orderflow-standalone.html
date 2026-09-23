@@ -115,75 +115,73 @@ body {
 }
 
 
-/* ==========================================
-   PRINT / PDF EXPORT STYLES (KEY PRIVACY SHIELD)
-   Hides all keys, private credentials, boss profit margins, and interactive controls
-   ========================================== */
 
 /* ==========================================
-   PRINT / PDF EXPORT STYLES (KEY PRIVACY SHIELD)
-   Hides all keys, private credentials, boss profit margins, and interactive controls
+   PRINT / PDF EXPORT: EXACT PANEL REPRODUCTION
+   Preserves all cards, colors, badges, keys, and metrics in full detail
    ========================================== */
 @media print {
-  body {
-    background: #ffffff !important;
-    color: #0f172a !important;
-    padding: 0 !important;
-    margin: 0 !important;
+  @page {
+    size: A4 portrait;
+    margin: 8mm 6mm;
   }
 
-  /* Hide everything on page except modal printable container */
-  header,
-  main,
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 12px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Keep header brand title, hide interactive search and sync buttons */
+  header {
+    border-bottom: 2px solid #cbd5e1 !important;
+    padding: 6px 0 !important;
+    position: static !important;
+    background: #ffffff !important;
+  }
+
+  #global-search,
+  #btn-sync-live-top,
+  #btn-export-pdf,
   #left-delete-zone,
   #toast-container,
-  #pdf-export-modal > div > div:first-child,
   .no-print {
     display: none !important;
   }
 
-  #pdf-export-modal {
-    position: static !important;
-    display: block !important;
-    background: transparent !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    overflow: visible !important;
-    box-shadow: none !important;
-  }
-
-  #pdf-export-modal > div {
-    border: none !important;
-    box-shadow: none !important;
+  /* Main container full width for printing */
+  main {
     max-width: 100% !important;
-    max-height: none !important;
-    border-radius: 0 !important;
-    overflow: visible !important;
-  }
-
-  #pdf-printable-container {
-    display: block !important;
-    padding: 0 !important;
+    width: 100% !important;
+    padding: 4px 0 !important;
     margin: 0 !important;
-    width: 100% !important;
-    background: #ffffff !important;
-    overflow: visible !important;
   }
 
-  table {
-    page-break-inside: auto;
-    width: 100% !important;
+  /* Prevent page-breaks in the middle of a card */
+  .bg-white {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
   }
 
-  tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
+  /* Hide drag handles and interactive adjustment click buttons in print */
+  button[onclick*="setWorkerAdjustment"],
+  button[onclick*="promptCustomPayAndNote"],
+  button[onclick*="resetKeyToOriginalForm"] {
+    display: none !important;
   }
 
-  thead {
-    display: table-header-group;
+  /* Keep custom notes visible in print */
+  [title*="Drag to merge"] {
+    cursor: default !important;
   }
 }
 
@@ -286,57 +284,6 @@ body {
   </main>
 
   
-  <!-- Infallible Modal Overlay for PDF Export & Direct Print -->
-  <div id="pdf-export-modal" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col border border-slate-200 overflow-hidden">
-      <!-- Modal Header (Controls: Print, Download, Close) -->
-      <div class="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between gap-3 shrink-0">
-        <div>
-          <div class="text-sm font-extrabold flex items-center gap-2">
-            <span>📄 Worker Payout Statement</span>
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              Zero Keys Exposed
-            </span>
-          </div>
-          <div class="text-[11px] text-slate-400 mt-0.5">
-            All keys and private details are stripped out. Click below to print or save as PDF.
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button 
-            onclick="triggerDirectPrint()" 
-            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer"
-          >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-            <span>Save as PDF / Print</span>
-          </button>
-
-          <button 
-            onclick="downloadCleanHtmlStatement()" 
-            class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1 active:scale-95 cursor-pointer"
-            title="Download offline HTML statement"
-          >
-            <span>📥 Download</span>
-          </button>
-
-          <button 
-            onclick="closePdfExportModal()" 
-            class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition active:scale-95 cursor-pointer"
-            title="Close"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-
-      <!-- Printable Statement Body -->
-      <div id="pdf-printable-container" class="p-6 sm:p-8 overflow-y-auto flex-1 bg-white">
-        <!-- Injected dynamically -->
-      </div>
-    </div>
-  </div>
-
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
@@ -1542,235 +1489,17 @@ body {
   };
 
     // ==========================================
-  // INFALLIBLE IN-PAGE PDF EXPORT & DIRECT PRINT
-  // 100% immune to popup blockers, zero keys exposed
+  // EXACT PANEL PDF EXPORT
+  // Renders the exact dashboard panel with all cards, metrics, and keys
   // ==========================================
-  window.closePdfExportModal = function() {
-    const modal = document.getElementById('pdf-export-modal');
-    if (modal) modal.classList.add('hidden');
-  };
-
-  window.triggerDirectPrint = function() {
-    window.print();
-  };
-
-  window.downloadCleanHtmlStatement = function() {
-    const container = document.getElementById('pdf-printable-container');
-    if (!container) return;
-    const content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Worker Payout Settlement</title><script src="https://cdn.tailwindcss.com"></script><style>@page{size:A4 portrait;margin:12mm;}body{padding:20px;font-family:sans-serif;}</style></head><body>${container.innerHTML}</body></html>`;
-    const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Worker_Payout_Settlement_${state.selectedDay || '23sep'}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('📥 Statement downloaded successfully', 'success');
-  };
-
   window.exportWorkersPdf = function() {
-    const selectedDay = state.selectedDay || '23sep';
-    const adjustments = getAdjustments();
-    const paidStatusMap = getPaidStatusMap();
-    const customPayMap = getCustomPayMap();
-    const customNotesMap = getCustomNotesMap();
-    const search = (state.searchQuery || '').toLowerCase().trim();
-
-    let rawGuysList = [];
-    let dateTitle = '';
-
-    if (selectedDay === '23sep') {
-      dateTitle = '23 Sep 2026 (Daily Payout Settlement)';
-      rawGuysList = settlementData23Sep.users.map(u => ({
-        id: u.id,
-        displayName: u.displayName,
-        telegramUsername: u.username,
-        completedOrders: u.done,
-        totalOrders: u.total,
-        failCount: u.fail,
-        successRate: u.successRate,
-        fixedRateUsd: u.fixedRateUsd,
-        fixedRateInr: u.fixedRateInr
-      }));
-    } else {
-      dateTitle = '24 Sep 2026 (Live Ongoing Orders)';
-      const allGuys = getGroupedGuys();
-      rawGuysList = allGuys.filter(g => {
-        if (!g.keys || g.keys.length === 0) return false;
-        return (Number(g.completedOrders) > 0) || Boolean(g.telegramUsername) || g.keys.length > 1;
-      });
-    }
-
-    // Filter by search if any
-    let filteredGuys = rawGuysList.filter(g => {
-      if (!search) return true;
-      const matchName = g.displayName && g.displayName.toLowerCase().includes(search);
-      const matchTg = g.telegramUsername && g.telegramUsername.toLowerCase().includes(search);
-      return matchName || matchTg;
-    });
-
-    let totalOrders = 0;
-    let totalPayout = 0;
-    let totalPaidCount = 0;
-
-    let enrichedGuys = filteredGuys.map(guy => {
-      const done = Number(guy.completedOrders) || 0;
-      const rate = Number(guy.successRate) || 0;
-      const usdRate = 84;
-      const fixedRateInr = guy.fixedRateInr || (guy.fixedRateUsd ? guy.fixedRateUsd * usdRate : (guy.id === 'person:loki' || guy.displayName === 'Loki' ? 0.5 * usdRate : null));
-      const payCalc = calculateWorkerPay(done, rate, fixedRateInr);
-      const adj = Number(adjustments[guy.id] || 0);
-
-      const hasCustomPay = customPayMap[guy.id] !== undefined;
-      const finalPay = hasCustomPay ? Number(customPayMap[guy.id]) : Math.max(0, payCalc.basePay + adj);
-      const customNote = customNotesMap[guy.id] || '';
-      const isPaid = Boolean(paidStatusMap[guy.id]);
-
-      totalOrders += done;
-      totalPayout += finalPay;
-      if (isPaid) totalPaidCount++;
-
-      return {
-        ...guy,
-        done,
-        rate,
-        payCalc,
-        adj,
-        finalPay,
-        hasCustomPay,
-        customNote,
-        isPaid
-      };
-    });
-
-    // Sort strictly from highest pay to lowest pay
-    enrichedGuys.sort((a, b) => b.finalPay - a.finalPay || b.done - a.done);
-
-    const generatedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' });
-
-    // Build statement HTML (Zero keys, zero IDs, zero credentials)
-    const statementHtml = `
-      <!-- Statement Header -->
-      <div style="border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
-        <div>
-          <h1 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px;">Worker Payout Settlement Statement</h1>
-          <div style="font-size: 13px; color: #475569; margin-top: 4px; font-weight: 500;">${escapeHtml(dateTitle)}</div>
-        </div>
-        <div style="text-align: right; font-size: 11px; color: #64748b;">
-          <div>Generated: <strong>${escapeHtml(generatedAt)}</strong></div>
-          <div>Settlement: <strong style="color: #059669;">${totalPaidCount} of ${enrichedGuys.length} Paid</strong></div>
-        </div>
-      </div>
-
-      <!-- Summary KPI Bar -->
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #64748b;">Total Workers</div>
-          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 2px;">${enrichedGuys.length}</div>
-        </div>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #64748b;">Completed Orders</div>
-          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 2px;">${totalOrders} QRs</div>
-        </div>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #64748b;">Paid / Settled</div>
-          <div style="font-size: 18px; font-weight: 800; color: #059669; margin-top: 2px;">${totalPaidCount} / ${enrichedGuys.length}</div>
-        </div>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
-          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #059669;">Total Payout</div>
-          <div style="font-size: 18px; font-weight: 800; color: #059669; margin-top: 2px;">₹${totalPayout.toLocaleString('en-IN')}</div>
-        </div>
-      </div>
-
-      <!-- Payout Table (Zero Keys, Zero Credentials) -->
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-        <thead>
-          <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center; width: 45px;">#</th>
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: left;">Worker / Name</th>
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: left;">Telegram Handle</th>
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Completed QRs</th>
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Success Rate</th>
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Applied Rate</th>
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: right;">Pay to Receive</th>
-            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${enrichedGuys.map((guy, idx) => `
-            <tr style="border-bottom: 1px solid #e2e8f0; ${idx % 2 === 1 ? 'background: #fcfdfe;' : ''}">
-              <td style="padding: 9px 12px; font-size: 12px; color: #64748b; font-weight: 700; text-align: center;">#${idx + 1}</td>
-              <td style="padding: 9px 12px; font-size: 13px; font-weight: 700; color: #0f172a;">
-                ${escapeHtml(guy.displayName || guy.personName || guy.id)}
-                ${guy.customNote ? `<div style="font-size: 10px; color: #475569; margin-top: 2px; font-style: italic;">📝 ${escapeHtml(guy.customNote)}</div>` : ''}
-              </td>
-              <td style="padding: 9px 12px; font-size: 12px; font-family: monospace; font-weight: 600; color: #2563eb;">
-                ${guy.telegramUsername ? escapeHtml(guy.telegramUsername) : '—'}
-              </td>
-              <td style="padding: 9px 12px; font-size: 12px; text-align: center; font-weight: 600; color: #334155;">${guy.done}</td>
-              <td style="padding: 9px 12px; font-size: 12px; text-align: center; font-weight: 600; color: #334155;">${guy.rate}%</td>
-              <td style="padding: 9px 12px; font-size: 12px; text-align: center; font-weight: 700; color: #0f172a;">
-                ₹${guy.payCalc.tierRate}/QR ${guy.payCalc.emoji}
-              </td>
-              <td style="padding: 9px 12px; font-size: 13px; font-weight: 800; color: #0f172a; text-align: right;">
-                ₹${guy.finalPay.toLocaleString('en-IN')}
-                ${guy.hasCustomPay ? `<div style="font-size: 10px; color: #4f46e5; font-weight: normal;">(Custom)</div>` : ''}
-              </td>
-              <td style="padding: 9px 12px; font-size: 11px; text-align: center; font-weight: 700;">
-                ${guy.isPaid ? '<span style="color: #065f46; background: #d1fae5; padding: 2px 6px; border-radius: 4px; display: inline-block;">✅ PAID</span>' : '<span style="color: #92400e; background: #fef3c7; padding: 2px 6px; border-radius: 4px; display: inline-block;">⏳ PENDING</span>'}
-              </td>
-            </tr>
-          `).join('')}
-          <!-- Total Summary Row -->
-          <tr style="background: #f8fafc; font-weight: 800; font-size: 13px; color: #0f172a; border-top: 2px solid #0f172a; border-bottom: 2px solid #0f172a;">
-            <td colspan="3" style="padding: 12px; text-align: left;">TOTAL SUMMARY (${enrichedGuys.length} WORKERS)</td>
-            <td style="padding: 12px; text-align: center;">${totalOrders} QRs</td>
-            <td style="padding: 12px; text-align: center;">—</td>
-            <td style="padding: 12px; text-align: center;">—</td>
-            <td style="padding: 12px; text-align: right;">₹${totalPayout.toLocaleString('en-IN')}</td>
-            <td style="padding: 12px; text-align: center;">${totalPaidCount} / ${enrichedGuys.length} Paid</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- Document Footer -->
-      <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 24px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8;">
-        <div style="display: inline-flex; align-items: center; gap: 4px; color: #059669; font-weight: 600;">
-          🔒 Privacy Protected: All worker keys, internal IDs, and private margins have been completely omitted.
-        </div>
-        <div>
-          Official Payout Statement • Page 1 of 1
-        </div>
-      </div>
-    `;
-
-    // 1. Inject into in-page printable container
-    const container = document.getElementById('pdf-printable-container');
-    const modal = document.getElementById('pdf-export-modal');
-
-    if (container && modal) {
-      container.innerHTML = statementHtml;
-      modal.classList.remove('hidden');
-
-      // 2. Trigger native browser print directly on user action
-      setTimeout(() => {
-        try {
-          window.print();
-        } catch(e) {
-          console.warn('Direct print warning:', e);
-        }
-      }, 150);
-
-      showToast('📄 Payout Statement ready! Use the dialog to Save as PDF', 'success');
-    } else {
-      // Fallback
+    showToast('📄 Opening Print to PDF dialog...', 'info');
+    setTimeout(() => {
       window.print();
-    }
+    }, 150);
   };
 
-    window.setDayFilter = function(day) {
+  window.setDayFilter = function(day) {
     state.selectedDay = day;
     render();
     const dayLabel = day === '23sep' ? '23 Sep (Full Settlement)' : '24 Sep (Today Live)';
