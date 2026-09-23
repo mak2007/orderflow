@@ -351,24 +351,16 @@
 
   // Render application
   function render() {
-    renderKPIs();
-
     const container = document.getElementById('panel-content');
     if (!container) return;
-
-    if (state.currentTab === 'guys') {
-      renderGuysPanel(container);
-    } else if (state.currentTab === 'keys') {
-      renderKeysPanel(container);
-    } else if (state.currentTab === 'bot') {
-      renderBotPanel(container);
-    } else {
-      state.currentTab = 'guys';
-      renderGuysPanel(container);
-    }
+    renderGuysPanel(container);
   }
 
   function renderCurrentPanelQuietly() {
+    render();
+  }
+
+    function renderCurrentPanelQuietly() {
     const container = document.getElementById('panel-content');
     if (!container) return;
     const activeEl = document.activeElement;
@@ -687,7 +679,123 @@
   };
 
   // ==========================================
-  // PANEL 1: TEAM WORKERS, DRAG & DROP MERGE, PAY RATES & BOSS PROFIT
+
+  // Rate Chart: 1-5: ₹25, 6-10: ₹27, 11-20: ₹31, 20+: ₹35, 30+: ₹40. (<60% max ₹32)
+  function calculateWorkerPay(completedCount, successRate) {
+    const done = Number(completedCount) || 0;
+    const rateNum = Number(successRate) || 0;
+    if (done <= 0) return { tierRate: 0, basePay: 0, isCapped: false, tierLabel: '0 QR' };
+
+    let tierRate = 25;
+    let tierLabel = '1–5 QR (₹25)';
+    if (done > 30) {
+      tierRate = 40;
+      tierLabel = '30+ QR (₹40)';
+    } else if (done > 20) {
+      tierRate = 35;
+      tierLabel = '20+ QR (₹35)';
+    } else if (done > 10) {
+      tierRate = 31;
+      tierLabel = '11–20 QR (₹31)';
+    } else if (done > 5) {
+      tierRate = 27;
+      tierLabel = '6–10 QR (₹27)';
+    }
+
+    let isCapped = false;
+    if (rateNum > 0 && rateNum < 60 && tierRate > 32) {
+      tierRate = 32;
+      isCapped = true;
+      tierLabel += ' (Capped @ ₹32)';
+    }
+
+    return { tierRate, basePay: done * tierRate, isCapped, tierLabel };
+  }
+
+  function getAdjustments() {
+    try {
+      return JSON.parse(localStorage.getItem('orderflow_adjustments') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  window.setWorkerAdjustment = function(workerId, amount) {
+    const adj = getAdjustments();
+    const current = Number(adj[workerId] || 0);
+    adj[workerId] = current + Number(amount);
+    localStorage.setItem('orderflow_adjustments', JSON.stringify(adj));
+    render();
+    showToast(`Adjustment: ₹${adj[workerId] >= 0 ? '+' : ''}${adj[workerId]}`, 'info');
+  };
+
+  window.promptCustomAdjustment = function(workerId, workerName) {
+    const adj = getAdjustments();
+    const current = Number(adj[workerId] || 0);
+    const input = prompt(`Enter bonus (+) or deduction (-) for ${workerName} in ₹:`, current);
+    if (input === null) return;
+    const val = Number(input);
+    if (isNaN(val)) return;
+    adj[workerId] = val;
+    localStorage.setItem('orderflow_adjustments', JSON.stringify(adj));
+    render();
+    showToast(`Set adjustment for ${workerName}: ₹${val >= 0 ? '+' : ''}${val}`, 'success');
+  };
+
+  window.resetWorkerAdjustment = function(workerId, workerName) {
+    const adj = getAdjustments();
+    delete adj[workerId];
+    localStorage.setItem('orderflow_adjustments', JSON.stringify(adj));
+    render();
+    showToast(`Reset adjustments for ${workerName} to ₹0`, 'info');
+  };
+
+  window.getUsdInrRate = function() {
+    return Number(localStorage.getItem('orderflow_usdinr_rate') || 84);
+  };
+
+  window.promptUsdInrRate = function() {
+    const current = getUsdInrRate();
+    const input = prompt('Enter USD to INR conversion rate:', current);
+    if (!input) return;
+    const rate = Number(input);
+    if (!rate || rate <= 0) return;
+    localStorage.setItem('orderflow_usdinr_rate', rate);
+    render();
+    showToast(`Conversion rate set to ₹${rate} / USD`, 'success');
+  };
+
+  window.fetchLiveMasiData = async function(manual = false) {
+    const label = document.getElementById('sync-btn-label');
+    const spinner = document.getElementById('sync-spinner-icon');
+    if (label) label.textContent = 'Syncing...';
+    if (spinner) spinner.classList.add('animate-spin');
+
+    try {
+      const res = await fetch('/api/masi/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bossKey: (state.settings && state.settings.bossKey) || 'WORKER-B030-0827-9A88-4A04' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        state.lastMasiSync = new Date();
+        await loadInitialData();
+        showToast('Live data synced from masi.cc.cd', 'success');
+      } else {
+        if (manual) showToast('Sync error: ' + (data.error || 'Failed'), 'danger');
+      }
+    } catch (e) {
+      if (manual) showToast('Sync error: ' + e.message, 'danger');
+    } finally {
+      if (label) label.textContent = 'Sync Masi';
+      if (spinner) spinner.classList.remove('animate-spin');
+      render();
+    }
+  };
+
+  // ==========================================
+  // PANEL: CLEAN MINIMAL LIGHT DASHBOARD
   // ==========================================
   function renderGuysPanel(container) {
     const allGuys = getGroupedGuys();
@@ -695,27 +803,22 @@
     const usdInrRate = getUsdInrRate();
     const search = (state.searchQuery || '').toLowerCase().trim();
 
-    // Filter to only guys that have at least 1 key or a telegram handle
+    // Show workers with keys
     let guysList = allGuys.filter(g => {
-      // Must have keys
       if (!g.keys || g.keys.length === 0) return false;
-      // If user typed a search query
       if (search) {
         const matchName = g.displayName && g.displayName.toLowerCase().includes(search);
         const matchTg = g.telegramUsername && g.telegramUsername.toLowerCase().includes(search);
         const matchKey = g.keys.some(k => (k.name && k.name.toLowerCase().includes(search)) || (k.key && k.key.toLowerCase().includes(search)));
         return matchName || matchTg || matchKey;
       }
-      // In default view: prioritize guys with completed orders > 0 OR assigned telegram handle
       return (Number(g.completedOrders) > 0) || Boolean(g.telegramUsername) || g.keys.length > 1;
     });
 
-    // If search didn't match or list is empty, fallback to all with keys
     if (guysList.length === 0 && !search) {
       guysList = allGuys.filter(g => g.keys && g.keys.length > 0).slice(0, 30);
     }
 
-    // Calculate aggregated team pay & individual pay
     let totalTeamBasePay = 0;
     let totalTeamAdjustments = 0;
     let totalTeamCompletedOrders = 0;
@@ -738,314 +841,181 @@
     });
 
     const totalWorkerPayout = totalTeamBasePay + totalTeamAdjustments;
-
-    // Boss Masi Inflow Calculations
-    // 23 Sep baseline or live overview:
-    // 219 completed orders generated gross $123.20, penalties -$10.65 = net $112.55
-    const masiOverview = state.masiOverview || {};
-    const liveNetUsd = 112.55; // verified net inflow
+    const liveNetUsd = 112.55;
     const masiNetInr = liveNetUsd * usdInrRate;
     const bossDailyProfit = masiNetInr - totalWorkerPayout;
     const profitMarginPct = masiNetInr > 0 ? ((bossDailyProfit / masiNetInr) * 100).toFixed(1) : 0;
 
-    const lastSyncTimeStr = state.lastMasiSync 
-      ? state.lastMasiSync.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      : 'Auto-Connected';
-
     let html = `
-      <div class="space-y-6">
-        <!-- 🏆 TOP SECTION: HOW MUCH YOU MADE THAT DAY (BOSS DAILY PROFIT) -->
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl shadow-xl p-5 sm:p-7 text-white border border-indigo-500/30 relative overflow-hidden">
-          <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none">
-            <svg class="w-64 h-64 text-indigo-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path></svg>
-          </div>
-
-          <div class="relative z-10">
-            <!-- Header bar with Live Sync & Conversion Rate -->
-            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-700/60">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-400 text-slate-950 shadow-sm flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span> Live Daily Profit
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/10 text-slate-200">
-                  Window: 23 Sep (12 AM – 10 PM IST)
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
-                  Rate: 1 USD = ₹${usdInrRate}
-                  <button onclick="promptUsdInrRate()" title="Change USD/INR conversion rate" class="ml-1 text-amber-300 hover:text-white font-sans font-bold">✏️</button>
-                </span>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <button onclick="fetchLiveMasiData(true)" id="btn-sync-live-top" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-white/10 hover:bg-white/20 text-white border border-white/20 active:scale-95 transition flex items-center gap-1.5">
-                  <svg id="sync-spinner-icon" class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                  <span id="sync-btn-label">🔄 Sync Live Masi</span>
-                </button>
+      <div class="space-y-4">
+        <!-- 1. BOSS NET PROFIT CARD (CLEAN MINIMAL LIGHT) -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Today's Net Profit (Your Take-Home)</span>
+              <div class="text-3xl sm:text-4xl font-black text-emerald-600 mt-0.5">
+                +${bossDailyProfit >= 0 ? '₹' + bossDailyProfit.toLocaleString('en-IN', { maximumFractionDigits: 0 }) : '-₹' + Math.abs(bossDailyProfit).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <!-- Big Daily Profit Callout -->
-            <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <div class="md:col-span-2 bg-gradient-to-br from-emerald-500/20 via-emerald-600/10 to-transparent p-5 rounded-2xl border border-emerald-400/30">
-                <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-400">
-                  🎉 What YOU Made Today (Boss Net Profit)
-                </div>
-                <div class="text-3xl sm:text-4xl font-black text-emerald-300 mt-1">
-                  +${bossDailyProfit >= 0 ? '₹' + bossDailyProfit.toLocaleString('en-IN', { maximumFractionDigits: 0 }) : '-₹' + Math.abs(bossDailyProfit).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </div>
-                <div class="text-xs text-slate-300 mt-1.5 flex items-center gap-2">
-                  <span>Profit Margin: <b>${profitMarginPct}%</b></span>
-                  <span>•</span>
-                  <span>Net Take-Home after all worker payouts</span>
-                </div>
+            <div class="text-right">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                ${profitMarginPct}% Net Margin
+              </span>
+              <div class="text-[11px] text-slate-400 mt-1">
+                Rate: 1 USD = ₹${usdInrRate} <button onclick="promptUsdInrRate()" title="Change rate" class="text-slate-600 hover:text-slate-900 font-bold ml-1">✏️</button>
               </div>
+            </div>
+          </div>
 
-              <!-- Inflow vs Outflow Cards -->
-              <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                <div class="text-[11px] font-bold uppercase tracking-wider text-sky-400">
-                  📥 Masi Net Credited
-                </div>
-                <div class="text-xl sm:text-2xl font-black text-white mt-1">
-                  ₹${masiNetInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </div>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  $${liveNetUsd} ($123.20 gross - $10.65 pen)
-                </div>
-              </div>
+          <!-- 4 Clean Light Metric Blocks -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Masi Inflow (Net)</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">₹${masiNetInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+              <div class="text-[10px] text-slate-400">$${liveNetUsd} ($123.20 - $10.65 pen)</div>
+            </div>
 
-              <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                  📤 Paid to Workers
-                </div>
-                <div class="text-xl sm:text-2xl font-black text-white mt-1">
-                  ₹${totalWorkerPayout.toLocaleString('en-IN')}
-                </div>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  ₹${totalTeamBasePay.toLocaleString('en-IN')} base ${totalTeamAdjustments !== 0 ? (totalTeamAdjustments > 0 ? '+₹' + totalTeamAdjustments : '-₹' + Math.abs(totalTeamAdjustments)) + ' adj' : ''}
-                </div>
-              </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Workers Payout</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">₹${totalWorkerPayout.toLocaleString('en-IN')}</div>
+              <div class="text-[10px] text-slate-400">${totalTeamAdjustments !== 0 ? 'Base ₹' + totalTeamBasePay + ' + Adj ₹' + totalTeamAdjustments : 'Base Pay'}</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Completed QRs</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">${totalTeamCompletedOrders}</div>
+              <div class="text-[10px] text-slate-400">Total Orders</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Active Workers</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">${enrichedGuys.length}</div>
+              <div class="text-[10px] text-slate-400">Mapped Profiles</div>
             </div>
           </div>
         </div>
 
-        <!-- ⚡ INSTRUCTIONS BANNER: DRAG & DROP TO MERGE + UNDO ON LEFT + ONE-TAP COPY -->
-        <div class="bg-gradient-to-r from-amber-50 via-indigo-50 to-sky-50 border-2 border-indigo-400/90 rounded-2xl p-4 sm:p-5 shadow-sm">
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-start sm:items-center gap-3.5">
-              <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex-shrink-0 flex items-center justify-center font-black text-2xl shadow-md">
-                ⚡
-              </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="text-base font-black text-indigo-950 uppercase tracking-wide">
-                    Drag & Drop to Merge • Left Side to Undo/Separate • One-Tap Copy
-                  </h3>
-                  <span class="px-2 py-0.5 rounded-full text-xs font-extrabold bg-indigo-600 text-white shadow-2xs">
-                    Live Rates Active
-                  </span>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">
-                  • <b>To Merge:</b> Drag any key by its <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-bold">⋮⋮</code> grip handle and drop onto another worker card.<br>
-                  • <b>To Undo / Separate:</b> Drag any key and drop into the <b>red panel on the LEFT side</b>, or click <b>[ ↩ Separate ]</b>.<br>
-                  • <b>One-Tap to Copy:</b> Click/tap ANY key badge to immediately copy the exact key code!
-                </p>
-              </div>
-            </div>
+        <!-- 2. MINIMAL RATE CHART BAR -->
+        <div class="bg-white rounded-lg border border-slate-200 px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="font-bold text-slate-700">Rate Chart:</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">1–5: ₹25</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">6–10: ₹27</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">11–20: ₹31</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">20+: ₹35</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">30+: ₹40</span>
+            <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold">&lt;60% max ₹32</span>
+          </div>
 
-            <!-- Rate Chart Quick Pills -->
-            <div class="flex flex-wrap gap-1.5 self-start sm:self-center">
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">🪙 1–5: ₹25</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">💸 6–10: ₹27</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">💰 11–20: ₹31</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">👾 20+: ₹35</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">🧸 30+: ₹40</span>
-              <span class="px-2 py-1 rounded-md bg-rose-50 border border-rose-200 text-[11px] font-extrabold text-rose-700">&lt;60% max ₹32</span>
-            </div>
+          <div class="text-[11px] text-slate-400">
+            ⚡ Tap key to copy • Drag key to merge • Drop left to separate
           </div>
         </div>
 
-        <!-- SEARCH BAR & STATS COUNTER -->
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-          <div class="text-xs font-bold text-slate-600 flex items-center gap-2">
-            <span>Showing <b>${enrichedGuys.length}</b> Workers/Teams</span>
-            <span>•</span>
-            <span class="text-emerald-600"><b>${totalTeamCompletedOrders}</b> Total QRs Completed</span>
-          </div>
-
-          <div class="relative w-full sm:w-72">
-            <input 
-              type="text" 
-              placeholder="Search by worker, @username, key..." 
-              value="${escapeHtml(state.searchQuery || '')}"
-              oninput="state.searchQuery = this.value; renderCurrentPanelQuietly();"
-              class="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            >
-            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            ${state.searchQuery ? `
-              <button onclick="state.searchQuery = ''; renderCurrentPanelQuietly();" class="absolute right-2 top-2 text-slate-400 hover:text-slate-600 text-xs font-bold">&times;</button>
-            ` : ''}
-          </div>
-        </div>
-
-        <!-- CARDS GRID: DROP TARGETS FOR MERGING -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- 3. WORKERS PAY & KEYS LIST (CLEAN MINIMAL LIGHT) -->
+        <div class="space-y-3">
           ${enrichedGuys.map((guy, idx) => {
             const hasMultipleKeys = guy.keys.length > 1;
-            const successOk = Number(guy.successRate) >= 60;
 
             return `
               <div 
                 ondragover="handleKeyDragOver(event)"
                 ondragleave="handleKeyDragLeave(event)"
                 ondrop="handleKeyDrop(event, '${guy.id}')"
-                class="bg-white rounded-2xl border border-slate-200 hover:border-indigo-400 shadow-xs hover:shadow-md transition p-4 sm:p-5 flex flex-col justify-between relative group/card"
+                class="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs hover:border-slate-300 transition"
               >
-                <!-- Card Header -->
-                <div>
-                  <div class="flex items-start justify-between gap-2 pb-3 border-b border-slate-100">
-                    <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-white flex items-center justify-center font-black text-sm shadow-xs flex-shrink-0">
-                        ${idx + 1}
+                <!-- Worker Row -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">
+                      ${idx + 1}
+                    </span>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-extrabold text-slate-900">${escapeHtml(guy.displayName || guy.personName || guy.id)}</span>
+                        ${guy.telegramUsername ? `
+                          <button onclick="copyToClipboard('${escapeHtml(guy.telegramUsername)}', 'Username')" title="Copy Handle" class="text-xs text-slate-500 hover:text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded font-mono">
+                            ${escapeHtml(guy.telegramUsername)}
+                          </button>
+                        ` : ''}
                       </div>
-                      <div class="min-w-0">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                          <h4 class="text-base font-extrabold text-slate-900 truncate">${escapeHtml(guy.displayName || guy.personName || guy.id)}</h4>
-                          ${guy.telegramUsername ? `
-                            <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 flex items-center gap-1">
-                              <span>${escapeHtml(guy.telegramUsername)}</span>
-                              <button onclick="copyToClipboard('${escapeHtml(guy.telegramUsername)}', 'Telegram Handle')" title="Copy Handle" class="text-sky-400 hover:text-sky-700">
-                                📋
-                              </button>
-                            </span>
-                          ` : ''}
-                        </div>
-                        <div class="text-[11px] text-slate-400 mt-0.5">
-                          ${guy.keys.length} Key${guy.keys.length > 1 ? 's Merged' : ''} • Success Rate: <b class="${successOk ? 'text-emerald-600' : 'text-amber-600'}">${guy.successRate}%</b>
-                        </div>
+                      <div class="text-[11px] text-slate-400">
+                        ${guy.completedOrders} QR completed • ${guy.successRate}% rate • ${guy.payCalc.tierLabel}
                       </div>
-                    </div>
-
-                    <!-- Calculated Pay Badge -->
-                    <div class="text-right flex-shrink-0">
-                      <div class="text-xs font-bold text-slate-500">
-                        ${guy.completedOrders} QR @ ₹${guy.payCalc.tierRate}
-                      </div>
-                      <div class="text-xl font-black text-emerald-600">
-                        ₹${guy.finalPay.toLocaleString('en-IN')}
-                      </div>
-                      ${guy.adjustment !== 0 ? `
-                        <div class="text-[10px] font-bold ${guy.adjustment > 0 ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'} px-1.5 py-0.2 rounded inline-block mt-0.5">
-                          Base ₹${guy.payCalc.basePay} ${guy.adjustment > 0 ? '+₹' + guy.adjustment : '-₹' + Math.abs(guy.adjustment)}
-                        </div>
-                      ` : `
-                        <div class="text-[10px] text-slate-400">${guy.payCalc.tierLabel}</div>
-                      `}
                     </div>
                   </div>
 
-                  <!-- Keys List (Draggable for Merging & Detaching) -->
-                  <div class="mt-3.5 space-y-2">
-                    <div class="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                      <span>Assigned Keys (Drag to Merge):</span>
-                      <span class="text-indigo-600 font-bold">${guy.keys.length} Key${guy.keys.length > 1 ? 's' : ''}</span>
+                  <!-- Pay & Adjustments -->
+                  <div class="flex items-center gap-3 sm:justify-end">
+                    <!-- Bonus / Adjustment Buttons -->
+                    <div class="flex items-center gap-1 text-[11px]">
+                      <span class="text-slate-400 mr-0.5">Bonus:</span>
+                      <button onclick="setWorkerAdjustment('${guy.id}', 50)" title="+₹50" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
+                        +50
+                      </button>
+                      <button onclick="setWorkerAdjustment('${guy.id}', -50)" title="-₹50" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
+                        -50
+                      </button>
+                      <button onclick="promptCustomAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Custom amount" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
+                        ✏️
+                      </button>
+                      ${guy.adjustment !== 0 ? `
+                        <span class="font-bold ${guy.adjustment > 0 ? 'text-emerald-600' : 'text-rose-600'}">
+                          (${guy.adjustment > 0 ? '+' : ''}₹${guy.adjustment})
+                        </span>
+                        <button onclick="resetWorkerAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Reset to 0" class="text-slate-400 hover:text-rose-600">⟲</button>
+                      ` : ''}
                     </div>
 
-                    ${guy.keys.map(k => {
-                      const kDone = Number(k.completedOrders !== undefined ? k.completedOrders : (k.completedCount || 0));
-                      const kRate = Number(k.successRate || 0);
-
-                      return `
-                        <div 
-                          draggable="true" 
-                          ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" 
-                          ondragend="handleKeyDragEnd(event)"
-                          title="Drag to merge onto another worker, or drop on the left side to separate"
-                          class="group/key p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/80 border border-slate-200 hover:border-indigo-400 shadow-2xs hover:shadow-xs transition flex items-center justify-between gap-2.5 cursor-grab active:cursor-grabbing select-none"
-                        >
-                          <div class="flex items-center gap-2 min-w-0">
-                            <!-- Drag Grip Handle -->
-                            <div class="text-slate-400 group-hover/key:text-indigo-600 cursor-grab font-bold text-xs select-none px-0.5" title="Drag to merge">
-                              ⋮⋮
-                            </div>
-
-                            <div class="min-w-0">
-                              <div class="flex items-center gap-1.5">
-                                <span class="text-xs font-black text-slate-800 group-hover/key:text-indigo-900 truncate">
-                                  ${escapeHtml(k.name || k.key)}
-                                </span>
-                                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold ${k.online ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200/80 text-slate-600'}">
-                                  ${k.online ? '🟢 Online' : 'Active'}
-                                </span>
-                              </div>
-                              <div 
-                                onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" 
-                                title="⚡ 1-Tap Copy: ${escapeHtml(k.key)}"
-                                class="font-mono text-[11px] font-semibold text-slate-500 hover:text-indigo-700 cursor-pointer flex items-center gap-1 mt-0.5 truncate"
-                              >
-                                <span>${escapeHtml(k.key)}</span>
-                                <svg class="w-3 h-3 text-slate-400 hover:text-indigo-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="flex items-center gap-2 flex-shrink-0">
-                            <div class="text-right">
-                              <span class="text-xs font-black text-emerald-600 block">${kDone}✓</span>
-                              <span class="text-[10px] text-slate-400 block">${kRate}%</span>
-                            </div>
-
-                            <!-- 1-Tap Copy Button -->
-                            <button 
-                              onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" 
-                              title="⚡ One-Tap Copy" 
-                              class="px-2 py-1 rounded-md bg-white hover:bg-indigo-600 text-indigo-700 hover:text-white font-bold text-[10px] border border-indigo-200 transition shadow-2xs active:scale-95"
-                            >
-                              ⚡ Copy
-                            </button>
-
-                            <!-- Undo / Separate Button (Visible if team has multiple keys) -->
-                            ${hasMultipleKeys ? `
-                              <button 
-                                onclick="resetKeyToOriginalForm('${escapeHtml(k.key)}')" 
-                                title="↩ Separate key from this team" 
-                                class="px-2 py-1 rounded-md bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold text-[10px] border border-rose-200 transition shadow-2xs active:scale-95"
-                              >
-                                ↩ Separate
-                              </button>
-                            ` : ''}
-                          </div>
-                        </div>
-                      `;
-                    }).join('')}
+                    <!-- Final Pay -->
+                    <div class="text-right">
+                      <div class="text-base font-black text-slate-900">
+                        ₹${guy.finalPay.toLocaleString('en-IN')}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Footer: Adjustments / Bonus Pay (+/-) -->
-                <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Bonus / Adj:</span>
-                    <button onclick="setWorkerAdjustment('${guy.id}', 50)" title="Add ₹50 bonus" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition active:scale-95">
-                      +₹50
-                    </button>
-                    <button onclick="setWorkerAdjustment('${guy.id}', 100)" title="Add ₹100 bonus" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition active:scale-95">
-                      +₹100
-                    </button>
-                    <button onclick="setWorkerAdjustment('${guy.id}', -50)" title="Deduct ₹50" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition active:scale-95">
-                      -₹50
-                    </button>
-                    <button onclick="promptCustomAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Enter custom adjustment" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95">
-                      ✏️ Custom
-                    </button>
-                    ${guy.adjustment !== 0 ? `
-                      <button onclick="resetWorkerAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Reset to ₹0" class="px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-rose-600 transition">
-                        ⟲ Reset
-                      </button>
-                    ` : ''}
-                  </div>
+                <!-- Keys Under Worker -->
+                <div class="mt-2.5 flex flex-wrap gap-2 items-center">
+                  ${guy.keys.map(k => {
+                    const kDone = Number(k.completedOrders !== undefined ? k.completedOrders : (k.completedCount || 0));
+                    return `
+                      <div 
+                        draggable="true" 
+                        ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" 
+                        ondragend="handleKeyDragEnd(event)"
+                        title="Drag to merge onto another worker, or drop on left to separate"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-mono cursor-grab active:cursor-grabbing transition"
+                      >
+                        <span class="text-slate-300 font-sans select-none text-[10px]">⋮⋮</span>
+                        <span class="font-sans font-bold text-slate-800">${escapeHtml(k.name || k.key)}</span>
+                        <span class="text-slate-300">|</span>
+                        <span 
+                          onclick="copyToClipboard('${escapeHtml(k.key)}', 'Key')" 
+                          title="⚡ 1-Tap Copy: ${escapeHtml(k.key)}" 
+                          class="text-slate-600 hover:text-slate-900 cursor-pointer font-medium"
+                        >
+                          ${escapeHtml(k.key)}
+                        </span>
+                        <span class="text-[10px] px-1 py-0.2 rounded bg-slate-200 font-sans font-bold text-slate-700">
+                          ${kDone}✓
+                        </span>
 
-                  <div class="text-right">
-                    <span class="text-xs font-black text-slate-900">Total: ₹${guy.finalPay.toLocaleString('en-IN')}</span>
-                  </div>
+                        <!-- Separate Button (if worker has multiple keys) -->
+                        ${hasMultipleKeys ? `
+                          <button 
+                            onclick="resetKeyToOriginalForm('${escapeHtml(k.key)}')" 
+                            title="Separate from team" 
+                            class="ml-1 text-[10px] text-rose-500 hover:text-rose-700 font-sans font-bold"
+                          >
+                            ↩
+                          </button>
+                        ` : ''}
+                      </div>
+                    `;
+                  }).join('')}
                 </div>
               </div>
             `;
@@ -3060,6 +3030,7 @@
   // Search input and global drag event listeners
   function setupEventListeners() {
     const searchInput = document.getElementById('global-search');
+    if (searchInput) { searchInput.oninput = (e) => { state.searchQuery = e.target.value; render(); }; }
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         state.searchQuery = e.target.value;

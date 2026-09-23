@@ -1,169 +1,91 @@
-/* Custom styles for Order & Inventory Management Dashboard */
+/* Minimal Light Theme for Daily Profit & Worker Payouts */
 :root {
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
+  --primary: #0f172a;
+  --primary-hover: #1e293b;
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  background-color: #f8fafc;
+  color: #0f172a;
 }
 
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Tab buttons styling */
-.tab-btn {
-  transition: all 0.2s ease-in-out;
-  border-bottom: 3px solid transparent;
-}
-
-.tab-btn.active {
-  color: #4f46e5;
-  border-bottom-color: #4f46e5;
-  font-weight: 600;
-  background-color: #eef2ff;
-}
-
 /* Toast styling */
 #toast-container {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   pointer-events: none;
 }
 
 .toast {
   pointer-events: auto;
-  min-width: 280px;
-  max-width: 420px;
-  padding: 12px 18px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  min-width: 260px;
+  max-width: 400px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  animation: slide-in 0.3s ease forwards;
-  transition: all 0.3s ease;
+  gap: 8px;
+  animation: toast-in 0.18s ease-out;
 }
 
-@keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.toast-success {
+  background-color: #ffffff;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
-.toast.toast-success {
-  background-color: #065f46;
-  color: #ecfdf5;
-  border-left: 5px solid #10b981;
+.toast-danger {
+  background-color: #ffffff;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
-.toast.toast-info {
-  background-color: #1e3a8a;
-  color: #eff6ff;
-  border-left: 5px solid #3b82f6;
+.toast-warning {
+  background-color: #ffffff;
+  color: #92400e;
+  border: 1px solid #fde68a;
 }
 
-.toast.toast-warning {
-  background-color: #92400e;
-  color: #fffbeb;
-  border-left: 5px solid #f59e0b;
+.toast-info {
+  background-color: #ffffff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
 }
 
-.toast.toast-danger {
-  background-color: #991b1b;
-  color: #fef2f2;
-  border-left: 5px solid #ef4444;
+@keyframes toast-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-/* Interactive copy button effect */
-.copy-btn {
-  transition: all 0.15s ease;
-}
-.copy-btn:hover {
-  transform: scale(1.05);
-}
-.copy-btn:active {
-  transform: scale(0.95);
-}
-
-/* Table row highlight */
-.row-highlight {
-  animation: highlight-pulse 1.2s ease;
-}
-
-@keyframes highlight-pulse {
-  0% { background-color: #fef3c7; }
-  100% { background-color: transparent; }
-}
-
-/* Paid & Settled Crossed Out Styles */
-.paid-crossed-text {
-  text-decoration: line-through;
-  text-decoration-thickness: 2.5px;
-  text-decoration-color: #10b981;
-  opacity: 0.75;
-}
-
-.paid-strike-bar {
-  position: relative;
-  display: inline-block;
-}
-.paid-strike-bar::after {
-  content: '';
-  position: absolute;
-  left: -4px;
-  top: 50%;
-  width: calc(100% + 8px);
-  height: 2.5px;
-  background: #10b981;
-  transform: translateY(-50%);
-  pointer-events: none;
-  border-radius: 2px;
-}
-
-.paid-card-settled {
-  background: linear-gradient(135deg, #fafffc 0%, #f0fdf4 100%) !important;
-  border-color: #86efac !important;
-  box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.15) !important;
-}
-
-.paid-row-settled {
-  background-color: #f0fdf4 !important;
-}
-
-.paid-row-settled:hover {
-  background-color: #dcfce7 !important;
-}
-
-/* Left Side Drop Zone to Reset / Detach Key */
+/* Left separate zone */
 #left-delete-zone {
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+  transition: transform 0.22s ease, opacity 0.18s ease;
 }
 
 #left-delete-zone.active-dragging {
@@ -173,27 +95,12 @@ body {
 }
 
 #left-delete-zone.drag-over-active {
-  background: linear-gradient(135deg, rgba(225, 29, 72, 0.98), rgba(159, 18, 57, 0.98)) !important;
-  border-color: #fecdd3 !important;
-  box-shadow: 0 0 45px rgba(225, 29, 72, 0.65), 10px 0 30px rgba(0, 0, 0, 0.4) !important;
-  transform: translateX(0) scale(1.02) !important;
+  background-color: #fff1f2 !important;
+  border-color: #f43f5e !important;
+  box-shadow: 0 0 25px rgba(244, 63, 94, 0.25) !important;
 }
 
-#left-delete-zone.drag-over-active #left-zone-icon {
-  transform: scale(1.25) rotate(-12deg);
-  background-color: rgba(255, 255, 255, 0.3);
-  border-color: #ffffff;
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+.drag-hover-active {
+  outline: 2px solid #3b82f6 !important;
+  background-color: #eff6ff !important;
 }
-
-@keyframes pulse-left-ring {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-.left-zone-pulse {
-  animation: pulse-left-ring 1.8s infinite ease-in-out;
-}
-
-

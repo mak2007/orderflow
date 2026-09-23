@@ -3,176 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Masi Team Hub & Worker Pay Tracker | masi.cc.cd Keys & Orders</title>
+  <title>Daily Profit & Worker Payouts | Today 24 Sep 2026</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-/* Custom styles for Order & Inventory Management Dashboard */
+/* Minimal Light Theme for Daily Profit & Worker Payouts */
 :root {
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
+  --primary: #0f172a;
+  --primary-hover: #1e293b;
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  background-color: #f8fafc;
+  color: #0f172a;
 }
 
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Tab buttons styling */
-.tab-btn {
-  transition: all 0.2s ease-in-out;
-  border-bottom: 3px solid transparent;
-}
-
-.tab-btn.active {
-  color: #4f46e5;
-  border-bottom-color: #4f46e5;
-  font-weight: 600;
-  background-color: #eef2ff;
-}
-
 /* Toast styling */
 #toast-container {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   pointer-events: none;
 }
 
 .toast {
   pointer-events: auto;
-  min-width: 280px;
-  max-width: 420px;
-  padding: 12px 18px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  min-width: 260px;
+  max-width: 400px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  animation: slide-in 0.3s ease forwards;
-  transition: all 0.3s ease;
+  gap: 8px;
+  animation: toast-in 0.18s ease-out;
 }
 
-@keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.toast-success {
+  background-color: #ffffff;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
-.toast.toast-success {
-  background-color: #065f46;
-  color: #ecfdf5;
-  border-left: 5px solid #10b981;
+.toast-danger {
+  background-color: #ffffff;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
-.toast.toast-info {
-  background-color: #1e3a8a;
-  color: #eff6ff;
-  border-left: 5px solid #3b82f6;
+.toast-warning {
+  background-color: #ffffff;
+  color: #92400e;
+  border: 1px solid #fde68a;
 }
 
-.toast.toast-warning {
-  background-color: #92400e;
-  color: #fffbeb;
-  border-left: 5px solid #f59e0b;
+.toast-info {
+  background-color: #ffffff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
 }
 
-.toast.toast-danger {
-  background-color: #991b1b;
-  color: #fef2f2;
-  border-left: 5px solid #ef4444;
+@keyframes toast-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-/* Interactive copy button effect */
-.copy-btn {
-  transition: all 0.15s ease;
-}
-.copy-btn:hover {
-  transform: scale(1.05);
-}
-.copy-btn:active {
-  transform: scale(0.95);
-}
-
-/* Table row highlight */
-.row-highlight {
-  animation: highlight-pulse 1.2s ease;
-}
-
-@keyframes highlight-pulse {
-  0% { background-color: #fef3c7; }
-  100% { background-color: transparent; }
-}
-
-/* Paid & Settled Crossed Out Styles */
-.paid-crossed-text {
-  text-decoration: line-through;
-  text-decoration-thickness: 2.5px;
-  text-decoration-color: #10b981;
-  opacity: 0.75;
-}
-
-.paid-strike-bar {
-  position: relative;
-  display: inline-block;
-}
-.paid-strike-bar::after {
-  content: '';
-  position: absolute;
-  left: -4px;
-  top: 50%;
-  width: calc(100% + 8px);
-  height: 2.5px;
-  background: #10b981;
-  transform: translateY(-50%);
-  pointer-events: none;
-  border-radius: 2px;
-}
-
-.paid-card-settled {
-  background: linear-gradient(135deg, #fafffc 0%, #f0fdf4 100%) !important;
-  border-color: #86efac !important;
-  box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.15) !important;
-}
-
-.paid-row-settled {
-  background-color: #f0fdf4 !important;
-}
-
-.paid-row-settled:hover {
-  background-color: #dcfce7 !important;
-}
-
-/* Left Side Drop Zone to Reset / Detach Key */
+/* Left separate zone */
 #left-delete-zone {
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+  transition: transform 0.22s ease, opacity 0.18s ease;
 }
 
 #left-delete-zone.active-dragging {
@@ -182,30 +104,15 @@ body {
 }
 
 #left-delete-zone.drag-over-active {
-  background: linear-gradient(135deg, rgba(225, 29, 72, 0.98), rgba(159, 18, 57, 0.98)) !important;
-  border-color: #fecdd3 !important;
-  box-shadow: 0 0 45px rgba(225, 29, 72, 0.65), 10px 0 30px rgba(0, 0, 0, 0.4) !important;
-  transform: translateX(0) scale(1.02) !important;
+  background-color: #fff1f2 !important;
+  border-color: #f43f5e !important;
+  box-shadow: 0 0 25px rgba(244, 63, 94, 0.25) !important;
 }
 
-#left-delete-zone.drag-over-active #left-zone-icon {
-  transform: scale(1.25) rotate(-12deg);
-  background-color: rgba(255, 255, 255, 0.3);
-  border-color: #ffffff;
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+.drag-hover-active {
+  outline: 2px solid #3b82f6 !important;
+  background-color: #eff6ff !important;
 }
-
-@keyframes pulse-left-ring {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-.left-zone-pulse {
-  animation: pulse-left-ring 1.8s infinite ease-in-out;
-}
-
-
 
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -216,787 +123,88 @@ body {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
           }
         }
       }
     }
   </script>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
 
-  <!-- Left Side Throw / Drop Zone: Detach & Reset Key to Original Form -->
+  <!-- Left Side Slide-in Drop Zone for separating/undoing merged keys -->
   <aside id="left-delete-zone"
          ondragover="handleLeftZoneDragOver(event)"
          ondragleave="handleLeftZoneDragLeave(event)"
          ondrop="handleLeftZoneDrop(event)"
-         class="fixed left-0 top-0 bottom-0 w-44 sm:w-64 z-[100] pointer-events-none opacity-0 -translate-x-full flex flex-col items-center justify-center p-5 border-r-4 border-dashed border-rose-400 bg-gradient-to-r from-rose-950/95 via-rose-900/90 to-rose-950/80 text-white shadow-2xl backdrop-blur-md select-none transition-all duration-300">
-    <div class="left-zone-pulse mb-3">
-      <div id="left-zone-icon" class="w-16 h-16 rounded-2xl bg-rose-800/80 border-2 border-rose-300 flex items-center justify-center text-3xl shadow-lg transition-transform duration-200">
-        🗑️
-      </div>
+         class="fixed left-0 top-0 bottom-0 w-52 sm:w-64 z-[100] pointer-events-none opacity-0 -translate-x-full flex flex-col items-center justify-center p-5 border-r-2 border-dashed border-rose-300 bg-white/95 text-slate-800 shadow-xl backdrop-blur-md select-none transition-all duration-200">
+    <div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-2xl text-rose-600 mb-2">
+      ↩
     </div>
-    <div id="left-zone-title" class="font-black text-sm sm:text-base uppercase tracking-wider text-rose-100 text-center leading-snug">
-      ↩ UNDO / SEPARATE
+    <div id="left-zone-title" class="font-extrabold text-xs uppercase tracking-wider text-rose-700 text-center">
+      DROP HERE TO SEPARATE
     </div>
-    <div class="text-xs font-bold text-rose-300 text-center mt-0.5">
-      DROP HERE TO SEPARATE TEAM
-    </div>
-    <p id="left-zone-desc" class="text-[11px] text-rose-200 text-center mt-3 leading-relaxed px-2">
-      Drop key on left side to detach it from the team and revert back to an <b>independent individual worker</b>
+    <p class="text-[11px] text-slate-500 text-center mt-1 leading-relaxed">
+      Detaches key from team and reverts back to individual worker
     </p>
-    <div class="mt-4 px-3 py-1.5 rounded-full bg-rose-950/90 border border-rose-400/50 text-[11px] text-rose-200 font-mono tracking-wide flex items-center gap-1.5 shadow-sm">
-      <span>↩</span>
-      <span>Drop to Separate</span>
-    </div>
   </aside>
 
-  <!-- Top Header Navigation -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-4">
-        <!-- Logo & Title -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center text-white shadow-md shadow-indigo-200">
-            <span class="text-xl">⚡</span>
+  <!-- Clean Minimal Light Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand & Current Date -->
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-sm">
+          ₹
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">Daily Profit & Worker Payouts</h1>
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+              📅 Today: 24 Sep 2026
+            </span>
           </div>
-          <div>
-            <h1 class="text-lg font-extrabold text-slate-900 tracking-tight leading-none">Masi Team Hub & Worker Pay Tracker</h1>
-            <p class="text-xs text-indigo-600 font-medium mt-1 flex items-center gap-1.5">
-              <span>masi.cc.cd/boss</span>
-              <span>•</span>
-              <span>Keys, Completed Orders & Success Rates</span>
-            </p>
-          </div>
+          <p class="text-[11px] text-slate-500">Live order fulfillment & net revenue from masi.cc.cd</p>
+        </div>
+      </div>
+
+      <!-- Actions: Search & Live Sync -->
+      <div class="flex items-center gap-2.5 w-full sm:w-auto">
+        <div class="relative flex-1 sm:w-60">
+          <input 
+            type="text" 
+            id="global-search" 
+            placeholder="Search worker or key..." 
+            class="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 transition"
+          >
+          <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
 
-        <!-- Bot Status & Top Action Buttons -->
-        <div class="flex items-center gap-2 sm:gap-3">
-          <!-- Official Channel Button -->
-          <a href="https://t.me/madmax00711" target="_blank" title="Join Official Telegram Channel: @madmax00711" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition shadow-2xs">
-            <span class="text-sm">📢</span>
-            <span class="hidden sm:inline">Channel:</span>
-            <span>@madmax00711</span>
-          </a>
-
-          <!-- Quick TG Connect Button -->
-          <button onclick="openQuickTgModal()" title="Quick Connect to Telegram" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 rounded-lg shadow-sm transition transform active:scale-95">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-2.02 1.28-5.7 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.89.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.21-.04.38z"/></svg>
-            <span>Quick TG Connect</span>
-          </button>
-
-          <!-- Live Telegram Bot Status Pill -->
-          <button onclick="openBotConfigModal()" id="bot-status-pill" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
-            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-            <span id="bot-status-text">Bot Offline</span>
-          </button>
-
-          <button id="btn-sync-masi-direct" onclick="syncMasiLiveDirect()" title="Fetch live completed orders from masi.cc.cd" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-lg shadow-sm transition transform active:scale-95">
-            <span>⚡</span> <span>Live Sync Masi</span>
-          </button>
-
-          <button onclick="openTeamAssignModal()" title="Assign keys to guys" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition border border-indigo-200">
-            <span>👥</span> Group by Guy
-          </button>
-
-          <!-- More Options Dropdown button -->
-          <div class="relative group">
-            <button class="px-2.5 py-2 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 flex items-center gap-1">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
-            </button>
-            <div class="absolute right-0 mt-1 w-52 bg-white border border-slate-200 rounded-lg shadow-lg py-1.5 hidden group-hover:block z-40">
-              <button onclick="openBotConfigModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <span>🤖 Telegram Bot Settings</span>
-              </button>
-              <button onclick="openAddWorkerModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <span>🔑 Generate New Worker Key</span>
-              </button>
-              <button onclick="openTeamAssignModal()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <span>👥 Assign Keys to Guys</span>
-              </button>
-              <hr class="my-1 border-slate-100">
-              <button onclick="exportCSV()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <span>Export CSV</span>
-              </button>
-              <button onclick="exportJSON()" class="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <span>Backup Database (JSON)</span>
-              </button>
-            </div>
-          </div>
-
-          <button onclick="openAddWorkerModal()" class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition">
-            <span>+</span> New Worker Key
-          </button>
-        </div>
+        <button 
+          onclick="fetchLiveMasiData(true)" 
+          id="btn-sync-live-top" 
+          title="Fetch live completed orders from masi.cc.cd" 
+          class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap active:scale-95"
+        >
+          <svg id="sync-spinner-icon" class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span id="sync-btn-label">Sync Masi</span>
+        </button>
       </div>
     </div>
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
-
-    <!-- KPI Metric Cards Bar (Masi Team & Completed Orders Focus) -->
-    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-      <!-- Total Masi Workers / Keys -->
-      <div class="bg-white p-4 rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50/40 to-white shadow-2xs">
-        <div class="text-xs font-semibold text-indigo-700 uppercase tracking-wider flex items-center justify-between">
-          <span>Worker Keys</span>
-          <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-        </div>
-        <div id="kpi-total-keys" class="text-2xl font-black text-indigo-900 mt-1">128</div>
-        <div class="text-[11px] text-indigo-600 font-medium mt-0.5">Extracted from Masi</div>
-      </div>
-
-      <!-- Total Completed Orders -->
-      <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/40 to-white shadow-2xs">
-        <div class="text-xs font-semibold text-emerald-700 uppercase tracking-wider flex items-center justify-between">
-          <span>Completed Orders</span>
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        </div>
-        <div id="kpi-completed-orders" class="text-2xl font-black text-emerald-800 mt-1">0</div>
-        <div class="text-[11px] text-emerald-600 font-medium mt-0.5">Read from masi.cc.cd</div>
-      </div>
-
-      <!-- Team Success Rate % -->
-      <div class="bg-white p-4 rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50/40 to-white shadow-2xs">
-        <div class="text-xs font-semibold text-purple-700 uppercase tracking-wider flex items-center justify-between">
-          <span>Team Success Rate</span>
-          <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-        </div>
-        <div id="kpi-team-success" class="text-2xl font-black text-purple-800 mt-1">0%</div>
-        <div class="text-[11px] text-purple-600 font-medium mt-0.5">Official & Admin Set</div>
-      </div>
-
-      <!-- Total Paid Today (Withdrawn from Masi) -->
-      <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/40 to-white shadow-2xs">
-        <div class="text-xs font-semibold text-emerald-800 uppercase tracking-wider flex items-center justify-between">
-          <span>Paid Today</span>
-          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-        </div>
-        <div id="kpi-paid-today" class="text-2xl font-black text-emerald-900 mt-1">$0.00</div>
-        <div id="kpi-paid-today-sub" class="text-[11px] text-emerald-700 font-medium mt-0.5">Withdrawn Today (Masi)</div>
-      </div>
-
-      <!-- Total Withdrawn All-time (Masi) -->
-      <div class="bg-white p-4 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50/40 to-white shadow-2xs col-span-2 sm:col-span-1">
-        <div class="text-xs font-semibold text-sky-700 uppercase tracking-wider flex items-center justify-between">
-          <span>Total Withdrawn</span>
-          <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-        </div>
-        <div id="kpi-total-withdrawn" class="text-2xl font-black text-sky-900 mt-1">$0.00</div>
-        <div id="kpi-total-withdrawn-sub" class="text-[11px] text-sky-600 font-medium mt-0.5">All-time Paid Out (Masi)</div>
-      </div>
-    </section>
-
-    <!-- Search & Navigation Tab Bar -->
-    <section class="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
-      <div class="p-3 sm:p-4 border-b border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
-        <!-- Tab Navigation Buttons -->
-        <nav class="flex items-center gap-1 sm:gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0" aria-label="Tabs">
-          <!-- 1. Telegram Workers & Keys (DEFAULT) -->
-          <button onclick="switchTab('guys')" data-tab="guys" class="tab-btn active px-3.5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap bg-indigo-50 text-indigo-700 border border-indigo-200">
-            <span>✈️ Telegram Workers & Keys</span>
-            <span id="tab-badge-guys" class="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-200 text-indigo-900">24</span>
-          </button>
-
-          <!-- 2. All Worker Keys Tab -->
-          <button onclick="switchTab('keys')" data-tab="keys" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
-            <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-            <span>🔑 All Worker Keys</span>
-            <span id="tab-badge-keys" class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700">128</span>
-          </button>
-
-          <!-- 3. Telegram Bot & Linker Tab -->
-          <button onclick="switchTab('bot')" data-tab="bot" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
-            <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-            <span>🤖 Telegram Bot</span>
-          </button>
-        </nav>
-
-        <!-- Search input box -->
-        <div class="relative w-full md:w-80">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-          </div>
-          <input type="text" id="global-search" placeholder="Search worker, key, @username, order ID..." class="w-full pl-9 pr-8 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-          <button onclick="clearSearch()" title="Clear search" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600">
-            &times;
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Dynamic Panel Content Container -->
-    <section id="panel-content" class="space-y-6">
-      <!-- Injected by app.js -->
-    </section>
-
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-5 flex-1 w-full space-y-4">
+    <div id="panel-content">
+      <!-- Dynamic light minimal dashboard injected by app.js -->
+    </div>
   </main>
-
-
-
-  <!-- Quick Telegram Connect Modal -->
-  <div id="quick-tg-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-in">
-      <div class="p-5 bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 text-white flex items-center justify-between">
-        <div>
-          <h3 class="text-base font-extrabold flex items-center gap-2">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-2.02 1.28-5.7 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.89.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.98-1.66 4.81-1.95 5.35-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.21-.04.38z"/></svg>
-            Quick Telegram Connect
-          </h3>
-          <p class="text-xs text-sky-100 mt-0.5">Link worker keys, assign @usernames & connect the Telegram bot</p>
-        </div>
-        <button onclick="closeQuickTgModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
-      </div>
-
-      <!-- Quick TG Tabs -->
-      <div class="px-6 pt-3 flex items-center gap-4 border-b border-slate-200 bg-slate-50 text-xs font-bold">
-        <button onclick="switchQuickTgTab('worker')" id="btn-quick-tg-worker" class="pb-2.5 border-b-2 border-sky-600 text-sky-700 transition">
-          🔗 Link Worker / Key
-        </button>
-        <button onclick="switchQuickTgTab('bot')" id="btn-quick-tg-bot" class="pb-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition">
-          🤖 Connect Bot Token
-        </button>
-      </div>
-
-      <div class="p-6 space-y-4">
-        <!-- TAB 1: Link Worker -->
-        <div id="quick-tg-panel-worker" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Select Worker / Key *</label>
-            <input type="text" id="quick-tg-key-input" list="quickTgWorkerList" placeholder="Type worker name or paste KEY..." oninput="onQuickTgKeySelected(this.value)" class="w-full text-xs font-mono px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
-            <datalist id="quickTgWorkerList"></datalist>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Telegram Username *</label>
-              <input type="text" id="quick-tg-username" placeholder="@username" oninput="updateQuickTgInvitePreview()" class="w-full text-xs font-mono px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Guy / Team Name</label>
-              <input type="text" id="quick-tg-guy-name" placeholder="e.g. Alam" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
-            </div>
-          </div>
-
-          <!-- Requirement: Join Channel 1st -->
-          <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-xl p-3 text-xs space-y-1.5">
-            <div class="font-extrabold text-amber-900 flex items-center justify-between">
-              <span class="flex items-center gap-1.5"><span>📢</span> <span>Worker Requirement: Join Channel 1st!</span></span>
-              <a href="https://t.me/madmax00711" target="_blank" class="text-sky-700 hover:text-sky-900 font-bold underline text-[11px]">Open Channel</a>
-            </div>
-            <p class="text-[11px] text-amber-800">
-              Every worker must join <a href="https://t.me/madmax00711" target="_blank" class="font-bold underline text-sky-800 font-mono">https://t.me/madmax00711</a> before accessing their tasks & payout bills.
-            </p>
-            <div class="flex items-center gap-2 pt-0.5">
-              <button type="button" onclick="copyToClipboard('https://t.me/madmax00711', 'Channel Link')" class="px-2.5 py-1 bg-amber-200/80 hover:bg-amber-300/80 text-amber-950 font-bold text-[10px] rounded transition">
-                📋 Copy Channel Link
-              </button>
-            </div>
-          </div>
-
-          <!-- Shareable 1-Click Link Preview -->
-          <div id="quick-tg-invite-card" class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-xs space-y-2">
-            <div class="font-bold text-sky-900 flex items-center justify-between">
-              <span>📲 1-Click Worker Invite Link:</span>
-              <button type="button" onclick="copyQuickTgInviteLink()" class="text-sky-600 hover:text-sky-800 font-bold underline">Copy Link</button>
-            </div>
-            <div id="quick-tg-invite-text" class="font-mono text-[11px] bg-white p-2 rounded border border-sky-200 text-slate-700 break-all select-all">
-              https://t.me/share/url?text=/link%20KEY
-            </div>
-            <p class="text-[11px] text-sky-700">Send this link to your worker on Telegram. When they click it, Telegram opens and connects their key instantly!</p>
-          </div>
-
-          <div class="pt-2 flex items-center justify-between border-t border-slate-200">
-            <button type="button" onclick="closeQuickTgModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
-            <button type="button" onclick="saveQuickTgWorkerLink()" class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
-              <span>✓</span> Connect & Save Key
-            </button>
-          </div>
-        </div>
-
-        <!-- TAB 2: Connect Bot Token -->
-        <div id="quick-tg-panel-bot" class="space-y-4 hidden">
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
-            <div class="font-bold text-slate-800">Quick Bot Setup (30 Seconds):</div>
-            <p class="text-slate-600 text-[11px]">1. Open Telegram, search <b>@BotFather</b> and type <code>/newbot</code>.<br>2. Copy the token you receive and paste it below:</p>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Bot HTTP API Token</label>
-            <input type="password" id="quick-tg-bot-token" placeholder="123456789:ABCdefGhIJKlmNoPQRstuv..." class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
-          </div>
-
-          <div class="pt-2 flex items-center justify-between border-t border-slate-200">
-            <button type="button" onclick="closeQuickTgModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
-            <button type="button" onclick="saveQuickTgBotToken()" class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
-              <span>⚡</span> Connect Bot Now
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Telegram Bot Configuration Modal -->
-  <div id="bot-config-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
-      <div class="p-5 bg-gradient-to-r from-sky-600 to-sky-700 text-white flex items-center justify-between">
-        <h3 class="text-base font-bold flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-          Telegram Bot Configuration
-        </h3>
-        <button onclick="closeBotConfigModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
-      </div>
-
-      <div class="p-6 space-y-4">
-        <div class="p-3 bg-sky-50 border border-sky-100 rounded-lg text-xs text-sky-900 space-y-1">
-          <div class="font-bold flex items-center gap-1.5">
-            <span>ℹ️ How to get your Bot Token:</span>
-          </div>
-          <ol class="list-decimal list-inside space-y-1 text-[11px] text-sky-800">
-            <li>Open Telegram and message <strong>@BotFather</strong>.</li>
-            <li>Send <code>/newbot</code> and follow prompts to name your bot.</li>
-            <li>Copy the API Token given (e.g. <code>123456789:ABCdefGh...</code>) and paste it below.</li>
-          </ol>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Telegram Bot Token</label>
-          <input type="password" id="input-bot-token" placeholder="Paste HTTP API token from @BotFather" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none">
-          <p id="bot-config-feedback" class="text-xs text-slate-500 mt-1"></p>
-        </div>
-
-        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
-          <button type="button" onclick="closeBotConfigModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
-            Close
-          </button>
-          <button type="button" onclick="saveBotToken()" class="px-4 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition">
-            Save & Connect Bot
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Generate / Add Worker Key Modal -->
-  <div id="worker-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
-      <div class="p-5 bg-gradient-to-r from-indigo-700 to-purple-700 text-white flex items-center justify-between">
-        <h3 class="text-base font-bold flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-          Create / Edit Worker Key
-        </h3>
-        <button onclick="closeWorkerModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
-      </div>
-
-      <div class="p-6 space-y-4">
-        <input type="hidden" id="edit-worker-id">
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Name *</label>
-          <input type="text" id="input-new-worker-name" placeholder="e.g. Liam Patel" oninput="autoGenerateKey(this.value)" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Worker Key *</label>
-          <div class="flex items-center gap-2">
-            <input type="text" id="input-new-worker-key" placeholder="KEY-LIAM-4921" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button type="button" onclick="regenerateRandomKey()" class="px-2.5 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700">New</button>
-          </div>
-          <p class="text-[11px] text-slate-400 mt-1">Give this key to the worker. They send <code>/link KEY</code> in Telegram to connect.</p>
-        </div>
-
-
-
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Admin Decided Success Rate (%)</label>
-            <span class="text-[11px] text-indigo-600 font-medium">Leave empty for auto</span>
-          </div>
-          <input type="number" step="0.5" min="0" max="100" id="input-new-worker-success-rate" placeholder="e.g. 95 (Blank = Auto calculated)" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-
-        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
-          <button type="button" onclick="closeWorkerModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">
-            Cancel
-          </button>
-          <button type="button" onclick="saveWorkerKey()" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition">
-            Save Worker Key
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Quick Decide Success Rate Modal -->
-  <div id="decide-rate-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-100">
-      <div class="p-5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center justify-between">
-        <h3 class="text-base font-bold flex items-center gap-2">
-          <span>🎯</span> Set Worker Success Rate
-        </h3>
-        <button onclick="closeDecideRateModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
-      </div>
-      <div class="p-6 space-y-4">
-        <input type="hidden" id="decide-rate-worker-id">
-        <div>
-          <div class="text-xs text-slate-500 mb-1">Worker: <strong id="decide-rate-worker-name" class="text-slate-800"></strong></div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Assign Success Rate (%)</label>
-          <div class="relative">
-            <input type="number" step="0.5" min="0" max="100" id="decide-rate-input" placeholder="e.g. 92" class="w-full px-3 py-2 text-xl font-bold text-slate-800 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-            <span class="absolute right-3 top-2.5 text-slate-400 font-bold">%</span>
-          </div>
-
-          <!-- Quick Preset Buttons -->
-          <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
-            <button type="button" onclick="setQuickRate(100)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">100%</button>
-            <button type="button" onclick="setQuickRate(95)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">95%</button>
-            <button type="button" onclick="setQuickRate(90)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition">90%</button>
-            <button type="button" onclick="setQuickRate(80)" class="px-2.5 py-1 text-xs font-bold rounded-md bg-amber-100 text-amber-800 hover:bg-amber-200 transition">80%</button>
-            <button type="button" onclick="setQuickRate('')" class="px-2.5 py-1 text-xs font-medium rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Reset to Auto</button>
-          </div>
-        </div>
-        <p class="text-[11px] text-slate-500">
-          This exact success rate will be shown in the dashboard and reported to the worker when they type <code>/stats</code> in Telegram!
-        </p>
-        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
-          <button type="button" onclick="closeDecideRateModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition">Cancel</button>
-          <button type="button" onclick="saveDecidedRate()" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition">Apply Rate</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Masi Boss Portal Extractor Modal -->
-  <div id="masi-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
-      <div class="p-5 bg-gradient-to-r from-violet-700 via-indigo-700 to-purple-800 text-white flex items-center justify-between flex-shrink-0">
-        <div>
-          <h3 class="text-base font-bold flex items-center gap-2">
-            <span>⚡</span> Masi Boss Extractor & Sync
-          </h3>
-          <p class="text-[11px] text-violet-200 mt-0.5">Extract worker keys, completed orders & success rates from masi.cc.cd/boss</p>
-        </div>
-        <button onclick="closeMasiModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
-      </div>
-
-      <div class="p-6 space-y-4 overflow-y-auto flex-1">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Masi Boss Key (WORKER-XXXX-XXXX-...)</label>
-          <div class="flex items-center gap-2">
-            <input type="password" id="masi-boss-key" placeholder="Paste your Boss Key from masi.cc.cd/boss" class="font-mono text-xs w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            <button type="button" onclick="extractFromMasi()" id="btn-masi-fetch" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow-sm whitespace-nowrap transition">
-              Extract Data
-            </button>
-          </div>
-          <p class="text-[11px] text-slate-400 mt-1">This connects securely to <code>https://masi.cc.cd/api/worker/team</code> with your boss key.</p>
-        </div>
-
-        <div id="masi-extract-preview" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs min-h-[120px]">
-          <span class="text-slate-400">Enter your Boss Key above and click "Extract Data" to preview workers, keys, and success rates.</span>
-        </div>
-      </div>
-
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
-        <button type="button" onclick="closeMasiModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancel</button>
-        <button type="button" onclick="syncMasiToDashboard()" id="btn-masi-sync" disabled class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed rounded-lg shadow-sm transition">
-          Sync & Import to Dashboard
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Team / Assign Keys to Guys Modal -->
-  <div id="team-assign-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-100 animate-in">
-      <div class="p-5 bg-gradient-to-r from-sky-600 via-indigo-600 to-indigo-700 text-white flex items-center justify-between flex-shrink-0">
-        <div>
-          <h3 class="text-base font-bold flex items-center gap-2">
-            <span>👥</span> Group Keys Under 1 Guy / Telegram
-          </h3>
-          <p class="text-[11px] text-sky-100 mt-0.5">Assign multiple keys to the same worker and sort their stats under 1 person</p>
-        </div>
-        <button onclick="closeTeamAssignModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
-      </div>
-
-      <!-- Mode Tabs: Bulk Paste vs Search & Pick -->
-      <div class="px-6 pt-3 pb-0 flex items-center gap-2 border-b border-slate-200 bg-slate-50">
-        <button type="button" onclick="switchTeamAssignTab('paste')" id="btn-tab-assign-paste" class="px-4 py-2 text-xs font-bold border-b-2 border-indigo-600 text-indigo-700 transition">
-          📋 Bulk Paste (Key & Telegram)
-        </button>
-        <button type="button" onclick="switchTeamAssignTab('search')" id="btn-tab-assign-search" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
-          🔍 Quick Search & Assign Table
-        </button>
-      </div>
-
-      <div class="p-6 space-y-4 overflow-y-auto flex-1">
-        <!-- Tab 1: Paste Lines -->
-        <div id="panel-assign-paste" class="space-y-3">
-          <p class="text-xs text-slate-600">
-            Paste copied keys from the website followed by their <b>Telegram username</b> (and optional Guy name). Multiple keys with the same username will be automatically grouped into <b>1 Guy Profile</b>:
-          </p>
-          <div class="bg-indigo-50/70 p-3 rounded-lg border border-indigo-100 text-[11px] text-indigo-900">
-            <span class="font-bold">Format:</span> <code class="font-mono bg-white px-1 py-0.5 rounded border border-indigo-200">KEY @telegram [Guy Name]</code>
-            <div class="mt-1 font-mono text-[10px] text-indigo-700">
-              WORKER-0BE2-72E7-D72A-E15F @alam_tg Alam<br>
-              WORKER-EEA7-F4C4-1EF8-7BBC @alam_tg Alam<br>
-              WORKER-BC2F-E0A0-6295-651D @majid Majid
-            </div>
-          </div>
-          <textarea id="team-assign-textarea" oninput="parseTeamAssignText()" rows="6" placeholder="Paste keys with telegram usernames here...&#10;WORKER-0BE2-72E7-D72A-E15F @alam_tg Alam&#10;WORKER-EEA7-F4C4-1EF8-7BBC @alam_tg Alam" class="font-mono text-xs w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-          
-          <div id="team-assign-preview" class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs max-h-48 overflow-y-auto">
-            <span class="text-slate-400">Preview will appear here as you type or paste...</span>
-          </div>
-        </div>
-
-        <!-- Tab 2: Search Table -->
-        <div id="panel-assign-search" class="space-y-3 hidden">
-          <input type="text" id="team-assign-filter" oninput="renderTeamAssignTable()" placeholder="🔍 Search key or worker name to assign..." class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-lg">
-            <table class="w-full text-xs text-left divide-y divide-slate-200">
-              <thead class="bg-slate-50 text-slate-600 font-semibold sticky top-0">
-                <tr>
-                  <th class="p-2.5">Key / Worker</th>
-                  <th class="p-2.5">Telegram (@...)</th>
-                  <th class="p-2.5">Guy / Team Name</th>
-                </tr>
-              </thead>
-              <tbody id="team-assign-table-body" class="divide-y divide-slate-100">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
-        <button type="button" onclick="closeTeamAssignModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancel</button>
-        <button type="button" onclick="saveTeamAssignments()" id="btn-save-team-assign" class="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
-          <span>✓</span> Save & Group Keys
-        </button>
-      </div>
-    </div>
-  </div>
-
-
-
-  <!-- Send Telegram Message to Worker Modal -->
-  <div id="send-msg-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 animate-in">
-      <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-sky-50 to-indigo-50/30">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center text-sm font-bold shadow-xs">
-            💬
-          </div>
-          <div>
-            <h3 class="text-sm font-bold text-slate-800">Send Telegram Message</h3>
-            <p id="send-msg-target-desc" class="text-xs text-slate-500">To: Worker</p>
-          </div>
-        </div>
-        <button onclick="closeSendMsgModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
-      </div>
-
-      <div class="p-5 space-y-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Your Message</label>
-          <textarea id="send-msg-input" rows="4" placeholder="Write message to send directly to worker's Telegram..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
-        </div>
-        <p id="send-msg-warning" class="text-[11px] text-amber-600 hidden">⚠️ Worker has not connected their Telegram yet.</p>
-      </div>
-
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-        <button type="button" onclick="closeSendMsgModal()" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancel</button>
-        <button type="button" id="btn-do-send-msg" onclick="submitSendMsg()" class="px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
-          <span>🚀</span> Send to Telegram
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Guy Keys List & Reassign Modal -->
-  <div id="guy-keys-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-in flex flex-col max-h-[90vh]">
-      <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-sky-50/30">
-        <div>
-          <h3 id="guy-keys-modal-title" class="text-base font-extrabold text-slate-800">Keys for Worker</h3>
-          <p id="guy-keys-modal-subtitle" class="text-xs text-slate-500 font-mono">@telegram_handle</p>
-        </div>
-        <button onclick="closeGuyKeysModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
-      </div>
-
-      <div class="p-5 overflow-y-auto space-y-4 flex-1">
-        <div>
-          <div class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Assigned Keys (<span id="guy-keys-count">0</span>)</span>
-            <span class="text-[11px] text-indigo-600 font-normal">Drag keys onto cards to move them</span>
-          </div>
-          <div id="guy-keys-list-container" class="space-y-2">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <!-- Add Another Key Section -->
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Add / Assign Key to this Guy</label>
-          <div class="flex items-center gap-2">
-            <input type="text" id="add-key-to-guy-input" placeholder="Type or paste WORKER-XXXX key..." class="flex-1 px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
-            <button onclick="submitAddKeyToGuy()" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition whitespace-nowrap">
-              + Add Key
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-        <button type="button" onclick="closeGuyKeysModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Guy Profile Payout & Withdrawal Modal ("when i click on profile view total paid and requested and add i paid him this that") -->
-  <div id="guy-profile-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-in flex flex-col max-h-[92vh]">
-      <!-- Header -->
-      <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-emerald-50 via-teal-50/40 to-white">
-        <div class="flex items-center gap-3">
-          <div id="profile-modal-avatar" class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
-            W
-          </div>
-          <div>
-            <h3 id="profile-modal-name" class="text-base font-extrabold text-slate-900">Worker Profile</h3>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span id="profile-modal-tg" class="text-xs text-sky-600 font-mono font-bold">@handle</span>
-              <span class="text-slate-300">•</span>
-              <span id="profile-modal-keys-badge" class="text-[11px] text-slate-500 font-semibold">1 Key</span>
-            </div>
-          </div>
-        </div>
-        <button onclick="closeGuyProfileModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">✕</button>
-      </div>
-
-      <!-- Scrollable Body -->
-      <div class="p-5 overflow-y-auto space-y-4 flex-1">
-        <!-- Settlement Progress (X/Y Fraction) -->
-        <div class="bg-gradient-to-r from-emerald-50 to-teal-50/50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
-          <div>
-            <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Settlement Progress</div>
-            <div class="flex items-center gap-2 mt-1">
-              <span id="profile-settled-fraction" class="text-2xl font-black text-emerald-950 font-mono">0/0</span>
-              <span id="profile-settled-badge" class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900">SETTLED</span>
-            </div>
-            <div id="profile-settled-detail" class="text-xs text-emerald-700 mt-1">0 completed • 0 settled • 0 leftover</div>
-          </div>
-          <div class="text-right">
-            <div class="text-[11px] font-medium text-slate-500">Unsettled Leftover</div>
-            <div id="profile-leftover-big" class="text-2xl font-black text-amber-700 font-mono">0</div>
-          </div>
-        </div>
-
-        <!-- Pending Withdrawal Request Alert Box -->
-        <div id="profile-payout-request-box" class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300 rounded-xl p-3.5 space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <span class="text-xl">🔔</span>
-              <div>
-                <div class="text-[11px] font-black uppercase tracking-wider text-amber-900">Withdrawal Request Pending</div>
-                <div class="text-xs text-amber-800 font-medium">Worker requested: <strong id="profile-requested-orders-val" class="font-extrabold text-slate-900 text-sm">0 orders</strong></div>
-              </div>
-            </div>
-            <span id="profile-requested-time" class="text-[10px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded font-medium">Pending</span>
-          </div>
-          <button id="btn-profile-approve-request" onclick="submitApproveProfileRequest()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black shadow-xs transition flex items-center justify-center gap-1.5">
-            <span>✓</span> Approve & Settle Requested Orders
-          </button>
-        </div>
-
-        <!-- "I Paid Him" Form: Record Settlement with Custom Note -->
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
-          <div class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center justify-between">
-            <span class="flex items-center gap-1.5"><span>💳</span> Record Payment ("I Paid Him")</span>
-            <span class="text-[10px] text-slate-400 font-normal">Adds to paid count & logs note</span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div class="sm:col-span-1">
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">Orders to Settle</label>
-              <input type="number" id="profile-pay-orders-input" min="1" placeholder="Orders" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900 focus:outline-none">
-            </div>
-            <div class="sm:col-span-2">
-              <label class="block text-[11px] font-bold text-slate-700 mb-1">Admin Note / Reference ("I paid him this that")</label>
-              <input type="text" id="profile-pay-note-input" placeholder="e.g. Paid via UPI #8812, USDT Binance, Cash..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between gap-2 pt-1">
-            <label class="flex items-center gap-2 text-xs text-slate-600 cursor-pointer select-none">
-              <input type="checkbox" id="profile-mark-all-check" onchange="toggleProfileMarkAll(this.checked)" class="rounded text-emerald-600 focus:ring-emerald-500">
-              <span>Mark all <strong id="profile-leftover-mark-text">0</strong> leftover orders as fully paid (20/20)</span>
-            </label>
-          </div>
-
-          <button type="button" onclick="submitRecordProfilePayment()" id="btn-submit-record-payment" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
-            <span>💾</span> Save Payment & Notify Worker via Telegram
-          </button>
-        </div>
-
-        <!-- Payment & Settlement History Log -->
-        <div>
-          <div class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Payment History Log</span>
-            <span id="profile-payment-count" class="text-[10px] text-slate-400">0 records</span>
-          </div>
-          <div id="profile-payment-history-list" class="space-y-1.5 max-h-44 overflow-y-auto">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
-        <button type="button" id="btn-profile-send-msg" onclick="openProfileMsgModal()" class="px-3.5 py-1.5 text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg flex items-center gap-1.5 transition">
-          <span>💬</span> Msg on TG
-        </button>
-        <button type="button" onclick="closeGuyProfileModal()" class="px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Quick Set Telegram Modal -->
-  <div id="set-tg-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-100 animate-in">
-      <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-sky-50">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">✈️</span>
-          <h3 id="set-tg-modal-title" class="text-sm font-bold text-slate-800">Set Telegram Username</h3>
-        </div>
-        <button onclick="closeSetTgModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
-      </div>
-      <div class="p-4 space-y-3">
-        <p id="set-tg-modal-desc" class="text-xs text-slate-500">Attach Telegram username to this worker:</p>
-        <input type="hidden" id="set-tg-guy-id">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Telegram Username</label>
-          <div class="relative">
-            <input type="text" id="set-tg-username-input" placeholder="@username" class="w-full pl-3 pr-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono">
-          </div>
-        </div>
-      </div>
-      <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-        <button onclick="closeSetTgModal()" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg">Cancel</button>
-        <button onclick="saveSetTgUsername()" class="px-4 py-1.5 text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-lg shadow-sm">
-          Save & Connect
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
-  <!-- App Script -->
+  <!-- Scripts -->
   <script>
 // Masi Team & Worker Performance Hub Logic
 // Multi-Key Grouping, Telegram Bot Integration & Masi Boss Sync
@@ -1351,24 +559,16 @@ body {
 
   // Render application
   function render() {
-    renderKPIs();
-
     const container = document.getElementById('panel-content');
     if (!container) return;
-
-    if (state.currentTab === 'guys') {
-      renderGuysPanel(container);
-    } else if (state.currentTab === 'keys') {
-      renderKeysPanel(container);
-    } else if (state.currentTab === 'bot') {
-      renderBotPanel(container);
-    } else {
-      state.currentTab = 'guys';
-      renderGuysPanel(container);
-    }
+    renderGuysPanel(container);
   }
 
   function renderCurrentPanelQuietly() {
+    render();
+  }
+
+    function renderCurrentPanelQuietly() {
     const container = document.getElementById('panel-content');
     if (!container) return;
     const activeEl = document.activeElement;
@@ -1687,7 +887,123 @@ body {
   };
 
   // ==========================================
-  // PANEL 1: TEAM WORKERS, DRAG & DROP MERGE, PAY RATES & BOSS PROFIT
+
+  // Rate Chart: 1-5: ₹25, 6-10: ₹27, 11-20: ₹31, 20+: ₹35, 30+: ₹40. (<60% max ₹32)
+  function calculateWorkerPay(completedCount, successRate) {
+    const done = Number(completedCount) || 0;
+    const rateNum = Number(successRate) || 0;
+    if (done <= 0) return { tierRate: 0, basePay: 0, isCapped: false, tierLabel: '0 QR' };
+
+    let tierRate = 25;
+    let tierLabel = '1–5 QR (₹25)';
+    if (done > 30) {
+      tierRate = 40;
+      tierLabel = '30+ QR (₹40)';
+    } else if (done > 20) {
+      tierRate = 35;
+      tierLabel = '20+ QR (₹35)';
+    } else if (done > 10) {
+      tierRate = 31;
+      tierLabel = '11–20 QR (₹31)';
+    } else if (done > 5) {
+      tierRate = 27;
+      tierLabel = '6–10 QR (₹27)';
+    }
+
+    let isCapped = false;
+    if (rateNum > 0 && rateNum < 60 && tierRate > 32) {
+      tierRate = 32;
+      isCapped = true;
+      tierLabel += ' (Capped @ ₹32)';
+    }
+
+    return { tierRate, basePay: done * tierRate, isCapped, tierLabel };
+  }
+
+  function getAdjustments() {
+    try {
+      return JSON.parse(localStorage.getItem('orderflow_adjustments') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  window.setWorkerAdjustment = function(workerId, amount) {
+    const adj = getAdjustments();
+    const current = Number(adj[workerId] || 0);
+    adj[workerId] = current + Number(amount);
+    localStorage.setItem('orderflow_adjustments', JSON.stringify(adj));
+    render();
+    showToast(`Adjustment: ₹${adj[workerId] >= 0 ? '+' : ''}${adj[workerId]}`, 'info');
+  };
+
+  window.promptCustomAdjustment = function(workerId, workerName) {
+    const adj = getAdjustments();
+    const current = Number(adj[workerId] || 0);
+    const input = prompt(`Enter bonus (+) or deduction (-) for ${workerName} in ₹:`, current);
+    if (input === null) return;
+    const val = Number(input);
+    if (isNaN(val)) return;
+    adj[workerId] = val;
+    localStorage.setItem('orderflow_adjustments', JSON.stringify(adj));
+    render();
+    showToast(`Set adjustment for ${workerName}: ₹${val >= 0 ? '+' : ''}${val}`, 'success');
+  };
+
+  window.resetWorkerAdjustment = function(workerId, workerName) {
+    const adj = getAdjustments();
+    delete adj[workerId];
+    localStorage.setItem('orderflow_adjustments', JSON.stringify(adj));
+    render();
+    showToast(`Reset adjustments for ${workerName} to ₹0`, 'info');
+  };
+
+  window.getUsdInrRate = function() {
+    return Number(localStorage.getItem('orderflow_usdinr_rate') || 84);
+  };
+
+  window.promptUsdInrRate = function() {
+    const current = getUsdInrRate();
+    const input = prompt('Enter USD to INR conversion rate:', current);
+    if (!input) return;
+    const rate = Number(input);
+    if (!rate || rate <= 0) return;
+    localStorage.setItem('orderflow_usdinr_rate', rate);
+    render();
+    showToast(`Conversion rate set to ₹${rate} / USD`, 'success');
+  };
+
+  window.fetchLiveMasiData = async function(manual = false) {
+    const label = document.getElementById('sync-btn-label');
+    const spinner = document.getElementById('sync-spinner-icon');
+    if (label) label.textContent = 'Syncing...';
+    if (spinner) spinner.classList.add('animate-spin');
+
+    try {
+      const res = await fetch('/api/masi/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bossKey: (state.settings && state.settings.bossKey) || 'WORKER-B030-0827-9A88-4A04' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        state.lastMasiSync = new Date();
+        await loadInitialData();
+        showToast('Live data synced from masi.cc.cd', 'success');
+      } else {
+        if (manual) showToast('Sync error: ' + (data.error || 'Failed'), 'danger');
+      }
+    } catch (e) {
+      if (manual) showToast('Sync error: ' + e.message, 'danger');
+    } finally {
+      if (label) label.textContent = 'Sync Masi';
+      if (spinner) spinner.classList.remove('animate-spin');
+      render();
+    }
+  };
+
+  // ==========================================
+  // PANEL: CLEAN MINIMAL LIGHT DASHBOARD
   // ==========================================
   function renderGuysPanel(container) {
     const allGuys = getGroupedGuys();
@@ -1695,27 +1011,22 @@ body {
     const usdInrRate = getUsdInrRate();
     const search = (state.searchQuery || '').toLowerCase().trim();
 
-    // Filter to only guys that have at least 1 key or a telegram handle
+    // Show workers with keys
     let guysList = allGuys.filter(g => {
-      // Must have keys
       if (!g.keys || g.keys.length === 0) return false;
-      // If user typed a search query
       if (search) {
         const matchName = g.displayName && g.displayName.toLowerCase().includes(search);
         const matchTg = g.telegramUsername && g.telegramUsername.toLowerCase().includes(search);
         const matchKey = g.keys.some(k => (k.name && k.name.toLowerCase().includes(search)) || (k.key && k.key.toLowerCase().includes(search)));
         return matchName || matchTg || matchKey;
       }
-      // In default view: prioritize guys with completed orders > 0 OR assigned telegram handle
       return (Number(g.completedOrders) > 0) || Boolean(g.telegramUsername) || g.keys.length > 1;
     });
 
-    // If search didn't match or list is empty, fallback to all with keys
     if (guysList.length === 0 && !search) {
       guysList = allGuys.filter(g => g.keys && g.keys.length > 0).slice(0, 30);
     }
 
-    // Calculate aggregated team pay & individual pay
     let totalTeamBasePay = 0;
     let totalTeamAdjustments = 0;
     let totalTeamCompletedOrders = 0;
@@ -1738,314 +1049,181 @@ body {
     });
 
     const totalWorkerPayout = totalTeamBasePay + totalTeamAdjustments;
-
-    // Boss Masi Inflow Calculations
-    // 23 Sep baseline or live overview:
-    // 219 completed orders generated gross $123.20, penalties -$10.65 = net $112.55
-    const masiOverview = state.masiOverview || {};
-    const liveNetUsd = 112.55; // verified net inflow
+    const liveNetUsd = 112.55;
     const masiNetInr = liveNetUsd * usdInrRate;
     const bossDailyProfit = masiNetInr - totalWorkerPayout;
     const profitMarginPct = masiNetInr > 0 ? ((bossDailyProfit / masiNetInr) * 100).toFixed(1) : 0;
 
-    const lastSyncTimeStr = state.lastMasiSync 
-      ? state.lastMasiSync.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      : 'Auto-Connected';
-
     let html = `
-      <div class="space-y-6">
-        <!-- 🏆 TOP SECTION: HOW MUCH YOU MADE THAT DAY (BOSS DAILY PROFIT) -->
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl shadow-xl p-5 sm:p-7 text-white border border-indigo-500/30 relative overflow-hidden">
-          <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none">
-            <svg class="w-64 h-64 text-indigo-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path></svg>
-          </div>
-
-          <div class="relative z-10">
-            <!-- Header bar with Live Sync & Conversion Rate -->
-            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-700/60">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-400 text-slate-950 shadow-sm flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span> Live Daily Profit
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/10 text-slate-200">
-                  Window: 23 Sep (12 AM – 10 PM IST)
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
-                  Rate: 1 USD = ₹${usdInrRate}
-                  <button onclick="promptUsdInrRate()" title="Change USD/INR conversion rate" class="ml-1 text-amber-300 hover:text-white font-sans font-bold">✏️</button>
-                </span>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <button onclick="fetchLiveMasiData(true)" id="btn-sync-live-top" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-white/10 hover:bg-white/20 text-white border border-white/20 active:scale-95 transition flex items-center gap-1.5">
-                  <svg id="sync-spinner-icon" class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                  <span id="sync-btn-label">🔄 Sync Live Masi</span>
-                </button>
+      <div class="space-y-4">
+        <!-- 1. BOSS NET PROFIT CARD (CLEAN MINIMAL LIGHT) -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Today's Net Profit (Your Take-Home)</span>
+              <div class="text-3xl sm:text-4xl font-black text-emerald-600 mt-0.5">
+                +${bossDailyProfit >= 0 ? '₹' + bossDailyProfit.toLocaleString('en-IN', { maximumFractionDigits: 0 }) : '-₹' + Math.abs(bossDailyProfit).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <!-- Big Daily Profit Callout -->
-            <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <div class="md:col-span-2 bg-gradient-to-br from-emerald-500/20 via-emerald-600/10 to-transparent p-5 rounded-2xl border border-emerald-400/30">
-                <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-400">
-                  🎉 What YOU Made Today (Boss Net Profit)
-                </div>
-                <div class="text-3xl sm:text-4xl font-black text-emerald-300 mt-1">
-                  +${bossDailyProfit >= 0 ? '₹' + bossDailyProfit.toLocaleString('en-IN', { maximumFractionDigits: 0 }) : '-₹' + Math.abs(bossDailyProfit).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </div>
-                <div class="text-xs text-slate-300 mt-1.5 flex items-center gap-2">
-                  <span>Profit Margin: <b>${profitMarginPct}%</b></span>
-                  <span>•</span>
-                  <span>Net Take-Home after all worker payouts</span>
-                </div>
+            <div class="text-right">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                ${profitMarginPct}% Net Margin
+              </span>
+              <div class="text-[11px] text-slate-400 mt-1">
+                Rate: 1 USD = ₹${usdInrRate} <button onclick="promptUsdInrRate()" title="Change rate" class="text-slate-600 hover:text-slate-900 font-bold ml-1">✏️</button>
               </div>
+            </div>
+          </div>
 
-              <!-- Inflow vs Outflow Cards -->
-              <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                <div class="text-[11px] font-bold uppercase tracking-wider text-sky-400">
-                  📥 Masi Net Credited
-                </div>
-                <div class="text-xl sm:text-2xl font-black text-white mt-1">
-                  ₹${masiNetInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </div>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  ${liveNetUsd} ($123.20 gross - $10.65 pen)
-                </div>
-              </div>
+          <!-- 4 Clean Light Metric Blocks -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Masi Inflow (Net)</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">₹${masiNetInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+              <div class="text-[10px] text-slate-400">${liveNetUsd} ($123.20 - $10.65 pen)</div>
+            </div>
 
-              <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                  📤 Paid to Workers
-                </div>
-                <div class="text-xl sm:text-2xl font-black text-white mt-1">
-                  ₹${totalWorkerPayout.toLocaleString('en-IN')}
-                </div>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  ₹${totalTeamBasePay.toLocaleString('en-IN')} base ${totalTeamAdjustments !== 0 ? (totalTeamAdjustments > 0 ? '+₹' + totalTeamAdjustments : '-₹' + Math.abs(totalTeamAdjustments)) + ' adj' : ''}
-                </div>
-              </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Workers Payout</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">₹${totalWorkerPayout.toLocaleString('en-IN')}</div>
+              <div class="text-[10px] text-slate-400">${totalTeamAdjustments !== 0 ? 'Base ₹' + totalTeamBasePay + ' + Adj ₹' + totalTeamAdjustments : 'Base Pay'}</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Completed QRs</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">${totalTeamCompletedOrders}</div>
+              <div class="text-[10px] text-slate-400">Total Orders</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Active Workers</div>
+              <div class="text-base sm:text-lg font-black text-slate-900 mt-0.5">${enrichedGuys.length}</div>
+              <div class="text-[10px] text-slate-400">Mapped Profiles</div>
             </div>
           </div>
         </div>
 
-        <!-- ⚡ INSTRUCTIONS BANNER: DRAG & DROP TO MERGE + UNDO ON LEFT + ONE-TAP COPY -->
-        <div class="bg-gradient-to-r from-amber-50 via-indigo-50 to-sky-50 border-2 border-indigo-400/90 rounded-2xl p-4 sm:p-5 shadow-sm">
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-start sm:items-center gap-3.5">
-              <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex-shrink-0 flex items-center justify-center font-black text-2xl shadow-md">
-                ⚡
-              </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="text-base font-black text-indigo-950 uppercase tracking-wide">
-                    Drag & Drop to Merge • Left Side to Undo/Separate • One-Tap Copy
-                  </h3>
-                  <span class="px-2 py-0.5 rounded-full text-xs font-extrabold bg-indigo-600 text-white shadow-2xs">
-                    Live Rates Active
-                  </span>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">
-                  • <b>To Merge:</b> Drag any key by its <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-bold">⋮⋮</code> grip handle and drop onto another worker card.<br>
-                  • <b>To Undo / Separate:</b> Drag any key and drop into the <b>red panel on the LEFT side</b>, or click <b>[ ↩ Separate ]</b>.<br>
-                  • <b>One-Tap to Copy:</b> Click/tap ANY key badge to immediately copy the exact key code!
-                </p>
-              </div>
-            </div>
+        <!-- 2. MINIMAL RATE CHART BAR -->
+        <div class="bg-white rounded-lg border border-slate-200 px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="font-bold text-slate-700">Rate Chart:</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">1–5: ₹25</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">6–10: ₹27</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">11–20: ₹31</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">20+: ₹35</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 font-medium">30+: ₹40</span>
+            <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold">&lt;60% max ₹32</span>
+          </div>
 
-            <!-- Rate Chart Quick Pills -->
-            <div class="flex flex-wrap gap-1.5 self-start sm:self-center">
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">🪙 1–5: ₹25</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">💸 6–10: ₹27</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">💰 11–20: ₹31</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">👾 20+: ₹35</span>
-              <span class="px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700">🧸 30+: ₹40</span>
-              <span class="px-2 py-1 rounded-md bg-rose-50 border border-rose-200 text-[11px] font-extrabold text-rose-700">&lt;60% max ₹32</span>
-            </div>
+          <div class="text-[11px] text-slate-400">
+            ⚡ Tap key to copy • Drag key to merge • Drop left to separate
           </div>
         </div>
 
-        <!-- SEARCH BAR & STATS COUNTER -->
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-          <div class="text-xs font-bold text-slate-600 flex items-center gap-2">
-            <span>Showing <b>${enrichedGuys.length}</b> Workers/Teams</span>
-            <span>•</span>
-            <span class="text-emerald-600"><b>${totalTeamCompletedOrders}</b> Total QRs Completed</span>
-          </div>
-
-          <div class="relative w-full sm:w-72">
-            <input 
-              type="text" 
-              placeholder="Search by worker, @username, key..." 
-              value="${escapeHtml(state.searchQuery || '')}"
-              oninput="state.searchQuery = this.value; renderCurrentPanelQuietly();"
-              class="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            >
-            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            ${state.searchQuery ? `
-              <button onclick="state.searchQuery = ''; renderCurrentPanelQuietly();" class="absolute right-2 top-2 text-slate-400 hover:text-slate-600 text-xs font-bold">&times;</button>
-            ` : ''}
-          </div>
-        </div>
-
-        <!-- CARDS GRID: DROP TARGETS FOR MERGING -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- 3. WORKERS PAY & KEYS LIST (CLEAN MINIMAL LIGHT) -->
+        <div class="space-y-3">
           ${enrichedGuys.map((guy, idx) => {
             const hasMultipleKeys = guy.keys.length > 1;
-            const successOk = Number(guy.successRate) >= 60;
 
             return `
               <div 
                 ondragover="handleKeyDragOver(event)"
                 ondragleave="handleKeyDragLeave(event)"
                 ondrop="handleKeyDrop(event, '${guy.id}')"
-                class="bg-white rounded-2xl border border-slate-200 hover:border-indigo-400 shadow-xs hover:shadow-md transition p-4 sm:p-5 flex flex-col justify-between relative group/card"
+                class="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs hover:border-slate-300 transition"
               >
-                <!-- Card Header -->
-                <div>
-                  <div class="flex items-start justify-between gap-2 pb-3 border-b border-slate-100">
-                    <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-white flex items-center justify-center font-black text-sm shadow-xs flex-shrink-0">
-                        ${idx + 1}
+                <!-- Worker Row -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">
+                      ${idx + 1}
+                    </span>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-extrabold text-slate-900">${escapeHtml(guy.displayName || guy.personName || guy.id)}</span>
+                        ${guy.telegramUsername ? `
+                          <button onclick="copyToClipboard('${escapeHtml(guy.telegramUsername)}', 'Username')" title="Copy Handle" class="text-xs text-slate-500 hover:text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded font-mono">
+                            ${escapeHtml(guy.telegramUsername)}
+                          </button>
+                        ` : ''}
                       </div>
-                      <div class="min-w-0">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                          <h4 class="text-base font-extrabold text-slate-900 truncate">${escapeHtml(guy.displayName || guy.personName || guy.id)}</h4>
-                          ${guy.telegramUsername ? `
-                            <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 flex items-center gap-1">
-                              <span>${escapeHtml(guy.telegramUsername)}</span>
-                              <button onclick="copyToClipboard('${escapeHtml(guy.telegramUsername)}', 'Telegram Handle')" title="Copy Handle" class="text-sky-400 hover:text-sky-700">
-                                📋
-                              </button>
-                            </span>
-                          ` : ''}
-                        </div>
-                        <div class="text-[11px] text-slate-400 mt-0.5">
-                          ${guy.keys.length} Key${guy.keys.length > 1 ? 's Merged' : ''} • Success Rate: <b class="${successOk ? 'text-emerald-600' : 'text-amber-600'}">${guy.successRate}%</b>
-                        </div>
+                      <div class="text-[11px] text-slate-400">
+                        ${guy.completedOrders} QR completed • ${guy.successRate}% rate • ${guy.payCalc.tierLabel}
                       </div>
-                    </div>
-
-                    <!-- Calculated Pay Badge -->
-                    <div class="text-right flex-shrink-0">
-                      <div class="text-xs font-bold text-slate-500">
-                        ${guy.completedOrders} QR @ ₹${guy.payCalc.tierRate}
-                      </div>
-                      <div class="text-xl font-black text-emerald-600">
-                        ₹${guy.finalPay.toLocaleString('en-IN')}
-                      </div>
-                      ${guy.adjustment !== 0 ? `
-                        <div class="text-[10px] font-bold ${guy.adjustment > 0 ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'} px-1.5 py-0.2 rounded inline-block mt-0.5">
-                          Base ₹${guy.payCalc.basePay} ${guy.adjustment > 0 ? '+₹' + guy.adjustment : '-₹' + Math.abs(guy.adjustment)}
-                        </div>
-                      ` : `
-                        <div class="text-[10px] text-slate-400">${guy.payCalc.tierLabel}</div>
-                      `}
                     </div>
                   </div>
 
-                  <!-- Keys List (Draggable for Merging & Detaching) -->
-                  <div class="mt-3.5 space-y-2">
-                    <div class="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                      <span>Assigned Keys (Drag to Merge):</span>
-                      <span class="text-indigo-600 font-bold">${guy.keys.length} Key${guy.keys.length > 1 ? 's' : ''}</span>
+                  <!-- Pay & Adjustments -->
+                  <div class="flex items-center gap-3 sm:justify-end">
+                    <!-- Bonus / Adjustment Buttons -->
+                    <div class="flex items-center gap-1 text-[11px]">
+                      <span class="text-slate-400 mr-0.5">Bonus:</span>
+                      <button onclick="setWorkerAdjustment('${guy.id}', 50)" title="+₹50" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
+                        +50
+                      </button>
+                      <button onclick="setWorkerAdjustment('${guy.id}', -50)" title="-₹50" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
+                        -50
+                      </button>
+                      <button onclick="promptCustomAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Custom amount" class="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold active:scale-95 transition">
+                        ✏️
+                      </button>
+                      ${guy.adjustment !== 0 ? `
+                        <span class="font-bold ${guy.adjustment > 0 ? 'text-emerald-600' : 'text-rose-600'}">
+                          (${guy.adjustment > 0 ? '+' : ''}₹${guy.adjustment})
+                        </span>
+                        <button onclick="resetWorkerAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Reset to 0" class="text-slate-400 hover:text-rose-600">⟲</button>
+                      ` : ''}
                     </div>
 
-                    ${guy.keys.map(k => {
-                      const kDone = Number(k.completedOrders !== undefined ? k.completedOrders : (k.completedCount || 0));
-                      const kRate = Number(k.successRate || 0);
-
-                      return `
-                        <div 
-                          draggable="true" 
-                          ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" 
-                          ondragend="handleKeyDragEnd(event)"
-                          title="Drag to merge onto another worker, or drop on the left side to separate"
-                          class="group/key p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/80 border border-slate-200 hover:border-indigo-400 shadow-2xs hover:shadow-xs transition flex items-center justify-between gap-2.5 cursor-grab active:cursor-grabbing select-none"
-                        >
-                          <div class="flex items-center gap-2 min-w-0">
-                            <!-- Drag Grip Handle -->
-                            <div class="text-slate-400 group-hover/key:text-indigo-600 cursor-grab font-bold text-xs select-none px-0.5" title="Drag to merge">
-                              ⋮⋮
-                            </div>
-
-                            <div class="min-w-0">
-                              <div class="flex items-center gap-1.5">
-                                <span class="text-xs font-black text-slate-800 group-hover/key:text-indigo-900 truncate">
-                                  ${escapeHtml(k.name || k.key)}
-                                </span>
-                                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold ${k.online ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200/80 text-slate-600'}">
-                                  ${k.online ? '🟢 Online' : 'Active'}
-                                </span>
-                              </div>
-                              <div 
-                                onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" 
-                                title="⚡ 1-Tap Copy: ${escapeHtml(k.key)}"
-                                class="font-mono text-[11px] font-semibold text-slate-500 hover:text-indigo-700 cursor-pointer flex items-center gap-1 mt-0.5 truncate"
-                              >
-                                <span>${escapeHtml(k.key)}</span>
-                                <svg class="w-3 h-3 text-slate-400 hover:text-indigo-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="flex items-center gap-2 flex-shrink-0">
-                            <div class="text-right">
-                              <span class="text-xs font-black text-emerald-600 block">${kDone}✓</span>
-                              <span class="text-[10px] text-slate-400 block">${kRate}%</span>
-                            </div>
-
-                            <!-- 1-Tap Copy Button -->
-                            <button 
-                              onclick="copyToClipboard('${escapeHtml(k.key)}', 'Worker Key')" 
-                              title="⚡ One-Tap Copy" 
-                              class="px-2 py-1 rounded-md bg-white hover:bg-indigo-600 text-indigo-700 hover:text-white font-bold text-[10px] border border-indigo-200 transition shadow-2xs active:scale-95"
-                            >
-                              ⚡ Copy
-                            </button>
-
-                            <!-- Undo / Separate Button (Visible if team has multiple keys) -->
-                            ${hasMultipleKeys ? `
-                              <button 
-                                onclick="resetKeyToOriginalForm('${escapeHtml(k.key)}')" 
-                                title="↩ Separate key from this team" 
-                                class="px-2 py-1 rounded-md bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold text-[10px] border border-rose-200 transition shadow-2xs active:scale-95"
-                              >
-                                ↩ Separate
-                              </button>
-                            ` : ''}
-                          </div>
-                        </div>
-                      `;
-                    }).join('')}
+                    <!-- Final Pay -->
+                    <div class="text-right">
+                      <div class="text-base font-black text-slate-900">
+                        ₹${guy.finalPay.toLocaleString('en-IN')}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Footer: Adjustments / Bonus Pay (+/-) -->
-                <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Bonus / Adj:</span>
-                    <button onclick="setWorkerAdjustment('${guy.id}', 50)" title="Add ₹50 bonus" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition active:scale-95">
-                      +₹50
-                    </button>
-                    <button onclick="setWorkerAdjustment('${guy.id}', 100)" title="Add ₹100 bonus" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition active:scale-95">
-                      +₹100
-                    </button>
-                    <button onclick="setWorkerAdjustment('${guy.id}', -50)" title="Deduct ₹50" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition active:scale-95">
-                      -₹50
-                    </button>
-                    <button onclick="promptCustomAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Enter custom adjustment" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95">
-                      ✏️ Custom
-                    </button>
-                    ${guy.adjustment !== 0 ? `
-                      <button onclick="resetWorkerAdjustment('${guy.id}', '${escapeHtml(guy.displayName)}')" title="Reset to ₹0" class="px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-rose-600 transition">
-                        ⟲ Reset
-                      </button>
-                    ` : ''}
-                  </div>
+                <!-- Keys Under Worker -->
+                <div class="mt-2.5 flex flex-wrap gap-2 items-center">
+                  ${guy.keys.map(k => {
+                    const kDone = Number(k.completedOrders !== undefined ? k.completedOrders : (k.completedCount || 0));
+                    return `
+                      <div 
+                        draggable="true" 
+                        ondragstart="handleKeyDragStart(event, '${escapeHtml(k.key)}')" 
+                        ondragend="handleKeyDragEnd(event)"
+                        title="Drag to merge onto another worker, or drop on left to separate"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-mono cursor-grab active:cursor-grabbing transition"
+                      >
+                        <span class="text-slate-300 font-sans select-none text-[10px]">⋮⋮</span>
+                        <span class="font-sans font-bold text-slate-800">${escapeHtml(k.name || k.key)}</span>
+                        <span class="text-slate-300">|</span>
+                        <span 
+                          onclick="copyToClipboard('${escapeHtml(k.key)}', 'Key')" 
+                          title="⚡ 1-Tap Copy: ${escapeHtml(k.key)}" 
+                          class="text-slate-600 hover:text-slate-900 cursor-pointer font-medium"
+                        >
+                          ${escapeHtml(k.key)}
+                        </span>
+                        <span class="text-[10px] px-1 py-0.2 rounded bg-slate-200 font-sans font-bold text-slate-700">
+                          ${kDone}✓
+                        </span>
 
-                  <div class="text-right">
-                    <span class="text-xs font-black text-slate-900">Total: ₹${guy.finalPay.toLocaleString('en-IN')}</span>
-                  </div>
+                        <!-- Separate Button (if worker has multiple keys) -->
+                        ${hasMultipleKeys ? `
+                          <button 
+                            onclick="resetKeyToOriginalForm('${escapeHtml(k.key)}')" 
+                            title="Separate from team" 
+                            class="ml-1 text-[10px] text-rose-500 hover:text-rose-700 font-sans font-bold"
+                          >
+                            ↩
+                          </button>
+                        ` : ''}
+                      </div>
+                    `;
+                  }).join('')}
                 </div>
               </div>
             `;
@@ -4060,6 +3238,7 @@ body {
   // Search input and global drag event listeners
   function setupEventListeners() {
     const searchInput = document.getElementById('global-search');
+    if (searchInput) { searchInput.oninput = (e) => { state.searchQuery = e.target.value; render(); }; }
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         state.searchQuery = e.target.value;
