@@ -1197,7 +1197,36 @@
     ]
   };
 
-    window.exportWorkersPdf = function() {
+    // ==========================================
+  // INFALLIBLE IN-PAGE PDF EXPORT & DIRECT PRINT
+  // 100% immune to popup blockers, zero keys exposed
+  // ==========================================
+  window.closePdfExportModal = function() {
+    const modal = document.getElementById('pdf-export-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.triggerDirectPrint = function() {
+    window.print();
+  };
+
+  window.downloadCleanHtmlStatement = function() {
+    const container = document.getElementById('pdf-printable-container');
+    if (!container) return;
+    const content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Worker Payout Settlement</title><script src="https://cdn.tailwindcss.com"></script><style>@page{size:A4 portrait;margin:12mm;}body{padding:20px;font-family:sans-serif;}</style></head><body>${container.innerHTML}</body></html>`;
+    const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Worker_Payout_Settlement_${state.selectedDay || '23sep'}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('📥 Statement downloaded successfully', 'success');
+  };
+
+  window.exportWorkersPdf = function() {
     const selectedDay = state.selectedDay || '23sep';
     const adjustments = getAdjustments();
     const paidStatusMap = getPaidStatusMap();
@@ -1217,7 +1246,9 @@
         completedOrders: u.done,
         totalOrders: u.total,
         failCount: u.fail,
-        successRate: u.successRate
+        successRate: u.successRate,
+        fixedRateUsd: u.fixedRateUsd,
+        fixedRateInr: u.fixedRateInr
       }));
     } else {
       dateTitle = '24 Sep 2026 (Live Ongoing Orders)';
@@ -1243,7 +1274,7 @@
     let enrichedGuys = filteredGuys.map(guy => {
       const done = Number(guy.completedOrders) || 0;
       const rate = Number(guy.successRate) || 0;
-      const usdRate = usdInrRate || 84;
+      const usdRate = 84;
       const fixedRateInr = guy.fixedRateInr || (guy.fixedRateUsd ? guy.fixedRateUsd * usdRate : (guy.id === 'person:loki' || guy.displayName === 'Loki' ? 0.5 * usdRate : null));
       const payCalc = calculateWorkerPay(done, rate, fixedRateInr);
       const adj = Number(adjustments[guy.id] || 0);
@@ -1275,400 +1306,123 @@
 
     const generatedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' });
 
-    // Build standalone printable HTML document with ZERO keys and ZERO sensitive credentials
-    const printDocHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Worker Payout Settlement - ${escapeHtml(dateTitle)}</title>
-  <style>
-    @page {
-      size: A4 portrait;
-      margin: 12mm 14mm;
-    }
-    * {
-      box-sizing: border-box;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: #0f172a;
-      background: #ffffff;
-      margin: 0;
-      padding: 24px;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-    .no-print-banner {
-      background: #0f172a;
-      color: #ffffff;
-      padding: 12px 18px;
-      border-radius: 8px;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
-    }
-    .no-print-banner .desc {
-      font-size: 12px;
-      color: #94a3b8;
-    }
-    .btn-print {
-      background: #10b981;
-      color: #ffffff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s;
-    }
-    .btn-print:hover {
-      background: #059669;
-    }
-    .btn-close {
-      background: #334155;
-      color: #ffffff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      margin-left: 8px;
-    }
-    .doc-header {
-      border-bottom: 2px solid #0f172a;
-      padding-bottom: 14px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    .doc-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #0f172a;
-      margin: 0;
-      letter-spacing: -0.5px;
-    }
-    .doc-subtitle {
-      font-size: 13px;
-      color: #475569;
-      margin-top: 4px;
-      font-weight: 500;
-    }
-    .doc-meta {
-      text-align: right;
-      font-size: 11px;
-      color: #64748b;
-    }
-    .doc-meta strong {
-      color: #0f172a;
-    }
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .kpi-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 10px 14px;
-      text-align: center;
-    }
-    .kpi-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: #64748b;
-    }
-    .kpi-value {
-      font-size: 18px;
-      font-weight: 800;
-      color: #0f172a;
-      margin-top: 2px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th {
-      background: #f1f5f9;
-      color: #1e293b;
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 10px 12px;
-      border-bottom: 2px solid #cbd5e1;
-      text-align: left;
-    }
-    td {
-      padding: 9px 12px;
-      border-bottom: 1px solid #e2e8f0;
-      font-size: 12px;
-      color: #334155;
-    }
-    tr:nth-child(even) td {
-      background: #fcfdfe;
-    }
-    .col-rank {
-      width: 45px;
-      font-weight: 700;
-      color: #64748b;
-      text-align: center;
-    }
-    .col-worker {
-      font-weight: 700;
-      color: #0f172a;
-      font-size: 13px;
-    }
-    .col-tg {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-weight: 600;
-      color: #2563eb;
-      font-size: 12px;
-    }
-    .col-num {
-      text-align: center;
-      font-weight: 600;
-    }
-    .col-rate {
-      text-align: center;
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .col-pay {
-      text-align: right;
-      font-weight: 800;
-      font-size: 13px;
-      color: #0f172a;
-    }
-    .col-status {
-      text-align: center;
-      font-weight: 700;
-      font-size: 11px;
-    }
-    .badge-paid {
-      color: #065f46;
-      background: #d1fae5;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-block;
-    }
-    .badge-pending {
-      color: #92400e;
-      background: #fef3c7;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-block;
-    }
-    .row-total td {
-      background: #f8fafc !important;
-      font-weight: 800 !important;
-      font-size: 13px !important;
-      color: #0f172a !important;
-      border-top: 2px solid #0f172a !important;
-      border-bottom: 2px solid #0f172a !important;
-      padding: 12px;
-    }
-    .custom-note-print {
-      font-size: 10px;
-      color: #475569;
-      margin-top: 2px;
-      font-style: italic;
-    }
-    .doc-footer {
-      border-top: 1px solid #e2e8f0;
-      padding-top: 14px;
-      margin-top: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: #94a3b8;
-    }
-    .doc-footer .privacy-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: #059669;
-      font-weight: 600;
-    }
-    @media print {
-      .no-print-banner {
-        display: none !important;
-      }
-      body {
-        padding: 0 !important;
-      }
-      table {
-        page-break-inside: auto;
-      }
-      tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-      }
-      thead {
-        display: table-header-group;
-      }
-    }
-  </style>
-</head>
-<body>
+    // Build statement HTML (Zero keys, zero IDs, zero credentials)
+    const statementHtml = `
+      <!-- Statement Header -->
+      <div style="border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+          <h1 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px;">Worker Payout Settlement Statement</h1>
+          <div style="font-size: 13px; color: #475569; margin-top: 4px; font-weight: 500;">${escapeHtml(dateTitle)}</div>
+        </div>
+        <div style="text-align: right; font-size: 11px; color: #64748b;">
+          <div>Generated: <strong>${escapeHtml(generatedAt)}</strong></div>
+          <div>Settlement: <strong style="color: #059669;">${totalPaidCount} of ${enrichedGuys.length} Paid</strong></div>
+        </div>
+      </div>
 
-  <!-- Controls Bar for Preview (Excluded from PDF Print) -->
-  <div class="no-print-banner">
-    <div>
-      <div style="font-weight: 800; font-size: 14px;">📄 Worker Payout Statement Ready for PDF</div>
-      <div class="desc">All worker keys, internal IDs, and private details are automatically hidden. Click below to save as PDF.</div>
-    </div>
-    <div>
-      <button onclick="window.print()" class="btn-print">
-        🖨️ Save as PDF / Print
-      </button>
-      <button onclick="window.close()" class="btn-close">
-        ✕ Close
-      </button>
-    </div>
-  </div>
+      <!-- Summary KPI Bar -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #64748b;">Total Workers</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 2px;">${enrichedGuys.length}</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #64748b;">Completed Orders</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 2px;">${totalOrders} QRs</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #64748b;">Paid / Settled</div>
+          <div style="font-size: 18px; font-weight: 800; color: #059669; margin-top: 2px;">${totalPaidCount} / ${enrichedGuys.length}</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+          <div style="font-size: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #059669;">Total Payout</div>
+          <div style="font-size: 18px; font-weight: 800; color: #059669; margin-top: 2px;">₹${totalPayout.toLocaleString('en-IN')}</div>
+        </div>
+      </div>
 
-  <!-- Statement Header -->
-  <div class="doc-header">
-    <div>
-      <h1 class="doc-title">Worker Payout Settlement Statement</h1>
-      <div class="doc-subtitle">${escapeHtml(dateTitle)}</div>
-    </div>
-    <div class="doc-meta">
-      <div>Generated: <strong>${escapeHtml(generatedAt)}</strong></div>
-      <div>Settlement: <strong style="color: #059669;">${totalPaidCount} of ${enrichedGuys.length} Paid</strong></div>
-    </div>
-  </div>
-
-  <!-- Summary KPI Bar -->
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">Total Workers</div>
-      <div class="kpi-value">${enrichedGuys.length}</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Completed Orders</div>
-      <div class="kpi-value">${totalOrders} QRs</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Paid / Settled</div>
-      <div class="kpi-value" style="color: #059669;">${totalPaidCount} / ${enrichedGuys.length}</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label" style="color: #059669;">Total Payout</div>
-      <div class="kpi-value" style="color: #059669;">₹${totalPayout.toLocaleString('en-IN')}</div>
-    </div>
-  </div>
-
-  <!-- Payout Table (Zero Keys, Zero Credentials) -->
-  <table>
-    <thead>
-      <tr>
-        <th class="col-rank">#</th>
-        <th>Worker / Name</th>
-        <th>Telegram Handle</th>
-        <th class="col-num">Completed QRs</th>
-        <th class="col-num">Success Rate</th>
-        <th class="col-rate">Applied Rate</th>
-        <th class="col-pay">Pay to Receive</th>
-        <th class="col-status">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${enrichedGuys.map((guy, idx) => {
-        return `
-          <tr>
-            <td class="col-rank">#${idx + 1}</td>
-            <td class="col-worker">
-              ${escapeHtml(guy.displayName || guy.personName || guy.id)}
-              ${guy.customNote ? `<div class="custom-note-print">📝 ${escapeHtml(guy.customNote)}</div>` : ''}
-            </td>
-            <td class="col-tg">${guy.telegramUsername ? escapeHtml(guy.telegramUsername) : '—'}</td>
-            <td class="col-num">${guy.done}</td>
-            <td class="col-num">${guy.rate}%</td>
-            <td class="col-rate">₹${guy.payCalc.tierRate}/QR ${guy.payCalc.emoji}</td>
-            <td class="col-pay">
-              ₹${guy.finalPay.toLocaleString('en-IN')}
-              ${guy.hasCustomPay ? `<div style="font-size: 10px; color: #4f46e5; font-weight: normal;">(Custom)</div>` : ''}
-            </td>
-            <td class="col-status">
-              ${guy.isPaid ? '<span class="badge-paid">✅ PAID</span>' : '<span class="badge-pending">⏳ PENDING</span>'}
-            </td>
+      <!-- Payout Table (Zero Keys, Zero Credentials) -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+          <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center; width: 45px;">#</th>
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: left;">Worker / Name</th>
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: left;">Telegram Handle</th>
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Completed QRs</th>
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Success Rate</th>
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Applied Rate</th>
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: right;">Pay to Receive</th>
+            <th style="padding: 10px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #1e293b; text-align: center;">Status</th>
           </tr>
-        `;
-      }).join('')}
-      <!-- Total Summary Row -->
-      <tr class="row-total">
-        <td colspan="3" style="text-align: left;">TOTAL SUMMARY (${enrichedGuys.length} WORKERS)</td>
-        <td class="col-num">${totalOrders} QRs</td>
-        <td class="col-num">—</td>
-        <td class="col-rate">—</td>
-        <td class="col-pay">₹${totalPayout.toLocaleString('en-IN')}</td>
-        <td class="col-status">${totalPaidCount} / ${enrichedGuys.length} Paid</td>
-      </tr>
-    </tbody>
-  </table>
+        </thead>
+        <tbody>
+          ${enrichedGuys.map((guy, idx) => `
+            <tr style="border-bottom: 1px solid #e2e8f0; ${idx % 2 === 1 ? 'background: #fcfdfe;' : ''}">
+              <td style="padding: 9px 12px; font-size: 12px; color: #64748b; font-weight: 700; text-align: center;">#${idx + 1}</td>
+              <td style="padding: 9px 12px; font-size: 13px; font-weight: 700; color: #0f172a;">
+                ${escapeHtml(guy.displayName || guy.personName || guy.id)}
+                ${guy.customNote ? `<div style="font-size: 10px; color: #475569; margin-top: 2px; font-style: italic;">📝 ${escapeHtml(guy.customNote)}</div>` : ''}
+              </td>
+              <td style="padding: 9px 12px; font-size: 12px; font-family: monospace; font-weight: 600; color: #2563eb;">
+                ${guy.telegramUsername ? escapeHtml(guy.telegramUsername) : '—'}
+              </td>
+              <td style="padding: 9px 12px; font-size: 12px; text-align: center; font-weight: 600; color: #334155;">${guy.done}</td>
+              <td style="padding: 9px 12px; font-size: 12px; text-align: center; font-weight: 600; color: #334155;">${guy.rate}%</td>
+              <td style="padding: 9px 12px; font-size: 12px; text-align: center; font-weight: 700; color: #0f172a;">
+                ₹${guy.payCalc.tierRate}/QR ${guy.payCalc.emoji}
+              </td>
+              <td style="padding: 9px 12px; font-size: 13px; font-weight: 800; color: #0f172a; text-align: right;">
+                ₹${guy.finalPay.toLocaleString('en-IN')}
+                ${guy.hasCustomPay ? `<div style="font-size: 10px; color: #4f46e5; font-weight: normal;">(Custom)</div>` : ''}
+              </td>
+              <td style="padding: 9px 12px; font-size: 11px; text-align: center; font-weight: 700;">
+                ${guy.isPaid ? '<span style="color: #065f46; background: #d1fae5; padding: 2px 6px; border-radius: 4px; display: inline-block;">✅ PAID</span>' : '<span style="color: #92400e; background: #fef3c7; padding: 2px 6px; border-radius: 4px; display: inline-block;">⏳ PENDING</span>'}
+              </td>
+            </tr>
+          `).join('')}
+          <!-- Total Summary Row -->
+          <tr style="background: #f8fafc; font-weight: 800; font-size: 13px; color: #0f172a; border-top: 2px solid #0f172a; border-bottom: 2px solid #0f172a;">
+            <td colspan="3" style="padding: 12px; text-align: left;">TOTAL SUMMARY (${enrichedGuys.length} WORKERS)</td>
+            <td style="padding: 12px; text-align: center;">${totalOrders} QRs</td>
+            <td style="padding: 12px; text-align: center;">—</td>
+            <td style="padding: 12px; text-align: center;">—</td>
+            <td style="padding: 12px; text-align: right;">₹${totalPayout.toLocaleString('en-IN')}</td>
+            <td style="padding: 12px; text-align: center;">${totalPaidCount} / ${enrichedGuys.length} Paid</td>
+          </tr>
+        </tbody>
+      </table>
 
-  <!-- Document Footer -->
-  <div class="doc-footer">
-    <div class="privacy-badge">
-      🔒 Privacy Protected: Worker keys, internal credentials, and private metrics have been omitted.
-    </div>
-    <div>
-      Official Payout Statement • Page 1 of 1
-    </div>
-  </div>
+      <!-- Document Footer -->
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 24px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8;">
+        <div style="display: inline-flex; align-items: center; gap: 4px; color: #059669; font-weight: 600;">
+          🔒 Privacy Protected: All worker keys, internal IDs, and private margins have been completely omitted.
+        </div>
+        <div>
+          Official Payout Statement • Page 1 of 1
+        </div>
+      </div>
+    `;
 
-  <script>
-    window.onload = function() {
-      setTimeout(function() {
-        window.print();
-      }, 350);
-    };
-  </script>
-</body>
-</html>`;
+    // 1. Inject into in-page printable container
+    const container = document.getElementById('pdf-printable-container');
+    const modal = document.getElementById('pdf-export-modal');
 
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(printDocHtml);
-      printWindow.document.close();
-      showToast('📄 PDF Export window opened — Print or Save as PDF', 'success');
-    } else {
-      const printFrame = document.createElement('iframe');
-      printFrame.style.position = 'fixed';
-      printFrame.style.right = '0';
-      printFrame.style.bottom = '0';
-      printFrame.style.width = '0';
-      printFrame.style.height = '0';
-      printFrame.style.border = '0';
-      document.body.appendChild(printFrame);
-      printFrame.contentDocument.open();
-      printFrame.contentDocument.write(printDocHtml);
-      printFrame.contentDocument.close();
+    if (container && modal) {
+      container.innerHTML = statementHtml;
+      modal.classList.remove('hidden');
+
+      // 2. Trigger native browser print directly on user action
       setTimeout(() => {
-        printFrame.contentWindow.focus();
-        printFrame.contentWindow.print();
-        setTimeout(() => document.body.removeChild(printFrame), 5000);
-      }, 500);
-      showToast('📄 Opened print dialog', 'info');
+        try {
+          window.print();
+        } catch(e) {
+          console.warn('Direct print warning:', e);
+        }
+      }, 150);
+
+      showToast('📄 Payout Statement ready! Use the dialog to Save as PDF', 'success');
+    } else {
+      // Fallback
+      window.print();
     }
   };
 

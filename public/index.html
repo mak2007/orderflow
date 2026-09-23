@@ -104,6 +104,58 @@
     </div>
   </main>
 
+  
+  <!-- Infallible Modal Overlay for PDF Export & Direct Print -->
+  <div id="pdf-export-modal" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col border border-slate-200 overflow-hidden">
+      <!-- Modal Header (Controls: Print, Download, Close) -->
+      <div class="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between gap-3 shrink-0">
+        <div>
+          <div class="text-sm font-extrabold flex items-center gap-2">
+            <span>📄 Worker Payout Statement</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Zero Keys Exposed
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-0.5">
+            All keys and private details are stripped out. Click below to print or save as PDF.
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button 
+            onclick="triggerDirectPrint()" 
+            class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <span>Save as PDF / Print</span>
+          </button>
+
+          <button 
+            onclick="downloadCleanHtmlStatement()" 
+            class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1 active:scale-95 cursor-pointer"
+            title="Download offline HTML statement"
+          >
+            <span>📥 Download</span>
+          </button>
+
+          <button 
+            onclick="closePdfExportModal()" 
+            class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition active:scale-95 cursor-pointer"
+            title="Close"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Statement Body -->
+      <div id="pdf-printable-container" class="p-6 sm:p-8 overflow-y-auto flex-1 bg-white">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
