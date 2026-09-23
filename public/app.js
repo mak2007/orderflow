@@ -244,8 +244,21 @@
         groupKey = 'person:' + worker.personName.trim().toLowerCase();
         displayName = worker.personName.trim();
       } else {
-        groupKey = 'worker:' + (worker.key || worker.name).toLowerCase();
-        displayName = worker.name || worker.key;
+        const isUnnamed = !worker.name || worker.name.trim() === '' || worker.name.startsWith('WORKER-') || worker.name.toLowerCase() === 'unnamed';
+        if (isUnnamed) {
+          if (!window.__idkMap) window.__idkMap = new Map();
+          const cleanKey = (worker.key || '').toUpperCase();
+          if (!window.__idkMap.has(cleanKey)) {
+            const nextIdx = window.__idkMap.size + 1;
+            window.__idkMap.set(cleanKey, 'idk ' + nextIdx);
+          }
+          const assignedIdk = window.__idkMap.get(cleanKey);
+          groupKey = 'idk:' + assignedIdk.replace(/\s+/g, '_');
+          displayName = assignedIdk;
+        } else {
+          groupKey = 'worker:' + (worker.key || worker.name).toLowerCase();
+          displayName = worker.name || worker.key;
+        }
       }
 
       if (!groups.has(groupKey)) {
@@ -658,10 +671,22 @@
   // 20+ QR   -> 35rs. 👾💣💥
   // 30+ QR   -> 40rs 🧸🧸🧸
   // If success rate below 60% -> Max rate is 32rs ⚠️
-  function calculateWorkerPay(completedCount, successRate) {
+  function calculateWorkerPay(completedCount, successRate, fixedRate) {
     const done = Number(completedCount) || 0;
     const rateNum = Number(successRate) || 0;
     if (done <= 0) return { tierRate: 0, basePay: 0, isCapped: false, tierLabel: '0 QR', emoji: '' };
+
+    // Support fixed rate override (e.g. Loki fixed rate 0.5 USD = ₹42/QR)
+    if (fixedRate !== undefined && fixedRate !== null && Number(fixedRate) > 0) {
+      const fixedRateNum = Number(fixedRate);
+      return {
+        tierRate: fixedRateNum,
+        basePay: done * fixedRateNum,
+        isCapped: false,
+        tierLabel: `Fixed Rate (₹${fixedRateNum}/QR • $0.50 USD)`,
+        emoji: '⭐'
+      };
+    }
 
     let tierRate = 25;
     let tierLabel = '1–5 QR (₹25)';
@@ -1058,6 +1083,8 @@
         id: "person:loki",
         username: "loki",
         displayName: "Loki",
+        fixedRateUsd: 0.5,
+        fixedRateInr: 42,
         keys: [
           { name: "Loki", key: "WORKER-1956-E7B7-7220-B03F", done: 3, fail: 1, total: 4, successRate: 75.0 },
           { name: "W99w8", key: "WORKER-E0F5-49CA-9564-7425", done: 2, fail: 1, total: 3, successRate: 66.7 }
@@ -1118,9 +1145,9 @@
         successRate: 28.6
       },
       {
-        id: "person:idk",
-        username: "idk",
-        displayName: "Idk",
+        id: "person:idk_1",
+        username: "idk 1",
+        displayName: "idk 1",
         keys: [{ name: "Woosidk", key: "WORKER-0872-8B7E-1BD4-17CC", done: 2, fail: 4, total: 6, successRate: 33.3 }],
         done: 2,
         fail: 4,
@@ -1216,7 +1243,9 @@
     let enrichedGuys = filteredGuys.map(guy => {
       const done = Number(guy.completedOrders) || 0;
       const rate = Number(guy.successRate) || 0;
-      const payCalc = calculateWorkerPay(done, rate);
+      const usdRate = usdInrRate || 84;
+      const fixedRateInr = guy.fixedRateInr || (guy.fixedRateUsd ? guy.fixedRateUsd * usdRate : (guy.id === 'person:loki' || guy.displayName === 'Loki' ? 0.5 * usdRate : null));
+      const payCalc = calculateWorkerPay(done, rate, fixedRateInr);
       const adj = Number(adjustments[guy.id] || 0);
 
       const hasCustomPay = customPayMap[guy.id] !== undefined;
@@ -1855,7 +1884,9 @@
     let enrichedGuys = filteredGuys.map(guy => {
       const done = Number(guy.completedOrders) || 0;
       const rate = Number(guy.successRate) || 0;
-      const payCalc = calculateWorkerPay(done, rate);
+      const usdRate = 84;
+      const fixedRateInr = guy.fixedRateInr || (guy.fixedRateUsd ? guy.fixedRateUsd * usdRate : (guy.id === 'person:loki' || guy.displayName === 'Loki' ? 0.5 * usdRate : null));
+      const payCalc = calculateWorkerPay(done, rate, fixedRateInr);
       const adjustment = Number(adjustments[guy.id] || 0);
 
       // Check custom pay override
