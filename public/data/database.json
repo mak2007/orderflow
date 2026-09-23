@@ -1203,7 +1203,7 @@
       "name": "HyperX",
       "key": "WORKER-F4CC-5C42-85A9-617F",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "hyper",
       "rate": 15,
       "completedOrders": 1,
       "failCount": 1,
@@ -1220,7 +1220,8 @@
       "lastSyncedAt": "2026-09-19T21:53:52.954Z",
       "paidAmount": 15,
       "paidCount": 1,
-      "lastPaidAt": "2026-09-20T02:31:00.745Z"
+      "lastPaidAt": "2026-09-20T02:31:00.745Z",
+      "personName": "hyper"
     },
     {
       "id": "w-masi-55",
@@ -1602,7 +1603,7 @@
       "name": "Loki",
       "key": "WORKER-1956-E7B7-7220-B03F",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "loki",
       "rate": 15,
       "completedOrders": 1,
       "failCount": 4,
@@ -1619,7 +1620,8 @@
       "lastSyncedAt": "2026-09-19T21:53:52.955Z",
       "paidAmount": 15,
       "paidCount": 1,
-      "lastPaidAt": "2026-09-20T01:50:34.839Z"
+      "lastPaidAt": "2026-09-20T01:50:34.839Z",
+      "personName": "loki"
     },
     {
       "id": "w-masi-73",
@@ -1888,7 +1890,7 @@
       "name": "Nitin",
       "key": "WORKER-2D3D-E8D5-B6A1-5CD1",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "@ntnatri",
       "rate": 15,
       "completedOrders": 6,
       "failCount": 10,
@@ -1902,7 +1904,8 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.956Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.956Z",
+      "personName": "@ntnatri"
     },
     {
       "id": "w-masi-85",
@@ -2283,7 +2286,7 @@
       "name": "Shaurya",
       "key": "WORKER-98D0-D03A-8138-F09A",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "@shauryagharat4103",
       "rate": 15,
       "completedOrders": 0,
       "failCount": 0,
@@ -2297,7 +2300,8 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.958Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.958Z",
+      "personName": "@shauryagharat4103"
     },
     {
       "id": "w-masi-104",
@@ -2421,7 +2425,7 @@
       "name": "Sonusingh",
       "key": "WORKER-79E7-D83D-0D37-C64B",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "@Sonu2538",
       "rate": 15,
       "completedOrders": 0,
       "failCount": 0,
@@ -2435,7 +2439,8 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.958Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.958Z",
+      "personName": "@Sonu2538"
     },
     {
       "id": "w-masi-110",
@@ -2528,7 +2533,7 @@
       "name": "W99w8",
       "key": "WORKER-E0F5-49CA-9564-7425",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "loki",
       "rate": 15,
       "completedOrders": 9,
       "failCount": 0,
@@ -2546,7 +2551,7 @@
       "paidAmount": 90,
       "paidCount": 6,
       "lastPaidAt": "2026-09-20T02:09:48.203Z",
-      "personName": "Lokesh",
+      "personName": "loki",
       "updatedAt": "2026-09-20T20:35:03.912Z"
     },
     {
@@ -2659,7 +2664,7 @@
       "name": "Woosidk",
       "key": "WORKER-0872-8B7E-1BD4-17CC",
       "telegramId": null,
-      "telegramUsername": null,
+      "telegramUsername": "idk",
       "rate": 15,
       "completedOrders": 0,
       "failCount": 0,
@@ -2673,7 +2678,8 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-19T21:53:52.958Z"
+      "lastSyncedAt": "2026-09-19T21:53:52.958Z",
+      "personName": "idk"
     },
     {
       "id": "w-masi-121",
@@ -2970,7 +2976,7 @@
       "id": "w-shubhraj-1789965599236-306",
       "name": "LuffyD",
       "key": "WORKER-BAF8-8A3C-3CA1-5604",
-      "personName": "Shubhraj Singh",
+      "personName": "@BCNAMI",
       "rate": 15,
       "completedOrders": 15,
       "done24h": 15,
@@ -2985,7 +2991,8 @@
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-21T04:39:59.236Z",
-      "updatedAt": "2026-09-21T04:39:59.237Z"
+      "updatedAt": "2026-09-21T04:39:59.237Z",
+      "telegramUsername": "@BCNAMI"
     },
     {
       "id": "w-shubhraj-1789965599237-968",
@@ -3049,6 +3056,292 @@
       "source": "masi",
       "createdAt": "2026-09-21T04:39:59.238Z",
       "updatedAt": "2026-09-21T04:39:59.238Z"
+    },
+    {
+      "id": "w-auto-1790188907436-228",
+      "name": "@Bnzaalam",
+      "key": "WORKER-21C3-59F9-EA3B-E26A",
+      "telegramUsername": "@Bnzaalam",
+      "personName": "@Bnzaalam",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-166",
+      "name": "@fileworker_6700",
+      "key": "WORKER-B25D-66C6-25F7-C418",
+      "telegramUsername": "@fileworker_6700",
+      "personName": "@fileworker_6700",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-956",
+      "name": "@hashirmhd",
+      "key": "WORKER-36F9-1F80-EA07-C8DA",
+      "telegramUsername": "@hashirmhd",
+      "personName": "@hashirmhd",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-355",
+      "name": "@AASHU_97",
+      "key": "WORKER-7F2C-BE14-84B5-EC3C",
+      "telegramUsername": "@AASHU_97",
+      "personName": "@AASHU_97",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-794",
+      "name": "@Deep280109",
+      "key": "WORKER-7D0E-10BE-477F-0741",
+      "telegramUsername": "@Deep280109",
+      "personName": "@Deep280109",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-238",
+      "name": "@pawan_naidu_24",
+      "key": "WORKER-D8DC-E408-F99E-B402",
+      "telegramUsername": "@pawan_naidu_24",
+      "personName": "@pawan_naidu_24",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-48",
+      "name": "shub",
+      "key": "WORKER-06D9-A94C-E26D-C1B2",
+      "telegramUsername": "shub",
+      "personName": "shub",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-206",
+      "name": "shub",
+      "key": "WORKER-B1B5-38E0-D897-E5D7",
+      "telegramUsername": "shub",
+      "personName": "shub",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-641",
+      "name": "shub",
+      "key": "WORKER-037D-4846-737B-5143",
+      "telegramUsername": "shub",
+      "personName": "shub",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-470",
+      "name": "shub",
+      "key": "WORKER-07BB-01F6-7743-7BE8",
+      "telegramUsername": "shub",
+      "personName": "shub",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-820",
+      "name": "@Tgrajout",
+      "key": "WORKER-B9CC-39EC-1C71-DDEC",
+      "telegramUsername": "@Tgrajout",
+      "personName": "@Tgrajout",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-428",
+      "name": "@Tgrajout",
+      "key": "WORKER-48A6-E6A7-89C5-A8E7",
+      "telegramUsername": "@Tgrajout",
+      "personName": "@Tgrajout",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-830",
+      "name": "@Tgrajout",
+      "key": "WORKER-7EDD-E24E-A7E0-8813",
+      "telegramUsername": "@Tgrajout",
+      "personName": "@Tgrajout",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-629",
+      "name": "@Tgrajout",
+      "key": "WORKER-8CAF-E03B-19C1-E66F",
+      "telegramUsername": "@Tgrajout",
+      "personName": "@Tgrajout",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-246",
+      "name": "@Tgrajout",
+      "key": "WORKER-D4A3-4AA1-5B5E-0060",
+      "telegramUsername": "@Tgrajout",
+      "personName": "@Tgrajout",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-656",
+      "name": "@Tgrajout",
+      "key": "WORKER-82FF-EC9D-35F4-8648",
+      "telegramUsername": "@Tgrajout",
+      "personName": "@Tgrajout",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-615",
+      "name": "@ROSALIE_ADMIN1",
+      "key": "WORKER-5C38-E9A2-3950-2DE3",
+      "telegramUsername": "@ROSALIE_ADMIN1",
+      "personName": "@ROSALIE_ADMIN1",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-278",
+      "name": "@ROSALIE_ADMIN1",
+      "key": "WORKER-B110-7AFF-53AF-AA74",
+      "telegramUsername": "@ROSALIE_ADMIN1",
+      "personName": "@ROSALIE_ADMIN1",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-318",
+      "name": "majid",
+      "key": "WORKER-90C8-CDB0-D93C-26B8",
+      "telegramUsername": "majid",
+      "personName": "majid",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-743",
+      "name": "@LaksheswarX",
+      "key": "WORKER-0452-3999-5B0F-FF48",
+      "telegramUsername": "@LaksheswarX",
+      "personName": "@LaksheswarX",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-774",
+      "name": "@Rayyann30",
+      "key": "WORKER-98EF-C719-3B23-A25A",
+      "telegramUsername": "@Rayyann30",
+      "personName": "@Rayyann30",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-175",
+      "name": "@Terajaat012",
+      "key": "WORKER-A13D-9071-CB21-EEAB",
+      "telegramUsername": "@Terajaat012",
+      "personName": "@Terajaat012",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-870",
+      "name": "@Work4money_owner",
+      "key": "WORKER-708B-BDA0-F8CC-FE52",
+      "telegramUsername": "@Work4money_owner",
+      "personName": "@Work4money_owner",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-877",
+      "name": "sharmaji",
+      "key": "WORKER-9433-07AE-F0AF-26E2",
+      "telegramUsername": "sharmaji",
+      "personName": "sharmaji",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-566",
+      "name": "@Kelifor",
+      "key": "WORKER-4A7A-EE26-47D4-9F9A",
+      "telegramUsername": "@Kelifor",
+      "personName": "@Kelifor",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
+    },
+    {
+      "id": "w-auto-1790188907436-125",
+      "name": "@PsychoAlex99",
+      "key": "WORKER-957A-2D08-DCB6-118F",
+      "telegramUsername": "@PsychoAlex99",
+      "personName": "@PsychoAlex99",
+      "rate": 15,
+      "completedOrders": 0,
+      "status": "active",
+      "source": "custom"
     }
   ],
   "orders": [
