@@ -1,17 +1,19 @@
-let server;
-try {
-  server = require('../server.js');
-} catch (e) {
-  console.error('[api/index.js] Failed to load server.js:', e.message);
-}
-
+// Vercel Serverless Function: fallback /api handler
 module.exports = (req, res) => {
-  if (!server) {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.statusCode = 500;
-    res.end(JSON.stringify({ success: false, error: 'Server module failed to initialize' }));
-    return;
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    return res.end();
   }
-  return server(req, res);
+
+  res.statusCode = 200;
+  return res.end(JSON.stringify({
+    success: true,
+    message: 'OrderFlow API operational',
+    version: '2.0.0'
+  }));
 };

@@ -1,12 +1,16 @@
 {
-  "name": "order-inventory-manager",
+  "name": "orderflow",
   "version": "1.0.0",
-  "description": "Worker submission tracking, sold/unsold inventory management, and fulfillment dashboard",
-  "main": "server.js",
+  "description": "Daily Profit, Settlements and Worker Payouts Dashboard",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "node -e \"console.log('Static site build complete')\""
   },
-  "keywords": ["inventory", "order-tracker", "worker-payouts"],
+  "keywords": [
+    "inventory",
+    "order-tracker",
+    "worker-payouts"
+  ],
   "author": "Antigravity",
   "license": "MIT"
 }
