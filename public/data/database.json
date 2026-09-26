@@ -69,7 +69,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.697Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.985Z"
     },
     {
       "id": "w-masi-2",
@@ -90,7 +90,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.702Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-masi-3",
@@ -111,7 +111,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.704Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-masi-4",
@@ -132,7 +132,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.704Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z",
       "paidAmount": 15,
       "paidCount": 1,
       "lastPaidAt": "2026-09-20T01:44:02.691Z"
@@ -156,7 +156,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.704Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z",
       "paidAmount": 150,
       "paidCount": 10,
       "lastPaidAt": "2026-09-20T01:44:08.664Z"
@@ -180,7 +180,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.705Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-masi-7",
@@ -201,7 +201,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.705Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z",
       "paidAmount": 30,
       "paidCount": 2,
       "lastPaidAt": "2026-09-20T01:44:16.700Z"
@@ -225,7 +225,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.705Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z",
       "personName": "Alam",
       "updatedAt": "2026-09-19T22:01:54.911Z",
       "paidAmount": 390,
@@ -251,7 +251,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.705Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z",
       "personName": "Alam",
       "updatedAt": "2026-09-19T22:01:54.912Z",
       "paidAmount": 225,
@@ -277,7 +277,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.707Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-masi-11",
@@ -298,7 +298,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.707Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-masi-12",
@@ -319,7 +319,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.708Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.988Z"
     },
     {
       "id": "w-masi-13",
@@ -340,7 +340,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.709Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-masi-14",
@@ -361,7 +361,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.709Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z",
       "paidAmount": 75,
       "paidCount": 5,
       "lastPaidAt": "2026-09-20T02:22:41.326Z"
@@ -385,7 +385,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.710Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-masi-16",
@@ -394,10 +394,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 1,
       "failCount": 1,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "successRate": 50,
+      "customSuccessRate": 50,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -406,7 +406,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-masi-17",
@@ -427,7 +427,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-masi-18",
@@ -448,7 +448,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z",
       "paidAmount": 60,
       "paidCount": 4,
       "lastPaidAt": "2026-09-20T02:16:03.414Z"
@@ -472,7 +472,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z",
       "paidAmount": 30,
       "paidCount": 2,
       "lastPaidAt": "2026-09-20T02:24:15.334Z"
@@ -496,7 +496,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-masi-21",
@@ -517,7 +517,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z",
       "paidAmount": 45,
       "paidCount": 3,
       "lastPaidAt": "2026-09-20T02:25:04.393Z"
@@ -541,7 +541,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z",
       "personName": "Lokesh",
       "updatedAt": "2026-09-20T20:35:03.910Z"
     },
@@ -564,7 +564,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z",
       "personName": "Lokesh",
       "updatedAt": "2026-09-20T20:35:03.910Z"
     },
@@ -587,7 +587,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z",
       "personName": "Lokesh",
       "updatedAt": "2026-09-20T20:35:03.912Z"
     },
@@ -610,7 +610,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-masi-26",
@@ -631,7 +631,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-masi-27",
@@ -652,7 +652,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-masi-28",
@@ -673,7 +673,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-masi-29",
@@ -694,7 +694,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.713Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z",
       "personName": "Shubhraj Singh",
       "updatedAt": "2026-09-21T04:39:59.238Z",
       "done24h": 1,
@@ -719,7 +719,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.714Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-masi-31",
@@ -740,7 +740,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.714Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z",
       "paidAmount": 135,
       "paidCount": 9,
       "lastPaidAt": "2026-09-20T02:28:33.117Z"
@@ -764,7 +764,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.715Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-masi-33",
@@ -785,7 +785,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.715Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-masi-34",
@@ -806,7 +806,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.715Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-masi-35",
@@ -827,7 +827,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.715Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-masi-36",
@@ -848,7 +848,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.715Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-masi-37",
@@ -869,7 +869,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.717Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.992Z"
     },
     {
       "id": "w-masi-38",
@@ -890,7 +890,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.718Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-masi-39",
@@ -911,7 +911,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.719Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-masi-40",
@@ -932,7 +932,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.719Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-masi-41",
@@ -953,7 +953,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.720Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-masi-42",
@@ -974,7 +974,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.720Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-masi-43",
@@ -995,7 +995,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.720Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-masi-44",
@@ -1016,7 +1016,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.720Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-masi-45",
@@ -1037,7 +1037,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.768Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-masi-46",
@@ -1058,7 +1058,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.768Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z",
       "paidAmount": 225,
       "paidCount": 15,
       "lastPaidAt": "2026-09-20T02:29:38.509Z"
@@ -1082,7 +1082,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.769Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-masi-49",
@@ -1103,7 +1103,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.770Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-masi-50",
@@ -1124,7 +1124,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.771Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z",
       "paidAmount": 90,
       "paidCount": 6,
       "lastPaidAt": "2026-09-20T02:30:08.791Z"
@@ -1148,7 +1148,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.771Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z",
       "paidAmount": 195,
       "paidCount": 13,
       "lastPaidAt": "2026-09-20T02:30:11.877Z"
@@ -1172,7 +1172,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.772Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-53",
@@ -1193,7 +1193,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.772Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z",
       "paidAmount": 120,
       "paidCount": 8,
       "lastPaidAt": "2026-09-20T02:30:59.549Z"
@@ -1217,7 +1217,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.772Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z",
       "paidAmount": 15,
       "paidCount": 1,
       "lastPaidAt": "2026-09-20T02:31:00.745Z",
@@ -1242,7 +1242,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.773Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-56",
@@ -1263,7 +1263,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-57",
@@ -1284,7 +1284,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-58",
@@ -1305,7 +1305,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-59",
@@ -1326,7 +1326,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-60",
@@ -1347,7 +1347,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-61",
@@ -1368,7 +1368,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-masi-62",
@@ -1389,7 +1389,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-masi-63",
@@ -1410,7 +1410,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "personName": "Shubhraj Singh",
       "updatedAt": "2026-09-21T04:39:59.238Z",
       "done24h": 2,
@@ -1435,7 +1435,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-masi-65",
@@ -1456,7 +1456,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "personName": "Lokesh",
       "updatedAt": "2026-09-20T20:35:03.912Z"
     },
@@ -1479,7 +1479,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "personName": "Shubhraj Singh",
       "updatedAt": "2026-09-21T04:39:59.237Z",
       "done24h": 4,
@@ -1504,7 +1504,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-masi-68",
@@ -1525,7 +1525,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "personName": "Lokesh",
       "updatedAt": "2026-09-20T20:35:03.912Z"
     },
@@ -1548,7 +1548,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "personName": "Lokesh"
     },
     {
@@ -1570,7 +1570,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "paidAmount": 15,
       "paidCount": 1,
       "lastPaidAt": "2026-09-20T01:50:39.289Z",
@@ -1595,7 +1595,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "personName": "Lokesh"
     },
     {
@@ -1617,7 +1617,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "paidAmount": 15,
       "paidCount": 1,
       "lastPaidAt": "2026-09-20T01:50:34.839Z",
@@ -1642,7 +1642,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "personName": "Shubhraj Singh",
       "updatedAt": "2026-09-21T04:39:59.237Z",
       "done24h": 13,
@@ -1667,7 +1667,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "paidAmount": 60,
       "paidCount": 4,
       "lastPaidAt": "2026-09-20T01:50:32.650Z",
@@ -1693,7 +1693,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "paidAmount": 75,
       "paidCount": 5,
       "lastPaidAt": "2026-09-20T02:34:15.018Z"
@@ -1717,7 +1717,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "paidAmount": 15,
       "paidCount": 1,
       "lastPaidAt": "2026-09-20T02:34:16.640Z",
@@ -1745,7 +1745,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z",
       "paidAmount": 270,
       "paidCount": 18,
       "lastPaidAt": "2026-09-20T02:36:43.898Z"
@@ -1757,10 +1757,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 12,
-      "failCount": 14,
-      "successRate": 46.2,
-      "customSuccessRate": 46.2,
+      "completedOrders": 27,
+      "failCount": 24,
+      "successRate": 52.9,
+      "customSuccessRate": 52.9,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -1769,7 +1769,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z",
       "paidAmount": 45,
       "paidCount": 3,
       "lastPaidAt": "2026-09-20T02:40:11.160Z"
@@ -1793,7 +1793,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z",
       "paidAmount": 60,
       "paidCount": 4,
       "lastPaidAt": "2026-09-20T02:34:25.230Z"
@@ -1817,7 +1817,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.998Z"
     },
     {
       "id": "w-masi-81",
@@ -1838,7 +1838,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.998Z",
       "paidAmount": 150,
       "paidCount": 10,
       "lastPaidAt": "2026-09-20T02:40:40.619Z"
@@ -1862,7 +1862,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.998Z"
     },
     {
       "id": "w-masi-83",
@@ -1883,7 +1883,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.998Z"
     },
     {
       "id": "w-masi-84",
@@ -1904,7 +1904,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z",
+      "lastSyncedAt": "2026-09-24T10:54:51.999Z",
       "personName": "@ntnatri"
     },
     {
@@ -1926,7 +1926,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.999Z"
     },
     {
       "id": "w-masi-86",
@@ -1947,7 +1947,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.999Z"
     },
     {
       "id": "w-masi-87",
@@ -1968,7 +1968,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.999Z"
     },
     {
       "id": "w-masi-88",
@@ -1989,7 +1989,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.999Z"
     },
     {
       "id": "w-masi-89",
@@ -2010,7 +2010,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z",
       "paidAmount": 75,
       "paidCount": 5,
       "lastPaidAt": "2026-09-20T02:42:41.811Z"
@@ -2034,7 +2034,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-masi-92",
@@ -2055,7 +2055,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-masi-93",
@@ -2076,7 +2076,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-masi-94",
@@ -2097,7 +2097,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z",
       "personName": "Shubhraj Singh",
       "done24h": 33,
       "fail24h": 6,
@@ -2122,7 +2122,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-masi-96",
@@ -2143,7 +2143,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-masi-97",
@@ -2152,10 +2152,10 @@
       "telegramId": null,
       "telegramUsername": null,
       "rate": 15,
-      "completedOrders": 1,
-      "failCount": 6,
-      "successRate": 14.3,
-      "customSuccessRate": 14.3,
+      "completedOrders": 2,
+      "failCount": 7,
+      "successRate": 22.2,
+      "customSuccessRate": 22.2,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2164,7 +2164,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-masi-98",
@@ -2185,7 +2185,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-masi-99",
@@ -2206,7 +2206,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z",
       "paidAmount": 195,
       "paidCount": 13,
       "lastPaidAt": "2026-09-20T01:52:15.044Z"
@@ -2230,7 +2230,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-masi-101",
@@ -2251,7 +2251,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-masi-102",
@@ -2272,7 +2272,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z",
       "paidAmount": 120,
       "paidCount": 8,
       "lastPaidAt": "2026-09-20T02:03:48.522Z",
@@ -2288,19 +2288,19 @@
       "telegramId": null,
       "telegramUsername": "@shauryagharat4103",
       "rate": 15,
-      "completedOrders": 10,
-      "failCount": 6,
-      "successRate": 62.5,
-      "customSuccessRate": 62.5,
+      "completedOrders": 11,
+      "failCount": 8,
+      "successRate": 57.9,
+      "customSuccessRate": 57.9,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "todayDone": 0,
-      "online": false,
+      "online": true,
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z",
       "personName": "@shauryagharat4103"
     },
     {
@@ -2322,7 +2322,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z",
       "paidAmount": 210,
       "paidCount": 14,
       "lastPaidAt": "2026-09-20T02:06:45.339Z"
@@ -2346,7 +2346,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z",
       "paidAmount": 75,
       "paidCount": 5,
       "lastPaidAt": "2026-09-20T02:07:00.462Z"
@@ -2370,7 +2370,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z",
       "paidAmount": 165,
       "paidCount": 11,
       "lastPaidAt": "2026-09-20T02:06:49.867Z"
@@ -2394,7 +2394,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z",
       "paidAmount": 15,
       "paidCount": 1,
       "lastPaidAt": "2026-09-20T02:06:48.509Z"
@@ -2418,7 +2418,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-masi-109",
@@ -2427,10 +2427,10 @@
       "telegramId": null,
       "telegramUsername": "@Sonu2538",
       "rate": 15,
-      "completedOrders": 1,
-      "failCount": 5,
-      "successRate": 16.7,
-      "customSuccessRate": 16.7,
+      "completedOrders": 3,
+      "failCount": 7,
+      "successRate": 30,
+      "customSuccessRate": 30,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -2439,7 +2439,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z",
       "personName": "@Sonu2538"
     },
     {
@@ -2461,7 +2461,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-masi-111",
@@ -2482,7 +2482,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-masi-112",
@@ -2503,7 +2503,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z",
       "personName": "Lokesh",
       "updatedAt": "2026-09-20T20:35:03.906Z"
     },
@@ -2526,7 +2526,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-masi-114",
@@ -2547,7 +2547,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z",
       "paidAmount": 90,
       "paidCount": 6,
       "lastPaidAt": "2026-09-20T02:09:48.203Z",
@@ -2573,7 +2573,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-masi-116",
@@ -2594,7 +2594,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-masi-117",
@@ -2615,7 +2615,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-masi-118",
@@ -2636,7 +2636,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-masi-119",
@@ -2657,7 +2657,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-masi-120",
@@ -2678,7 +2678,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z",
       "personName": "idk"
     },
     {
@@ -2700,7 +2700,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z",
       "personName": "Shubhraj Singh",
       "done24h": 41,
       "fail24h": 12,
@@ -2725,7 +2725,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z",
       "paidAmount": 30,
       "paidCount": 2,
       "lastPaidAt": "2026-09-20T02:12:04.390Z"
@@ -2749,7 +2749,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-masi-124",
@@ -2770,7 +2770,7 @@
       "status": "paused",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-masi-125",
@@ -2791,7 +2791,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z",
       "paidAmount": 15,
       "paidCount": 1,
       "lastPaidAt": "2026-09-20T02:12:44.685Z"
@@ -2815,7 +2815,7 @@
       "status": "active",
       "source": "masi",
       "linkedAt": null,
-      "lastSyncedAt": "2026-09-23T18:58:59.790Z",
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z",
       "paidAmount": 60,
       "paidCount": 4,
       "lastPaidAt": "2026-09-20T02:12:41.387Z"
@@ -2841,7 +2841,7 @@
       "customSuccessRate": 83.3,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.792Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
     },
     {
       "id": "w-lokesh-1789936503911-328",
@@ -2864,7 +2864,7 @@
       "customSuccessRate": 0,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.791Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-lokesh-1789936503911-494",
@@ -2887,7 +2887,7 @@
       "customSuccessRate": 36.4,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.790Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-lokesh-1789936503911-60",
@@ -2910,7 +2910,7 @@
       "customSuccessRate": 0,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.791Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-lokesh-1789936503911-103",
@@ -2933,7 +2933,7 @@
       "customSuccessRate": 0,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.790Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-lokesh-1789936503911-76",
@@ -2956,7 +2956,7 @@
       "customSuccessRate": 0,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.792Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
     },
     {
       "id": "w-lokesh-1789936503912-604",
@@ -3002,25 +3002,25 @@
       "key": "WORKER-BAF8-8A3C-3CA1-5604",
       "personName": "@BCNAMI",
       "rate": 15,
-      "completedOrders": 44,
+      "completedOrders": 52,
       "done24h": 15,
       "fail24h": 0,
       "paidCount": 0,
       "paidAmount": 0,
-      "failCount": 27,
-      "successRate": 62,
+      "failCount": 32,
+      "successRate": 61.9,
       "todayDone": 0,
       "d7Done": 0,
-      "online": true,
+      "online": false,
       "status": "active",
       "source": "masi",
       "createdAt": "2026-09-21T04:39:59.236Z",
       "updatedAt": "2026-09-21T04:39:59.237Z",
       "telegramUsername": "@BCNAMI",
-      "customSuccessRate": 62,
+      "customSuccessRate": 61.9,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-shubhraj-1789965599237-968",
@@ -3045,7 +3045,7 @@
       "customSuccessRate": 50,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-shubhraj-1789965599237-890",
@@ -3070,7 +3070,7 @@
       "customSuccessRate": 50,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-shubhraj-1789965599238-860",
@@ -3095,7 +3095,7 @@
       "customSuccessRate": 60,
       "d7Fail": 0,
       "d7Rate": 0,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-auto-1790188907436-228",
@@ -3104,17 +3104,17 @@
       "telegramUsername": "@Bnzaalam",
       "personName": "@Bnzaalam",
       "rate": 15,
-      "completedOrders": 42,
+      "completedOrders": 86,
       "status": "active",
       "source": "masi",
-      "failCount": 3,
-      "successRate": 93.3,
-      "customSuccessRate": 93.3,
+      "failCount": 14,
+      "successRate": 86,
+      "customSuccessRate": 86,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.771Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-auto-1790188907436-166",
@@ -3123,17 +3123,17 @@
       "telegramUsername": "@fileworker_6700",
       "personName": "@fileworker_6700",
       "rate": 15,
-      "completedOrders": 56,
+      "completedOrders": 69,
       "status": "active",
       "source": "masi",
-      "failCount": 21,
-      "successRate": 72.7,
-      "customSuccessRate": 72.7,
+      "failCount": 31,
+      "successRate": 69,
+      "customSuccessRate": 69,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.770Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-auto-1790188907436-956",
@@ -3142,17 +3142,17 @@
       "telegramUsername": "@hashirmhd",
       "personName": "@hashirmhd",
       "rate": 15,
-      "completedOrders": 58,
+      "completedOrders": 79,
       "status": "active",
       "source": "masi",
-      "failCount": 9,
-      "successRate": 86.6,
-      "customSuccessRate": 86.6,
+      "failCount": 16,
+      "successRate": 83.2,
+      "customSuccessRate": 83.2,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
-      "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.769Z"
+      "online": true,
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-auto-1790188907436-355",
@@ -3164,14 +3164,14 @@
       "completedOrders": 20,
       "status": "active",
       "source": "masi",
-      "failCount": 12,
-      "successRate": 62.5,
-      "customSuccessRate": 62.5,
+      "failCount": 17,
+      "successRate": 54.1,
+      "customSuccessRate": 54.1,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.702Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-auto-1790188907436-794",
@@ -3190,7 +3190,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-auto-1790188907436-238",
@@ -3199,17 +3199,17 @@
       "telegramUsername": "@pawan_naidu_24",
       "personName": "@pawan_naidu_24",
       "rate": 15,
-      "completedOrders": 8,
+      "completedOrders": 9,
       "status": "active",
       "source": "masi",
       "failCount": 5,
-      "successRate": 61.5,
-      "customSuccessRate": 61.5,
+      "successRate": 64.3,
+      "customSuccessRate": 64.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
-      "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.719Z"
+      "online": true,
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-auto-1790188907436-48",
@@ -3228,7 +3228,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-auto-1790188907436-206",
@@ -3247,7 +3247,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.787Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-auto-1790188907436-641",
@@ -3266,7 +3266,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-auto-1790188907436-470",
@@ -3285,7 +3285,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-auto-1790188907436-820",
@@ -3294,17 +3294,17 @@
       "telegramUsername": "@Tgrajout",
       "personName": "@Tgrajout",
       "rate": 15,
-      "completedOrders": 6,
+      "completedOrders": 8,
       "status": "active",
       "source": "masi",
-      "failCount": 7,
-      "successRate": 46.2,
-      "customSuccessRate": 46.2,
+      "failCount": 23,
+      "successRate": 25.8,
+      "customSuccessRate": 25.8,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-auto-1790188907436-428",
@@ -3323,7 +3323,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.787Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-auto-1790188907436-830",
@@ -3342,7 +3342,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-auto-1790188907436-629",
@@ -3354,14 +3354,14 @@
       "completedOrders": 2,
       "status": "active",
       "source": "masi",
-      "failCount": 6,
-      "successRate": 25,
-      "customSuccessRate": 25,
+      "failCount": 7,
+      "successRate": 22.2,
+      "customSuccessRate": 22.2,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.787Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-auto-1790188907436-246",
@@ -3380,7 +3380,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.787Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-auto-1790188907436-656",
@@ -3399,7 +3399,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-auto-1790188907436-615",
@@ -3408,17 +3408,17 @@
       "telegramUsername": "@ROSALIE_ADMIN1",
       "personName": "@ROSALIE_ADMIN1",
       "rate": 15,
-      "completedOrders": 6,
+      "completedOrders": 7,
       "status": "active",
       "source": "masi",
-      "failCount": 7,
-      "successRate": 46.2,
-      "customSuccessRate": 46.2,
+      "failCount": 12,
+      "successRate": 36.8,
+      "customSuccessRate": 36.8,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.718Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-auto-1790188907436-278",
@@ -3427,17 +3427,17 @@
       "telegramUsername": "@ROSALIE_ADMIN1",
       "personName": "@ROSALIE_ADMIN1",
       "rate": 15,
-      "completedOrders": 3,
+      "completedOrders": 24,
       "status": "active",
       "source": "masi",
-      "failCount": 3,
-      "successRate": 50,
-      "customSuccessRate": 50,
+      "failCount": 15,
+      "successRate": 61.5,
+      "customSuccessRate": 61.5,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
-      "online": true,
-      "lastSyncedAt": "2026-09-23T18:58:59.698Z"
+      "online": false,
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
     },
     {
       "id": "w-auto-1790188907436-318",
@@ -3456,7 +3456,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-auto-1790188907436-743",
@@ -3475,7 +3475,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-auto-1790188907436-774",
@@ -3494,7 +3494,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-auto-1790188907436-175",
@@ -3513,7 +3513,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-auto-1790188907436-870",
@@ -3532,7 +3532,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.702Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-auto-1790188907436-877",
@@ -3551,7 +3551,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-auto-1790188907436-566",
@@ -3560,17 +3560,17 @@
       "telegramUsername": "@Kelifor",
       "personName": "@Kelifor",
       "rate": 15,
-      "completedOrders": 3,
+      "completedOrders": 4,
       "status": "active",
       "source": "masi",
-      "failCount": 8,
-      "successRate": 27.3,
-      "customSuccessRate": 27.3,
+      "failCount": 9,
+      "successRate": 30.8,
+      "customSuccessRate": 30.8,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.778Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-auto-1790188907436-125",
@@ -3589,7 +3589,7 @@
       "d7Fail": 0,
       "d7Rate": 0,
       "online": false,
-      "lastSyncedAt": "2026-09-23T18:58:59.706Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939699-329",
@@ -3609,17 +3609,17 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.700Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
     },
     {
       "id": "w-1790189939700-747",
       "name": "@Noob_001",
       "key": "WORKER-2E2B-0002-1C3A-6661",
       "rate": 15,
-      "completedOrders": 6,
-      "failCount": 13,
-      "successRate": 31.6,
-      "customSuccessRate": 31.6,
+      "completedOrders": 13,
+      "failCount": 15,
+      "successRate": 46.4,
+      "customSuccessRate": 46.4,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -3629,7 +3629,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.701Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
     },
     {
       "id": "w-1790189939701-544",
@@ -3649,7 +3649,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.701Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
     },
     {
       "id": "w-1790189939701-514",
@@ -3669,7 +3669,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.701Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
     },
     {
       "id": "w-1790189939703-584",
@@ -3689,7 +3689,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.703Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939703-312",
@@ -3709,7 +3709,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.703Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939704-28",
@@ -3729,7 +3729,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.704Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939704-732",
@@ -3749,7 +3749,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.704Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939704-751",
@@ -3769,7 +3769,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.704Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939704-898",
@@ -3789,7 +3789,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.704Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939705-316",
@@ -3809,7 +3809,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.705Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939705-991",
@@ -3829,7 +3829,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.706Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939706-53",
@@ -3849,7 +3849,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.706Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939706-487",
@@ -3869,7 +3869,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.706Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939707-460",
@@ -3889,7 +3889,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.707Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
     },
     {
       "id": "w-1790189939707-18",
@@ -3909,7 +3909,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.707Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.988Z"
     },
     {
       "id": "w-1790189939707-52",
@@ -3929,7 +3929,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.707Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.988Z"
     },
     {
       "id": "w-1790189939708-664",
@@ -3949,7 +3949,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.708Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.988Z"
     },
     {
       "id": "w-1790189939708-447",
@@ -3969,7 +3969,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.708Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.988Z"
     },
     {
       "id": "w-1790189939708-388",
@@ -3989,7 +3989,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.708Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.988Z"
     },
     {
       "id": "w-1790189939709-7",
@@ -4009,7 +4009,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.709Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.988Z"
     },
     {
       "id": "w-1790189939709-185",
@@ -4029,7 +4029,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.709Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-1790189939709-565",
@@ -4049,7 +4049,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.709Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-1790189939709-101",
@@ -4069,7 +4069,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.709Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-1790189939710-407",
@@ -4089,7 +4089,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.710Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-1790189939710-918",
@@ -4109,7 +4109,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.710Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-1790189939711-166",
@@ -4129,7 +4129,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-1790189939711-686",
@@ -4149,7 +4149,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.711Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.989Z"
     },
     {
       "id": "w-1790189939712-531",
@@ -4169,7 +4169,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.712Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-1790189939713-9",
@@ -4189,7 +4189,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.713Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-1790189939713-747",
@@ -4209,7 +4209,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.713Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.990Z"
     },
     {
       "id": "w-1790189939714-719",
@@ -4229,7 +4229,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.714Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-1790189939714-190",
@@ -4249,7 +4249,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.714Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-1790189939715-456",
@@ -4269,7 +4269,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.715Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-1790189939715-788",
@@ -4289,7 +4289,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.715Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.991Z"
     },
     {
       "id": "w-1790189939716-548",
@@ -4309,7 +4309,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.716Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.992Z"
     },
     {
       "id": "w-1790189939716-728",
@@ -4329,7 +4329,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.716Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.992Z"
     },
     {
       "id": "w-1790189939716-585",
@@ -4349,7 +4349,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.717Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.992Z"
     },
     {
       "id": "w-1790189939718-968",
@@ -4369,7 +4369,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.718Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.992Z"
     },
     {
       "id": "w-1790189939718-344",
@@ -4377,9 +4377,9 @@
       "key": "WORKER-66E6-3DEE-3014-C7F8",
       "rate": 15,
       "completedOrders": 1,
-      "failCount": 1,
-      "successRate": 50,
-      "customSuccessRate": 50,
+      "failCount": 2,
+      "successRate": 33.3,
+      "customSuccessRate": 33.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -4389,7 +4389,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.718Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-1790189939718-865",
@@ -4409,7 +4409,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.718Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-1790189939719-958",
@@ -4429,7 +4429,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.719Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-1790189939719-192",
@@ -4449,7 +4449,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.719Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.993Z"
     },
     {
       "id": "w-1790189939768-817",
@@ -4469,7 +4469,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.768Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939768-204",
@@ -4489,7 +4489,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.768Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939769-339",
@@ -4509,7 +4509,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.769Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939769-815",
@@ -4529,7 +4529,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.769Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939769-984",
@@ -4549,7 +4549,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.769Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939770-314",
@@ -4569,7 +4569,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.770Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939770-965",
@@ -4577,7 +4577,7 @@
       "key": "WORKER-F1DB-01CD-1E57-6DCB",
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 1,
+      "failCount": 4,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -4589,7 +4589,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.770Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939770-516",
@@ -4609,7 +4609,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.770Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939770-744",
@@ -4629,7 +4629,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.770Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939771-191",
@@ -4649,7 +4649,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.771Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.994Z"
     },
     {
       "id": "w-1790189939771-552",
@@ -4669,7 +4669,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.771Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939771-532",
@@ -4689,7 +4689,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.771Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939771-600",
@@ -4697,7 +4697,7 @@
       "key": "WORKER-B6D3-6301-0EB4-9B2C",
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 0,
+      "failCount": 1,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -4709,7 +4709,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.771Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939772-460",
@@ -4729,7 +4729,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.772Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939772-808",
@@ -4749,7 +4749,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.772Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939772-504",
@@ -4769,7 +4769,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.772Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939772-242",
@@ -4777,9 +4777,9 @@
       "key": "WORKER-B5F3-B889-02AF-2A5C",
       "rate": 15,
       "completedOrders": 2,
-      "failCount": 0,
-      "successRate": 100,
-      "customSuccessRate": 100,
+      "failCount": 2,
+      "successRate": 50,
+      "customSuccessRate": 50,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -4789,7 +4789,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.772Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939773-292",
@@ -4809,7 +4809,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.773Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939773-67",
@@ -4829,7 +4829,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.773Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939777-631",
@@ -4849,7 +4849,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939777-165",
@@ -4869,7 +4869,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939777-939",
@@ -4889,7 +4889,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.777Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939778-292",
@@ -4909,7 +4909,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.778Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939778-539",
@@ -4929,7 +4929,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.778Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939778-918",
@@ -4949,7 +4949,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.778Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
     },
     {
       "id": "w-1790189939778-698",
@@ -4969,7 +4969,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.778Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939778-249",
@@ -4989,7 +4989,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.778Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939779-348",
@@ -5009,17 +5009,17 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939779-283",
       "name": "Lodalasn",
       "key": "WORKER-8154-5DF2-4F51-FEE0",
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 1,
       "failCount": 1,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "successRate": 50,
+      "customSuccessRate": 50,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -5029,7 +5029,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.779Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939780-92",
@@ -5049,7 +5049,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939780-900",
@@ -5069,7 +5069,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.780Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939781-524",
@@ -5089,7 +5089,7 @@
       "linkedAt": null,
       "status": "paused",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939781-52",
@@ -5109,7 +5109,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.996Z"
     },
     {
       "id": "w-1790189939781-807",
@@ -5129,7 +5129,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z"
     },
     {
       "id": "w-1790189939781-379",
@@ -5149,17 +5149,17 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z"
     },
     {
       "id": "w-1790189939781-475",
       "name": "Mayanke",
       "key": "WORKER-8249-BBAF-83E8-8414",
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 2,
+      "failCount": 1,
+      "successRate": 66.7,
+      "customSuccessRate": 66.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -5169,17 +5169,17 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z"
     },
     {
       "id": "w-1790189939781-7",
       "name": "Mazid",
       "key": "WORKER-3733-5E4E-39BD-A862",
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 8,
+      "failCount": 3,
+      "successRate": 72.7,
+      "customSuccessRate": 72.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -5189,7 +5189,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z"
     },
     {
       "id": "w-1790189939781-896",
@@ -5209,7 +5209,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z"
     },
     {
       "id": "w-1790189939781-937",
@@ -5229,7 +5229,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z"
     },
     {
       "id": "w-1790189939781-578",
@@ -5249,7 +5249,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.781Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.997Z"
     },
     {
       "id": "w-1790189939782-296",
@@ -5269,7 +5269,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.998Z"
     },
     {
       "id": "w-1790189939782-631",
@@ -5289,7 +5289,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.998Z"
     },
     {
       "id": "w-1790189939782-820",
@@ -5309,7 +5309,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.998Z"
     },
     {
       "id": "w-1790189939782-507",
@@ -5329,17 +5329,17 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.999Z"
     },
     {
       "id": "w-1790189939782-101",
       "name": "Nitinji",
       "key": "WORKER-4119-5DB9-C755-2C6C",
       "rate": 15,
-      "completedOrders": 2,
+      "completedOrders": 6,
       "failCount": 1,
-      "successRate": 66.7,
-      "customSuccessRate": 66.7,
+      "successRate": 85.7,
+      "customSuccessRate": 85.7,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -5349,7 +5349,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:51.999Z"
     },
     {
       "id": "w-1790189939782-927",
@@ -5369,7 +5369,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.782Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-273",
@@ -5389,7 +5389,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-226",
@@ -5409,7 +5409,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-454",
@@ -5429,7 +5429,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-228",
@@ -5449,7 +5449,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-372",
@@ -5469,7 +5469,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-938",
@@ -5489,7 +5489,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-534",
@@ -5509,7 +5509,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939783-944",
@@ -5529,7 +5529,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.783Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.000Z"
     },
     {
       "id": "w-1790189939784-799",
@@ -5549,7 +5549,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-1790189939784-69",
@@ -5569,7 +5569,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-1790189939784-941",
@@ -5589,7 +5589,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-1790189939784-933",
@@ -5609,7 +5609,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-1790189939784-130",
@@ -5629,7 +5629,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-1790189939784-334",
@@ -5649,7 +5649,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.001Z"
     },
     {
       "id": "w-1790189939784-509",
@@ -5669,7 +5669,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-1790189939784-423",
@@ -5677,7 +5677,7 @@
       "key": "WORKER-1BF4-E852-B5B3-34CC",
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 0,
+      "failCount": 5,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -5689,7 +5689,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.784Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-1790189939785-921",
@@ -5709,7 +5709,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-1790189939785-971",
@@ -5729,7 +5729,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-1790189939785-744",
@@ -5749,7 +5749,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-1790189939785-773",
@@ -5769,7 +5769,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-1790189939785-89",
@@ -5789,7 +5789,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.002Z"
     },
     {
       "id": "w-1790189939785-995",
@@ -5809,7 +5809,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939785-475",
@@ -5829,7 +5829,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.785Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939786-111",
@@ -5849,7 +5849,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939786-235",
@@ -5869,7 +5869,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939786-299",
@@ -5889,7 +5889,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939786-223",
@@ -5909,7 +5909,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939786-974",
@@ -5929,17 +5929,17 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939786-228",
       "name": "Sahileix",
       "key": "WORKER-275C-AFF1-0964-B7D3",
       "rate": 15,
-      "completedOrders": 0,
+      "completedOrders": 1,
       "failCount": 0,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "successRate": 100,
+      "customSuccessRate": 100,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -5949,7 +5949,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939786-775",
@@ -5969,7 +5969,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.786Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.003Z"
     },
     {
       "id": "w-1790189939787-141",
@@ -5977,9 +5977,9 @@
       "key": "WORKER-13A1-13E1-B4B9-8CBE",
       "rate": 15,
       "completedOrders": 6,
-      "failCount": 4,
-      "successRate": 60,
-      "customSuccessRate": 60,
+      "failCount": 5,
+      "successRate": 54.5,
+      "customSuccessRate": 54.5,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -5989,7 +5989,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.787Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-1790189939787-819",
@@ -6009,7 +6009,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.787Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-1790189939787-30",
@@ -6029,7 +6029,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.787Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-1790189939788-379",
@@ -6049,7 +6049,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-1790189939788-83",
@@ -6069,7 +6069,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.004Z"
     },
     {
       "id": "w-1790189939788-66",
@@ -6089,17 +6089,17 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-1790189939788-160",
       "name": "Teliyash",
       "key": "WORKER-1DDE-7ACC-3F5A-CB6B",
       "rate": 15,
-      "completedOrders": 0,
-      "failCount": 1,
-      "successRate": 0,
-      "customSuccessRate": 0,
+      "completedOrders": 1,
+      "failCount": 2,
+      "successRate": 33.3,
+      "customSuccessRate": 33.3,
       "d7Done": 0,
       "d7Fail": 0,
       "d7Rate": 0,
@@ -6109,7 +6109,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.788Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-1790189939789-225",
@@ -6129,7 +6129,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-1790189939789-192",
@@ -6149,7 +6149,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.005Z"
     },
     {
       "id": "w-1790189939789-654",
@@ -6157,7 +6157,7 @@
       "key": "WORKER-9D8E-6C9B-BBB9-085A",
       "rate": 15,
       "completedOrders": 0,
-      "failCount": 0,
+      "failCount": 1,
       "successRate": 0,
       "customSuccessRate": 0,
       "d7Done": 0,
@@ -6169,7 +6169,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-1790189939789-24",
@@ -6189,7 +6189,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-1790189939789-445",
@@ -6209,7 +6209,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.789Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.006Z"
     },
     {
       "id": "w-1790189939790-104",
@@ -6229,7 +6229,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.790Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939790-619",
@@ -6249,7 +6249,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.790Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939790-778",
@@ -6269,7 +6269,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.790Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939790-411",
@@ -6289,7 +6289,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.790Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939791-363",
@@ -6309,7 +6309,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.791Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939791-79",
@@ -6329,7 +6329,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.791Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939791-258",
@@ -6349,7 +6349,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.791Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939791-511",
@@ -6369,7 +6369,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.791Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.007Z"
     },
     {
       "id": "w-1790189939791-708",
@@ -6389,7 +6389,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.791Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
     },
     {
       "id": "w-1790189939792-440",
@@ -6409,7 +6409,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.792Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
     },
     {
       "id": "w-1790189939792-822",
@@ -6429,7 +6429,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.792Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
     },
     {
       "id": "w-1790189939792-601",
@@ -6449,7 +6449,7 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.792Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
     },
     {
       "id": "w-1790189939792-887",
@@ -6469,7 +6469,267 @@
       "linkedAt": null,
       "status": "active",
       "source": "masi",
-      "lastSyncedAt": "2026-09-23T18:58:59.792Z"
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
+    },
+    {
+      "id": "w-1790247014515-259",
+      "name": "4bankhe",
+      "key": "WORKER-100A-8FA5-F2F6-5892",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 1,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014516-629",
+      "name": "@Adarsh443",
+      "key": "WORKER-59EB-D1C3-2675-9E08",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": true,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014517-325",
+      "name": "@Boss00077777",
+      "key": "WORKER-E905-9A1D-E4CF-694B",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014517-478",
+      "name": "@Davidprivate22",
+      "key": "WORKER-21A1-3852-4B33-B1EB",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014518-27",
+      "name": "@LAKSHAYDEV",
+      "key": "WORKER-739F-F2E4-D748-105B",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014519-261",
+      "name": "@Raju6789uu",
+      "key": "WORKER-E184-4C9B-3C7F-CB67",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 2,
+      "successRate": 33.3,
+      "customSuccessRate": 33.3,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014519-599",
+      "name": "@fileworker_6700",
+      "key": "WORKER-5B31-CA3F-B7C1-2C22",
+      "rate": 15,
+      "completedOrders": 2,
+      "failCount": 1,
+      "successRate": 66.7,
+      "customSuccessRate": 66.7,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014520-894",
+      "name": "@indianagent10",
+      "key": "WORKER-8C94-F3F9-58D8-7E76",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 2,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.986Z"
+    },
+    {
+      "id": "w-1790247014520-116",
+      "name": "@paise666",
+      "key": "WORKER-6B27-144B-E61B-1229",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.987Z"
+    },
+    {
+      "id": "w-1790247014531-241",
+      "name": "Jaatue",
+      "key": "WORKER-EC38-FDD9-D04A-EA07",
+      "rate": 15,
+      "completedOrders": 1,
+      "failCount": 1,
+      "successRate": 50,
+      "customSuccessRate": 50,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:51.995Z"
+    },
+    {
+      "id": "w-1790247014547-218",
+      "name": "mohitsingh",
+      "key": "WORKER-7717-41E9-19D6-9C1B",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
+    },
+    {
+      "id": "w-1790247014547-191",
+      "name": "robertjr",
+      "key": "WORKER-A179-7E17-F5F3-2DB9",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 2,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
+    },
+    {
+      "id": "w-1790247014548-73",
+      "name": "sharma",
+      "key": "WORKER-2D60-397C-56F4-1974",
+      "rate": 15,
+      "completedOrders": 0,
+      "failCount": 0,
+      "successRate": 0,
+      "customSuccessRate": 0,
+      "d7Done": 0,
+      "d7Fail": 0,
+      "d7Rate": 0,
+      "online": false,
+      "telegramId": null,
+      "telegramUsername": null,
+      "linkedAt": null,
+      "status": "active",
+      "source": "masi",
+      "lastSyncedAt": "2026-09-24T10:54:52.008Z"
     }
   ],
   "orders": [
@@ -6583,14 +6843,14 @@
     }
   ],
   "masiOverview": {
-    "withdrawnPaidCents": 49200,
-    "withdrawnPaidTotal": 492,
-    "paidTodayCents": 5000,
-    "paidTodayTotal": 50,
-    "balanceCents": 3480,
-    "balanceTotal": 34.8,
-    "limitDay": "2026-09-23",
-    "todayWithdrawalsCount": 1,
+    "withdrawnPaidCents": 56200,
+    "withdrawnPaidTotal": 562,
+    "paidTodayCents": 0,
+    "paidTodayTotal": 0,
+    "balanceCents": 4960,
+    "balanceTotal": 49.6,
+    "limitDay": "2026-09-24",
+    "todayWithdrawalsCount": 0,
     "withdrawals": [
       {
         "address": "0xab40ac212e1039ebdada72749d35e8348b108c0a",
@@ -6753,8 +7013,8 @@
         "net_amount_cents": 6860,
         "payment_method": "usdt",
         "real_name": "",
-        "status": "pending",
-        "updated_at": 1790173494,
+        "status": "paid",
+        "updated_at": 1790230373,
         "usdt_cny_rate": 7.2,
         "withdrawal_id": "ae5d945df3a6ba84",
         "worker_id": "6fe3ccd5812e",

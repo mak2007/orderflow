@@ -1,0 +1,1311 @@
+{
+  "window": "25 Sep 2026 (12:00 AM – 12:00 AM Midnight Full Day Settlement)",
+  "bossMasi": {
+    "totalCompleted": 177,
+    "ratePerSuccess": 0.6,
+    "lossPerFailure": 0.1,
+    "grossUsd": 106.2,
+    "penaltiesCount": 67,
+    "penaltiesUsd": -6.7,
+    "netUsd": 99.5,
+    "approxInrNet": 8358,
+    "balanceCents": 0
+  },
+  "redBanKeys": [
+    {
+      "name": "Hashirbhai",
+      "key": "WORKER-36F9-1F80-EA07-C8DA",
+      "tg": "@hashirmhd",
+      "ownerName": "Hashir",
+      "completed": 65,
+      "failed": 5,
+      "total": 71,
+      "successRate": 91.5,
+      "reason": "High Failures (5 fail)"
+    },
+    {
+      "name": "Alam00",
+      "key": "WORKER-0BE2-72E7-D72A-E15F",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 7 (Alam00)",
+      "completed": 55,
+      "failed": 12,
+      "total": 67,
+      "successRate": 82.1,
+      "reason": "High Failures (12 fail)"
+    },
+    {
+      "name": "Hellxieii",
+      "key": "WORKER-B25D-66C6-25F7-C418",
+      "tg": "@fileworker_6700",
+      "ownerName": "Fileworker",
+      "completed": 15,
+      "failed": 7,
+      "total": 23,
+      "successRate": 65.2,
+      "reason": "High Failures (7 fail)"
+    },
+    {
+      "name": "Duds",
+      "key": "WORKER-DUDS",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 4 (Duds)",
+      "completed": 3,
+      "failed": 3,
+      "total": 6,
+      "successRate": 50,
+      "reason": "Low Output (3 QR) with high fails (3 fail)"
+    },
+    {
+      "name": "Shaurya",
+      "key": "WORKER-98D0-D03A-8138-F09A",
+      "tg": "@shauryagharat4103",
+      "ownerName": "Shaurya",
+      "completed": 2,
+      "failed": 6,
+      "total": 8,
+      "successRate": 25,
+      "reason": "Low Output (2 QR) with high fails (6 fail)"
+    },
+    {
+      "name": "mohitsingh",
+      "key": "WORKER-7717-41E9-19D6-9C1B",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 8 (mohitsingh)",
+      "completed": 1,
+      "failed": 2,
+      "total": 4,
+      "successRate": 25,
+      "reason": "Low Output (1 QR) with high fails (2 fail)"
+    },
+    {
+      "name": "Adibhai",
+      "key": "WORKER-ADIBHAI",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 14 (Adibhai)",
+      "completed": 1,
+      "failed": 2,
+      "total": 3,
+      "successRate": 33.3,
+      "reason": "Low Output (1 QR) with high fails (2 fail)"
+    },
+    {
+      "name": "@Dudeinsaneee",
+      "key": "WORKER-@DUDEINSANEEE",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 3 (@Dudeinsaneee)",
+      "completed": 0,
+      "failed": 1,
+      "total": 2,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "Unknown",
+      "key": "WORKER-UNKNOWN",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 5 (Unknown)",
+      "completed": 0,
+      "failed": 3,
+      "total": 3,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (3 fail)"
+    },
+    {
+      "name": "Adityasingh",
+      "key": "WORKER-A49B-FD25-122A-244D",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 6 (Adityasingh)",
+      "completed": 0,
+      "failed": 1,
+      "total": 1,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "hi",
+      "key": "WORKER-HI",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 9 (hi)",
+      "completed": 0,
+      "failed": 1,
+      "total": 1,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "Sharmaji",
+      "key": "WORKER-9433-07AE-F0AF-26E2",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 11 (Sharmaji)",
+      "completed": 0,
+      "failed": 2,
+      "total": 2,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (2 fail)"
+    },
+    {
+      "name": "Lokesh",
+      "key": "WORKER-ABC7-A12B-7A80-E0C4",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 12 (Lokesh)",
+      "completed": 0,
+      "failed": 4,
+      "total": 4,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (4 fail)"
+    },
+    {
+      "name": "@Adarsh443",
+      "key": "WORKER-@ADARSH443",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 15 (@Adarsh443)",
+      "completed": 0,
+      "failed": 2,
+      "total": 2,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (2 fail)"
+    },
+    {
+      "name": "Paras48",
+      "key": "WORKER-PARAS48",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 16 (Paras48)",
+      "completed": 0,
+      "failed": 1,
+      "total": 1,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "¥¥",
+      "key": "WORKER-C210-CEC2-1E10-53A0",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 17 (¥¥)",
+      "completed": 0,
+      "failed": 1,
+      "total": 2,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "Givemeworkbro",
+      "key": "WORKER-D8DC-E408-F99E-B402",
+      "tg": "@pawan_naidu_24",
+      "ownerName": "Pawan Naidu",
+      "completed": 0,
+      "failed": 1,
+      "total": 1,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "Teliyash",
+      "key": "WORKER-1DDE-7ACC-3F5A-CB6B",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 18 (Teliyash)",
+      "completed": 0,
+      "failed": 1,
+      "total": 1,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "Sonusingh",
+      "key": "WORKER-79E7-D83D-0D37-C64B",
+      "tg": "@Sonu2538",
+      "ownerName": "Sonu Singh",
+      "completed": 0,
+      "failed": 1,
+      "total": 1,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    },
+    {
+      "name": "Cixiid",
+      "key": "WORKER-CCB2-8079-028A-FC37",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 21 (Cixiid)",
+      "completed": 0,
+      "failed": 2,
+      "total": 2,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (2 fail)"
+    },
+    {
+      "name": "Hugguno1",
+      "key": "WORKER-B5F3-B889-02AF-2A5C",
+      "tg": "Unassigned (Assign TG)",
+      "ownerName": "Worker 22 (Hugguno1)",
+      "completed": 0,
+      "failed": 1,
+      "total": 1,
+      "successRate": 0,
+      "reason": "Low Output (0 QR) with high fails (1 fail)"
+    }
+  ],
+  "users": [
+    {
+      "id": "tg:@hashirmhd",
+      "username": "@hashirmhd",
+      "displayName": "Hashir",
+      "telegramUsername": "@hashirmhd",
+      "isNewKey": false,
+      "done": 65,
+      "fail": 5,
+      "expired": 1,
+      "total": 71,
+      "successRate": 91.5,
+      "completedOrders": 65,
+      "totalOrders": 71,
+      "failCount": 5,
+      "payCalc": {
+        "tierRate": 40,
+        "basePay": 2600,
+        "isCapped": false,
+        "tierLabel": "30+ QR (₹40)"
+      },
+      "keys": [
+        {
+          "name": "Hashirbhai",
+          "key": "WORKER-36F9-1F80-EA07-C8DA",
+          "completedOrders": 65,
+          "done": 65,
+          "failCount": 5,
+          "fail": 5,
+          "expired": 1,
+          "totalOrders": 71,
+          "total": 71,
+          "successRate": 91.5
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-0BE2-72E7-D72A-E15F",
+      "username": null,
+      "displayName": "Worker 7 (Alam00)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 55,
+      "fail": 12,
+      "expired": 0,
+      "total": 67,
+      "successRate": 82.1,
+      "completedOrders": 55,
+      "totalOrders": 67,
+      "failCount": 12,
+      "payCalc": {
+        "tierRate": 40,
+        "basePay": 2200,
+        "isCapped": false,
+        "tierLabel": "30+ QR (₹40)"
+      },
+      "keys": [
+        {
+          "name": "Alam00",
+          "key": "WORKER-0BE2-72E7-D72A-E15F",
+          "completedOrders": 55,
+          "done": 55,
+          "failCount": 12,
+          "fail": 12,
+          "expired": 0,
+          "totalOrders": 67,
+          "total": 67,
+          "successRate": 82.1
+        }
+      ]
+    },
+    {
+      "id": "tg:@fileworker_6700",
+      "username": "@fileworker_6700",
+      "displayName": "Fileworker",
+      "telegramUsername": "@fileworker_6700",
+      "isNewKey": false,
+      "done": 25,
+      "fail": 8,
+      "expired": 1,
+      "total": 34,
+      "successRate": 73.5,
+      "completedOrders": 25,
+      "totalOrders": 34,
+      "failCount": 8,
+      "payCalc": {
+        "tierRate": 35,
+        "basePay": 875,
+        "isCapped": false,
+        "tierLabel": "20+ QR (₹35)"
+      },
+      "keys": [
+        {
+          "name": "Hellxieii",
+          "key": "WORKER-B25D-66C6-25F7-C418",
+          "completedOrders": 15,
+          "done": 15,
+          "failCount": 7,
+          "fail": 7,
+          "expired": 1,
+          "totalOrders": 23,
+          "total": 23,
+          "successRate": 65.2
+        },
+        {
+          "name": "@fileworker_6700",
+          "key": "WORKER-B25D-66C6-25F7-C418",
+          "completedOrders": 10,
+          "done": 10,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 11,
+          "total": 11,
+          "successRate": 90.9
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-DEPUBABY",
+      "username": null,
+      "displayName": "Worker 10 (Depubaby)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 5,
+      "fail": 1,
+      "expired": 1,
+      "total": 7,
+      "successRate": 71.4,
+      "completedOrders": 5,
+      "totalOrders": 7,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 125,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Depubaby",
+          "key": "WORKER-DEPUBABY",
+          "completedOrders": 5,
+          "done": 5,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 1,
+          "totalOrders": 7,
+          "total": 7,
+          "successRate": 71.4
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-4119-5DB9-C755-2C6C",
+      "username": null,
+      "displayName": "Worker 2 (Nitinji)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 4,
+      "fail": 0,
+      "expired": 0,
+      "total": 4,
+      "successRate": 100,
+      "completedOrders": 4,
+      "totalOrders": 4,
+      "failCount": 0,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 100,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Nitinji",
+          "key": "WORKER-4119-5DB9-C755-2C6C",
+          "completedOrders": 4,
+          "done": 4,
+          "failCount": 0,
+          "fail": 0,
+          "expired": 0,
+          "totalOrders": 4,
+          "total": 4,
+          "successRate": 100
+        }
+      ]
+    },
+    {
+      "id": "tg:@bcnami",
+      "username": "@BCNAMI",
+      "displayName": "BCNAMI",
+      "telegramUsername": "@BCNAMI",
+      "isNewKey": false,
+      "done": 4,
+      "fail": 2,
+      "expired": 1,
+      "total": 7,
+      "successRate": 57.1,
+      "completedOrders": 4,
+      "totalOrders": 7,
+      "failCount": 2,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 100,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "LuffyD",
+          "key": "WORKER-BAF8-8A3C-3CA1-5604",
+          "completedOrders": 4,
+          "done": 4,
+          "failCount": 2,
+          "fail": 2,
+          "expired": 1,
+          "totalOrders": 7,
+          "total": 7,
+          "successRate": 57.1
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-@WS_SOURAV69",
+      "username": null,
+      "displayName": "Worker 13 (@Ws_sourav69)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 4,
+      "fail": 1,
+      "expired": 0,
+      "total": 5,
+      "successRate": 80,
+      "completedOrders": 4,
+      "totalOrders": 5,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 100,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "@Ws_sourav69",
+          "key": "WORKER-@WS_SOURAV69",
+          "completedOrders": 4,
+          "done": 4,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 5,
+          "total": 5,
+          "successRate": 80
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-DUDS",
+      "username": null,
+      "displayName": "Worker 4 (Duds)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 3,
+      "fail": 3,
+      "expired": 0,
+      "total": 6,
+      "successRate": 50,
+      "completedOrders": 3,
+      "totalOrders": 6,
+      "failCount": 3,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 75,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Duds",
+          "key": "WORKER-DUDS",
+          "completedOrders": 3,
+          "done": 3,
+          "failCount": 3,
+          "fail": 3,
+          "expired": 0,
+          "totalOrders": 6,
+          "total": 6,
+          "successRate": 50
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-66E6-3DEE-3014-C7F8",
+      "username": null,
+      "displayName": "Worker 1 (Fastest)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 2,
+      "fail": 0,
+      "expired": 0,
+      "total": 2,
+      "successRate": 100,
+      "completedOrders": 2,
+      "totalOrders": 2,
+      "failCount": 0,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 50,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Fastest",
+          "key": "WORKER-66E6-3DEE-3014-C7F8",
+          "completedOrders": 2,
+          "done": 2,
+          "failCount": 0,
+          "fail": 0,
+          "expired": 0,
+          "totalOrders": 2,
+          "total": 2,
+          "successRate": 100
+        }
+      ]
+    },
+    {
+      "id": "tg:@rosalie_admin1",
+      "username": "@ROSALIE_ADMIN1",
+      "displayName": "Rosalie Admin",
+      "telegramUsername": "@ROSALIE_ADMIN1",
+      "isNewKey": false,
+      "done": 2,
+      "fail": 1,
+      "expired": 1,
+      "total": 4,
+      "successRate": 50,
+      "completedOrders": 2,
+      "totalOrders": 4,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 50,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "1webkeydedo",
+          "key": "WORKER-B110-7AFF-53AF-AA74",
+          "completedOrders": 2,
+          "done": 2,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 1,
+          "totalOrders": 4,
+          "total": 4,
+          "successRate": 50
+        }
+      ]
+    },
+    {
+      "id": "tg:@shauryagharat4103",
+      "username": "@shauryagharat4103",
+      "displayName": "Shaurya",
+      "telegramUsername": "@shauryagharat4103",
+      "isNewKey": false,
+      "done": 2,
+      "fail": 6,
+      "expired": 0,
+      "total": 8,
+      "successRate": 25,
+      "completedOrders": 2,
+      "totalOrders": 8,
+      "failCount": 6,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 50,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Shaurya",
+          "key": "WORKER-98D0-D03A-8138-F09A",
+          "completedOrders": 2,
+          "done": 2,
+          "failCount": 6,
+          "fail": 6,
+          "expired": 0,
+          "totalOrders": 8,
+          "total": 8,
+          "successRate": 25
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-BLASTER09",
+      "username": null,
+      "displayName": "Worker 19 (Blaster09)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 2,
+      "fail": 1,
+      "expired": 0,
+      "total": 3,
+      "successRate": 66.7,
+      "completedOrders": 2,
+      "totalOrders": 3,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 50,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Blaster09",
+          "key": "WORKER-BLASTER09",
+          "completedOrders": 2,
+          "done": 2,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 3,
+          "total": 3,
+          "successRate": 66.7
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-7717-41E9-19D6-9C1B",
+      "username": null,
+      "displayName": "Worker 8 (mohitsingh)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 1,
+      "fail": 2,
+      "expired": 1,
+      "total": 4,
+      "successRate": 25,
+      "completedOrders": 1,
+      "totalOrders": 4,
+      "failCount": 2,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 25,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "mohitsingh",
+          "key": "WORKER-7717-41E9-19D6-9C1B",
+          "completedOrders": 1,
+          "done": 1,
+          "failCount": 2,
+          "fail": 2,
+          "expired": 1,
+          "totalOrders": 4,
+          "total": 4,
+          "successRate": 25
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-ADIBHAI",
+      "username": null,
+      "displayName": "Worker 14 (Adibhai)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 1,
+      "fail": 2,
+      "expired": 0,
+      "total": 3,
+      "successRate": 33.3,
+      "completedOrders": 1,
+      "totalOrders": 3,
+      "failCount": 2,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 25,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Adibhai",
+          "key": "WORKER-ADIBHAI",
+          "completedOrders": 1,
+          "done": 1,
+          "failCount": 2,
+          "fail": 2,
+          "expired": 0,
+          "totalOrders": 3,
+          "total": 3,
+          "successRate": 33.3
+        }
+      ]
+    },
+    {
+      "id": "tg:@tgrajout",
+      "username": "@Tgrajout",
+      "displayName": "Tg Rajput",
+      "telegramUsername": "@Tgrajout",
+      "isNewKey": false,
+      "done": 1,
+      "fail": 1,
+      "expired": 0,
+      "total": 2,
+      "successRate": 50,
+      "completedOrders": 1,
+      "totalOrders": 2,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 25,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "Shub5",
+          "key": "WORKER-8CAF-E03B-19C1-E66F",
+          "completedOrders": 1,
+          "done": 1,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 2,
+          "total": 2,
+          "successRate": 50
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-EB89-186B-D312-4CB7",
+      "username": null,
+      "displayName": "Worker 20 (D10)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 1,
+      "fail": 0,
+      "expired": 0,
+      "total": 1,
+      "successRate": 100,
+      "completedOrders": 1,
+      "totalOrders": 1,
+      "failCount": 0,
+      "payCalc": {
+        "tierRate": 25,
+        "basePay": 25,
+        "isCapped": false,
+        "tierLabel": "1–5 QR (₹25)"
+      },
+      "keys": [
+        {
+          "name": "D10",
+          "key": "WORKER-EB89-186B-D312-4CB7",
+          "completedOrders": 1,
+          "done": 1,
+          "failCount": 0,
+          "fail": 0,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 100
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-@DUDEINSANEEE",
+      "username": null,
+      "displayName": "Worker 3 (@Dudeinsaneee)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 1,
+      "expired": 1,
+      "total": 2,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 2,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "@Dudeinsaneee",
+          "key": "WORKER-@DUDEINSANEEE",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 1,
+          "totalOrders": 2,
+          "total": 2,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-UNKNOWN",
+      "username": null,
+      "displayName": "Worker 5 (Unknown)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 3,
+      "expired": 0,
+      "total": 3,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 3,
+      "failCount": 3,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Unknown",
+          "key": "WORKER-UNKNOWN",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 3,
+          "fail": 3,
+          "expired": 0,
+          "totalOrders": 3,
+          "total": 3,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-A49B-FD25-122A-244D",
+      "username": null,
+      "displayName": "Worker 6 (Adityasingh)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 1,
+      "expired": 0,
+      "total": 1,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 1,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Adityasingh",
+          "key": "WORKER-A49B-FD25-122A-244D",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-HI",
+      "username": null,
+      "displayName": "Worker 9 (hi)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 1,
+      "expired": 0,
+      "total": 1,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 1,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "hi",
+          "key": "WORKER-HI",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-9433-07AE-F0AF-26E2",
+      "username": null,
+      "displayName": "Worker 11 (Sharmaji)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 2,
+      "expired": 0,
+      "total": 2,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 2,
+      "failCount": 2,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Sharmaji",
+          "key": "WORKER-9433-07AE-F0AF-26E2",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 2,
+          "fail": 2,
+          "expired": 0,
+          "totalOrders": 2,
+          "total": 2,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-ABC7-A12B-7A80-E0C4",
+      "username": null,
+      "displayName": "Worker 12 (Lokesh)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 4,
+      "expired": 0,
+      "total": 4,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 4,
+      "failCount": 4,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Lokesh",
+          "key": "WORKER-ABC7-A12B-7A80-E0C4",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 4,
+          "fail": 4,
+          "expired": 0,
+          "totalOrders": 4,
+          "total": 4,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-@ADARSH443",
+      "username": null,
+      "displayName": "Worker 15 (@Adarsh443)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 2,
+      "expired": 0,
+      "total": 2,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 2,
+      "failCount": 2,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "@Adarsh443",
+          "key": "WORKER-@ADARSH443",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 2,
+          "fail": 2,
+          "expired": 0,
+          "totalOrders": 2,
+          "total": 2,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-PARAS48",
+      "username": null,
+      "displayName": "Worker 16 (Paras48)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 1,
+      "expired": 0,
+      "total": 1,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 1,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Paras48",
+          "key": "WORKER-PARAS48",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-C210-CEC2-1E10-53A0",
+      "username": null,
+      "displayName": "Worker 17 (¥¥)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 1,
+      "expired": 1,
+      "total": 2,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 2,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "¥¥",
+          "key": "WORKER-C210-CEC2-1E10-53A0",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 1,
+          "totalOrders": 2,
+          "total": 2,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "tg:@pawan_naidu_24",
+      "username": "@pawan_naidu_24",
+      "displayName": "Pawan Naidu",
+      "telegramUsername": "@pawan_naidu_24",
+      "isNewKey": false,
+      "done": 0,
+      "fail": 1,
+      "expired": 0,
+      "total": 1,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 1,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Givemeworkbro",
+          "key": "WORKER-D8DC-E408-F99E-B402",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-1DDE-7ACC-3F5A-CB6B",
+      "username": null,
+      "displayName": "Worker 18 (Teliyash)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 1,
+      "expired": 0,
+      "total": 1,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 1,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Teliyash",
+          "key": "WORKER-1DDE-7ACC-3F5A-CB6B",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "tg:@sonu2538",
+      "username": "@Sonu2538",
+      "displayName": "Sonu Singh",
+      "telegramUsername": "@Sonu2538",
+      "isNewKey": false,
+      "done": 0,
+      "fail": 1,
+      "expired": 0,
+      "total": 1,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 1,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Sonusingh",
+          "key": "WORKER-79E7-D83D-0D37-C64B",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-CCB2-8079-028A-FC37",
+      "username": null,
+      "displayName": "Worker 21 (Cixiid)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 2,
+      "expired": 0,
+      "total": 2,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 2,
+      "failCount": 2,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Cixiid",
+          "key": "WORKER-CCB2-8079-028A-FC37",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 2,
+          "fail": 2,
+          "expired": 0,
+          "totalOrders": 2,
+          "total": 2,
+          "successRate": 0
+        }
+      ]
+    },
+    {
+      "id": "unassigned:WORKER-B5F3-B889-02AF-2A5C",
+      "username": null,
+      "displayName": "Worker 22 (Hugguno1)",
+      "telegramUsername": null,
+      "isNewKey": true,
+      "done": 0,
+      "fail": 1,
+      "expired": 0,
+      "total": 1,
+      "successRate": 0,
+      "completedOrders": 0,
+      "totalOrders": 1,
+      "failCount": 1,
+      "payCalc": {
+        "tierRate": 0,
+        "basePay": 0,
+        "isCapped": false,
+        "tierLabel": "0 QR"
+      },
+      "keys": [
+        {
+          "name": "Hugguno1",
+          "key": "WORKER-B5F3-B889-02AF-2A5C",
+          "completedOrders": 0,
+          "done": 0,
+          "failCount": 1,
+          "fail": 1,
+          "expired": 0,
+          "totalOrders": 1,
+          "total": 1,
+          "successRate": 0
+        }
+      ]
+    }
+  ]
+}

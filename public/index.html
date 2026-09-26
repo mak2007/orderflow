@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daily Profit & Worker Payouts | Today 24 Sep 2026</title>
+  <title>Daily Profit & Worker Payouts | Today 26 Sep 2026 Live</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
@@ -43,25 +43,25 @@
   </aside>
 
   <!-- Clean Minimal Light Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
       <!-- Brand & Current Date -->
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-sm">
+        <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-sm shadow-2xs">
           ₹
         </div>
         <div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">Daily Profit & Worker Payouts</h1>
-            <span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-300">🕒 Last Updated: 24 Sep 2026, 10:00 PM IST</span>
+            <span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-300">🕒 Live: 26 Sep 2026, 01:00 PM IST (Today)</span>
           </div>
           <p class="text-[11px] text-slate-500">Live order fulfillment & net revenue from masi.cc.cd</p>
         </div>
       </div>
 
-      <!-- Actions: Search & Live Sync -->
-      <div class="flex items-center gap-2.5 w-full sm:w-auto">
-        <div class="relative flex-1 sm:w-60">
+      <!-- Actions: Search, Auth Status, Export & Live Sync -->
+      <div class="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
+        <div class="relative flex-1 sm:w-52">
           <input 
             type="text" 
             id="global-search" 
@@ -69,6 +69,20 @@
             class="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 transition"
           >
           <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+
+        <!-- Logged-in Boss Badge & Logout Action -->
+        <div id="auth-user-badge" class="hidden items-center gap-1.5">
+          <span class="px-2 py-1 rounded-md text-[11px] font-extrabold bg-slate-900 text-white flex items-center gap-1 shadow-2xs">
+            <span>👑</span><span class="hidden sm:inline">Boss Portal</span>
+          </span>
+          <button 
+            onclick="logoutUser()" 
+            title="Lock & Logout" 
+            class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition flex items-center gap-1 active:scale-95 cursor-pointer shadow-2xs"
+          >
+            <span>🔒</span><span class="hidden sm:inline">Logout</span>
+          </button>
         </div>
 
         <!-- Direct Download Option -->
@@ -79,7 +93,7 @@
           class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap active:scale-95 cursor-pointer"
         >
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-          <span>📥 Download Report</span>
+          <span class="hidden md:inline">Download</span><span>Report</span>
         </button>
 
         <!-- Save as PDF / Print -->
@@ -90,17 +104,17 @@
           class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap active:scale-95 cursor-pointer"
         >
           <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          <span>🖨️ Save as PDF</span>
+          <span class="hidden sm:inline">Print /</span><span>PDF</span>
         </button>
 
         <button 
           onclick="fetchLiveMasiData(true)" 
           id="btn-sync-live-top" 
           title="Fetch live completed orders from masi.cc.cd" 
-          class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap active:scale-95"
+          class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap active:scale-95 cursor-pointer"
         >
           <svg id="sync-spinner-icon" class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-          <span id="sync-btn-label">Sync Masi</span>
+          <span id="sync-btn-label">Sync</span>
         </button>
       </div>
     </div>
@@ -113,7 +127,78 @@
     </div>
   </main>
 
-  
+  <!-- Auth Gate / Login Modal Overlay -->
+  <div id="auth-gate-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 hidden">
+    <div class="w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200">
+      <!-- Card Top Banner -->
+      <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 text-white text-center relative border-b border-slate-800">
+        <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-3xl shadow-inner">
+          🔒
+        </div>
+        <h2 class="text-xl font-black tracking-tight">OrderFlow Boss Portal</h2>
+        <p class="text-xs text-slate-300 mt-1">Authorized access to financial settlements, worker payouts & keys</p>
+      </div>
+
+      <!-- Card Body -->
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            Boss Passcode / Key
+          </label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="auth-password-input" 
+              placeholder="Enter PIN, password, or Boss Key..."
+              autocomplete="current-password"
+              class="w-full pl-3.5 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition font-mono shadow-inner"
+            >
+            <button 
+              type="button" 
+              onclick="togglePasswordVisibility()" 
+              id="btn-toggle-eye" 
+              title="Show/Hide Password"
+              class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700 text-sm cursor-pointer"
+            >
+              👁️
+            </button>
+          </div>
+          <div id="auth-error-msg" class="text-xs text-rose-600 font-semibold mt-1.5 hidden flex items-center gap-1">
+            <span>⚠️</span><span id="auth-error-text">Invalid credentials</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs pt-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-slate-600">
+            <input type="checkbox" id="auth-remember-me" checked class="rounded border-slate-300 text-slate-900 focus:ring-slate-900">
+            <span>Remember this device</span>
+          </label>
+          <span class="text-[11px] font-semibold text-slate-500">Master PIN: <code class="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded font-mono font-bold">7788</code></span>
+        </div>
+
+        <!-- Action Buttons -->
+        <button 
+          type="submit" 
+          id="btn-login-submit"
+          class="w-full py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 active:scale-[0.98] transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
+        >
+          <span>Unlock Dashboard</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+
+        <div class="pt-2 border-t border-slate-100">
+          <button 
+            type="button" 
+            onclick="quickUnlock()"
+            class="w-full py-2 px-3 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+          >
+            <span>⚡ Quick Unlock (Boss Master PIN: 7788)</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
